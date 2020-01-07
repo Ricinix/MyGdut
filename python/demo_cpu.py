@@ -11,9 +11,9 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms.functional import to_tensor, to_pil_image
 from tqdm import tqdm
 
-characters = string.digits + string.ascii_uppercase + string.ascii_lowercase
+characters = '-' + string.digits + string.ascii_uppercase + string.ascii_lowercase
 width, height, n_len, n_classes = 140, 60, 4, len(characters)
-n_input_length = 12
+n_input_length = 8
 print(characters, width, height, n_len, n_classes)
 
 
@@ -209,7 +209,7 @@ for epoch in range(1, epochs + 1):
 model.eval()
 import save_model
 
-save_model.save(model, 0.9)
+save_model.save(model, "cpu")
 do = True
 while do or decode_target(target) == decode(output_argmax[0]):
     do = False

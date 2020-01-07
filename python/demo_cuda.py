@@ -231,7 +231,7 @@ for epoch in range(1, epochs + 1):
 model.eval()
 import save_model
 
-save_model.save(model, 0.99)
+save_model.save(model, "cuda")
 # 一直输出答案，直到输出不一样为止
 do = True
 output = model(image)
