@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torchvision.transforms.functional import to_tensor
+import demo_cuda
 
 class MyModel(nn.Module):
     def __init__(self, kernel_layer):
@@ -8,7 +9,9 @@ class MyModel(nn.Module):
 
     def forward(self, x):
         a = to_tensor(x)
-        return self.kernel_layer(a)
+        output = self.kernel_layer(a)
+        output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
+        return demo_cuda.decode(output_argmax[0])
 
 
 def save(model, version_code):

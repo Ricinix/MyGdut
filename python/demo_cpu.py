@@ -1,19 +1,19 @@
+import random
+import string
+from collections import OrderedDict
+
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from captcha.image import ImageCaptcha
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms.functional import to_tensor, to_pil_image
-
-from captcha.image import ImageCaptcha
 from tqdm import tqdm
-import random
-import numpy as np
-from collections import OrderedDict
 
-import string
 characters = string.digits + string.ascii_uppercase + string.ascii_lowercase
 width, height, n_len, n_classes = 140, 60, 4, len(characters)
-n_input_length = 8
+n_input_length = 12
 print(characters, width, height, n_len, n_classes)
 
 
@@ -33,25 +33,37 @@ class CaptchaDataset(Dataset):
         return self.length
 
     def __getitem__(self, index):
+        # 随机选取4个字符
         random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
+        # 生成对应的图片并转换成tensor
         image = to_tensor(self.generator.generate_image(random_str))
+        # 长度为4，每个位置为4个字符在[characters]中对应的index
         target = torch.tensor([self.characters.find(x) for x in random_str], dtype=torch.long)
+        # 将scalar：input_length变成一个tensor
         input_length = torch.full(size=(1,), fill_value=self.input_length, dtype=torch.long)
+        # 将scalar:：n_len变成一个tensor
         target_length = torch.full(size=(1,), fill_value=self.label_length, dtype=torch.long)
         return image, target, input_length, target_length
 
+# 数据集
 dataset = CaptchaDataset(characters, 1, width, height, n_input_length, n_len)
 image, target, input_length, label_length = dataset[0]
+# 输出第一个数据看看效果
 print(''.join([characters[x] for x in target]), input_length, label_length)
-to_pil_image(image)
+# to_pil_image(image)
 
+# 批量大小
 batch_size = 64
+# 训练集
 train_set = CaptchaDataset(characters, 100 * batch_size, width, height, n_input_length, n_len)
+# 验证集
 valid_set = CaptchaDataset(characters, 10 * batch_size, width, height, n_input_length, n_len)
+# 将dataset转化成dataloader来读取数据
 train_loader = DataLoader(train_set, batch_size=batch_size)
 valid_loader = DataLoader(valid_set, batch_size=batch_size)
 
 
+# 卷积神经网络+循环神经网络
 class Model(nn.Module):
     def __init__(self, n_classes, input_shape=(3, 64, 128)):
         super(Model, self).__init__()
@@ -94,26 +106,31 @@ class Model(nn.Module):
         x = self.fc(x)
         return x
 
+
+# 传入验证码图片的大小，获取模型
 model = Model(n_classes, input_shape=(3, height, width))
 inputs = torch.zeros((32, 3, height, width))
 outputs = model(inputs)
-outputs.shape
+print("output shape:", outputs.shape)
 
 model = Model(n_classes, input_shape=(3, height, width))
 model = model
 model
 
+
 def decode(sequence):
     a = ''.join([characters[x] for x in sequence])
-    s = ''.join([x for j, x in enumerate(a[:-1]) if x != characters[0] and x != a[j+1]])
+    s = ''.join([x for j, x in enumerate(a[:-1]) if x != characters[0] and x != a[j + 1]])
     if len(s) == 0:
         return ''
     if a[-1] != characters[0] and s[-1] != a[-1]:
         s += a[-1]
     return s
 
+
 def decode_target(sequence):
     return ''.join([characters[x] for x in sequence]).replace(' ', '')
+
 
 def calc_acc(target, output):
     output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
@@ -176,6 +193,7 @@ def valid(model, optimizer, epoch, dataloader):
 
             pbar.set_description(f'Test : {epoch} Loss: {loss_mean:.4f} Acc: {acc_mean:.4f} ')
 
+
 optimizer = torch.optim.Adam(model.parameters(), 1e-3, amsgrad=True)
 epochs = 30
 for epoch in range(1, epochs + 1):
@@ -190,6 +208,7 @@ for epoch in range(1, epochs + 1):
 
 model.eval()
 import save_model
+
 save_model.save(model, 0.9)
 do = True
 while do or decode_target(target) == decode(output_argmax[0]):
