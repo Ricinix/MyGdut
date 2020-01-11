@@ -25,13 +25,12 @@ class MyModel(nn.Module):
 
     def forward(self, x):
         output = self.kernel_layer(x)
-        output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
+        output_argmax = output.permute(1, 0, 2).argmax(dim=-1)
         return output_argmax[0]
 
 
 def save(model, version_code):
     model.eval()
-    my_model = MyModel(model)
     example = torch.rand(1, 3, 60, 140)
-    traced_script_module = torch.jit.trace(my_model, example)
-    traced_script_module.save("./model-%s.pt" % version_code)
+    traced_script_module = torch.jit.trace(model, example)
+    traced_script_module.save("./model3-%s.pt" % version_code)

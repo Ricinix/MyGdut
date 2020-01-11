@@ -1,14 +1,13 @@
 import string
 from collections import OrderedDict
 
+import get_verify_code
+import save_model
 import torch
+from captcha.image import ImageCaptcha
 from matplotlib import pyplot as plt
 from torch import nn
 from torchvision.transforms.functional import to_tensor
-
-import captcha_generate
-import get_verify_code
-import save_model
 
 
 class Model(nn.Module):
@@ -55,7 +54,7 @@ class Model(nn.Module):
 
 
 def load_model():
-    return torch.jit.load('model-test.pt')
+    return torch.jit.load('model2-script-colab.pt')
 
 
 def test_data():
@@ -68,7 +67,7 @@ def test_data():
 
 
 def generate_model():
-    characters = '-' + string.digits + string.ascii_uppercase + string.ascii_lowercase
+    characters = '-' + string.digits + string.ascii_lowercase
     width, height, n_len, n_classes = 140, 60, 4, len(characters)
     model = Model(n_classes, input_shape=(3, height, width))
     save_model.save(model, "test")
@@ -76,13 +75,24 @@ def generate_model():
 
 def test_model():
     img = get_verify_code.get_pic()
-    input = to_tensor(img).view(1, 3, 60, 140)
+    get_verify_code.show_pic(img)
+    input = to_tensor(img)
     model = load_model()
-    y = model(input)
-    print(y)
-    print("code:", save_model.decode(y))
+    y = model(input.view(1, 3, 60, 140))
+    print(y.shape)
+    print(y.permute(1, 0, 2).shape)
+    print(y.permute(1, 0, 2).argmax(dim=-1))
+    print("code:", save_model.decode(y.permute(1, 0, 2).argmax(dim=-1)[0]))
+
+
+def transform_model():
+    model = load_model()
+    example = torch.rand(1, 3, 60, 140)
+    traced_script_module = torch.jit.trace(model.kernel_layer, example)
+    traced_script_module.save("./model-%s.pt" % "cuda2")
 
 
 if __name__ == '__main__':
-    generate_model()
+    # generate_model()
     test_model()
+    # transform_model()

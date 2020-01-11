@@ -1,11 +1,11 @@
 package com.example.mygdut
 
 import android.graphics.BitmapFactory
-import com.example.mygdut.net.MyRetorfit
+import com.example.mygdut.domain.VerifyCodeClasses
+import com.example.mygdut.net.MyRetrofit
 import com.example.mygdut.net.api.LoginApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -15,7 +15,7 @@ import java.util.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    private val c = MyRetorfit.newInstance.create(LoginApi::class.java)
+    private val c = MyRetrofit.newInstance.create(LoginApi::class.java)
 //    @Test
     fun addition_isCorrect() = runBlocking{
         val r = c.getLoginPage()
@@ -29,5 +29,9 @@ class ExampleUnitTest {
             println(r.bytes())
             val bitmap = BitmapFactory.decodeByteArray(r.bytes(), 0, r.bytes().size)
         }
+    }
+    @Test
+    fun size_test(){
+        println(VerifyCodeClasses.names.length)
     }
 }

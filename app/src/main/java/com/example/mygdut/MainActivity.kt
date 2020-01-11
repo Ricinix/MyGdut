@@ -5,14 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.example.mygdut.domain.ClassesName
-import com.example.mygdut.net.MyRetorfit
+import androidx.appcompat.app.AppCompatActivity
+import com.example.mygdut.domain.VerifyCodeCrack
+import com.example.mygdut.net.MyRetrofit
 import com.example.mygdut.net.api.LoginApi
-
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.*
@@ -22,17 +21,18 @@ import org.pytorch.torchvision.TensorImageUtils
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.StringBuilder
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val scope = MainScope()
+    private lateinit var verifyCodeCrack: VerifyCodeCrack
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val c = MyRetorfit.newInstance.create(LoginApi::class.java)
+        val c = MyRetrofit.newInstance.create(LoginApi::class.java)
+        verifyCodeCrack = VerifyCodeCrack(this, VerifyCodeCrack.Engine.EngineTwo)
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
@@ -42,55 +42,12 @@ class MainActivity : AppCompatActivity() {
                 val bitmap = BitmapFactory.decodeStream(r.byteStream())
                 Log.d("ImageView", "$bitmap")
                 image_view.setImageBitmap(bitmap)
-                val code = withContext(Dispatchers.Default){
-                    getVerifyCode(bitmap)
+                val code = withContext(Dispatchers.IO){
+                    verifyCodeCrack.getVerifyCode(bitmap)
                 }
                 verify_code_text_view.text = code
+
             }
-        }
-    }
-
-    private fun getVerifyCode(bitmap :Bitmap) : String{
-        val module = Module.load(assetFilePath(this, "model.pt"))
-        val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
-            TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB)
-
-        val outputTensor = module.forward(IValue.from(inputTensor)).toTensor()
-        val scores = outputTensor.dataAsFloatArray
-        val codes = StringBuilder()
-
-        for(j in 0..3){
-            var largestIndex = 0
-            var largestScore = Float.MIN_VALUE
-            for (i in ClassesName.names.indices){
-                if (scores[j*ClassesName.names.length + i] > largestScore){
-                    largestIndex = i
-                    largestScore = scores[j*ClassesName.names.length + i]
-                }
-            }
-            codes.append(ClassesName.names[largestIndex])
-        }
-        return codes.toString()
-    }
-
-    @Throws(IOException::class)
-    private fun assetFilePath(context: Context, assetName: String): String {
-        val file = File(context.filesDir, assetName)
-        if (file.exists() && file.length() > 0) {
-            return file.absolutePath
-        }
-
-        context.assets.open(assetName).use { `is` ->
-            FileOutputStream(file).use { os ->
-                val buffer = ByteArray(4 * 1024)
-                var read = `is`.read(buffer)
-                while (read != -1) {
-                    os.write(buffer, 0, read)
-                    read = `is`.read(buffer)
-                }
-                os.flush()
-            }
-            return file.absolutePath
         }
     }
 

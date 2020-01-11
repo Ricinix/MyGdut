@@ -3,19 +3,21 @@ import string
 from collections import OrderedDict
 
 import numpy as np
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from captcha.image import ImageCaptcha
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms.functional import to_tensor
+from PIL import Image
 from tqdm import tqdm
 
-characters = '-' + string.digits + string.ascii_uppercase + string.ascii_lowercase
+base_uri = "E:/Programming/idea_workspace/Data"
+characters = '-' + string.digits + string.ascii_lowercase
 width, height, n_len, n_classes = 140, 60, 4, len(characters)
-n_input_length = 12
+n_input_length = 8
 print(characters, width, height, n_len, n_classes)
-
 
 class CaptchaDataset(Dataset):
     def __init__(self, characters, length, width, height, input_length, label_length):
@@ -32,11 +34,23 @@ class CaptchaDataset(Dataset):
     def __len__(self):
         return self.length
 
+    def get_pic(self):
+        random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
+        while True:
+            try:
+                img = Image.open(base_uri + "/" + random_str + ".png")
+                return random_str, img
+            except OSError:
+                random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
+
     def __getitem__(self, index):
         # 随机选取4个字符
-        random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
+        # random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
         # 生成对应的图片并转换成tensor
-        image = to_tensor(self.generator.generate_image(random_str))
+        # image = to_tensor(self.generator.generate_image(random_str))
+        # image = to_tensor(Image.open(base_uri + "/" + imgs[r]))
+        random_str, img = self.get_pic()
+        image = to_tensor(img)
         # 长度为4，每个位置为4个字符在[characters]中对应的index
         target = torch.tensor([self.characters.find(x) for x in random_str], dtype=torch.long)
         # 将scalar：input_length变成一个tensor
@@ -54,17 +68,18 @@ print(''.join([characters[x] for x in target]), input_length, label_length)
 # to_pil_image(image)
 
 # 批量大小
-batch_size = 64
+batch_size = 128
 # 训练集
 train_set = CaptchaDataset(characters, 1000 * batch_size, width, height, n_input_length, n_len)
 # 验证集
 valid_set = CaptchaDataset(characters, 100 * batch_size, width, height, n_input_length, n_len)
 # 将dataset转化成dataloader来读取数据
-train_loader = DataLoader(train_set, batch_size=batch_size, num_workers=12)
-valid_loader = DataLoader(valid_set, batch_size=batch_size, num_workers=12)
+train_loader = DataLoader(train_set, batch_size=batch_size)
+valid_loader = DataLoader(valid_set, batch_size=batch_size)
 
 
 # 卷积神经网络+循环神经网络
+# class Model(torch.jit.ScriptModule):
 class Model(nn.Module):
     def __init__(self, n_classes, input_shape=(3, 64, 128)):
         super(Model, self).__init__()
@@ -99,6 +114,7 @@ class Model(nn.Module):
         x = x.reshape(x.shape[0], -1, x.shape[-1])
         return x.shape[1]
 
+    # @torch.jit.script_method
     def forward(self, x):
         x = self.cnn(x)
         x = x.reshape(x.shape[0], -1, x.shape[-1])
@@ -216,13 +232,14 @@ def valid(model, optimizer, epoch, dataloader):
 # Adam优化器（8说了，遇事不决上Adam）
 optimizer = torch.optim.Adam(model.parameters(), 1e-3, amsgrad=True)
 # 30次迭代
-epochs = 30
+epochs = 5
 for epoch in range(1, epochs + 1):
     train(model, optimizer, epoch, train_loader)
     valid(model, optimizer, epoch, valid_loader)
 # 降低优化器的学习率，进行后15次的优化
 optimizer = torch.optim.Adam(model.parameters(), 1e-4, amsgrad=True)
-epochs = 15
+# 15次迭代
+epochs = 3
 for epoch in range(1, epochs + 1):
     train(model, optimizer, epoch, train_loader)
     valid(model, optimizer, epoch, valid_loader)
@@ -230,18 +247,20 @@ for epoch in range(1, epochs + 1):
 # 训练完成，保存模型
 model.eval()
 import save_model
+save_model.save(model.cpu(), "script-local")
+torch.save(model.cpu().state_dict(), "model3-param-local.pt")
+# torch.save(model.cpu(), 'model3-raw-local.pt')
 
-save_model.save(model, "cuda")
 # 一直输出答案，直到输出不一样为止
-do = True
-output = model(image)
-output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
-while do or decode_target(target) == decode(output_argmax[0]):
-    do = False
-    image, target, input_length, label_length = dataset[0]
-    print('true:', decode_target(target))
-
-    output = model(image.unsqueeze(0).cuda())
-    output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
-    print('pred:', decode(output_argmax[0]))
+# do = True
+# output = model(image)
+# output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
+# while do or decode_target(target) == decode(output_argmax[0]):
+#     do = False
+#     image, target, input_length, label_length = dataset[0]
+#     print('true:', decode_target(target))
+#
+#     output = model(image.unsqueeze(0).cuda())
+#     output_argmax = output.detach().permute(1, 0, 2).argmax(dim=-1)
+#     print('pred:', decode(output_argmax[0]))
 # to_pil_image(image)

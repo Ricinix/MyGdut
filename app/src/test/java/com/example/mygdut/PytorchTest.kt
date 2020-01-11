@@ -1,14 +1,12 @@
 package com.example.mygdut
 
 import android.content.Context
-import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.example.mygdut.net.MyRetorfit
+import com.example.mygdut.net.MyRetrofit
 import com.example.mygdut.net.api.LoginApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import org.pytorch.Module
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -17,7 +15,7 @@ import java.util.*
 
 
 class PytorchTest{
-    private val retrofit = MyRetorfit.newInstance
+    private val retrofit = MyRetrofit.newInstance
     private val loginCall = retrofit.create(LoginApi::class.java)
     private val date = Date()
 
