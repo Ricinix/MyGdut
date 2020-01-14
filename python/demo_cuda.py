@@ -38,7 +38,7 @@ class CaptchaDataset(Dataset):
         random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
         while True:
             try:
-                img = Image.open(base_uri + "/" + random_str + ".png")
+                img = to_tensor(Image.open(base_uri + "/" + random_str + ".png"))
                 return random_str, img
             except OSError:
                 random_str = ''.join([random.choice(self.characters[1:]) for j in range(self.label_length)])
@@ -49,8 +49,7 @@ class CaptchaDataset(Dataset):
         # 生成对应的图片并转换成tensor
         # image = to_tensor(self.generator.generate_image(random_str))
         # image = to_tensor(Image.open(base_uri + "/" + imgs[r]))
-        random_str, img = self.get_pic()
-        image = to_tensor(img)
+        random_str, image = self.get_pic()
         # 长度为4，每个位置为4个字符在[characters]中对应的index
         target = torch.tensor([self.characters.find(x) for x in random_str], dtype=torch.long)
         # 将scalar：input_length变成一个tensor
@@ -232,14 +231,14 @@ def valid(model, optimizer, epoch, dataloader):
 # Adam优化器（8说了，遇事不决上Adam）
 optimizer = torch.optim.Adam(model.parameters(), 1e-3, amsgrad=True)
 # 30次迭代
-epochs = 5
+epochs = 20
 for epoch in range(1, epochs + 1):
     train(model, optimizer, epoch, train_loader)
     valid(model, optimizer, epoch, valid_loader)
 # 降低优化器的学习率，进行后15次的优化
 optimizer = torch.optim.Adam(model.parameters(), 1e-4, amsgrad=True)
 # 15次迭代
-epochs = 3
+epochs = 10
 for epoch in range(1, epochs + 1):
     train(model, optimizer, epoch, train_loader)
     valid(model, optimizer, epoch, valid_loader)

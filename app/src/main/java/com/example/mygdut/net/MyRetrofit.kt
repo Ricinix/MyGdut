@@ -12,11 +12,18 @@ import javax.net.ssl.X509TrustManager
 
 class MyRetrofit {
     companion object {
-        private fun init() : OkHttpClient{
+        val newInstance: Retrofit by lazy {
+            Retrofit.Builder()
+                .baseUrl("https://jxfw.gdut.edu.cn/")
+                .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())
+                .client(initClient())
+                .build()
+        }
+        private fun initClient() : OkHttpClient{
             val okHttpClient = OkHttpClient().newBuilder()
             //信任所有服务器地址
             //信任所有服务器地址
-            okHttpClient.hostnameVerifier { s, sslSession ->
+            okHttpClient.hostnameVerifier { _, _ ->
                 //设置为true
                 true
             }
@@ -28,15 +35,13 @@ class MyRetrofit {
                     override fun checkClientTrusted(
                         x509Certificates: Array<X509Certificate?>?,
                         s: String?
-                    ) {
-                    }
+                    ) = Unit
 
                     @Throws(CertificateException::class)
                     override fun checkServerTrusted(
                         x509Certificates: Array<X509Certificate?>?,
                         s: String?
-                    ) {
-                    }
+                    ) = Unit
 
                     override fun getAcceptedIssuers(): Array<X509Certificate> {
                         return arrayOf() //To change body of created functions use File | Settings | File Templates.
@@ -52,13 +57,6 @@ class MyRetrofit {
                 e.printStackTrace()
             }
             return OkHttpClient()
-        }
-        val newInstance: Retrofit by lazy {
-            Retrofit.Builder()
-                .baseUrl("https://jxfw.gdut.edu.cn/")
-                .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())
-                .client(init())
-                .build()
         }
     }
 

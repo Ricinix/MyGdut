@@ -10,21 +10,21 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class VerifyCodeCrack(context: Context, engineType : Engine) {
-    private val mModule : Module by lazy {
-        when (engineType){
-            Engine.EngineOne->Module.load(assetFilePath(context, "model-script-local.pt"))
-            Engine.EngineTwo-> Module.load(assetFilePath(context, "model-script-local.pt"))
+class VerifyCodeCrack(context: Context, engineType: Engine) {
+    private val mModule: Module by lazy {
+        when (engineType) {
+            Engine.EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
+            Engine.EngineTwo -> Module.load(assetFilePath(context, "model-script-local.pt"))
         }
     }
 
     /**
      * 用异步来使用该方法
      */
-    fun getVerifyCode(bitmap: Bitmap) : String{
+    fun getVerifyCode(bitmap: Bitmap): String {
         val inputTensor = TensorImageUtils.bitmapToFloat32Tensor(
             bitmap,
-            FloatArray(3){0f}, FloatArray(3){1f}
+            FloatArray(3) { 0f }, FloatArray(3) { 1f }
         )
         Log.d(TAG, "inputTensor: $inputTensor")
         val outputTensor = mModule.forward(IValue.from(inputTensor)).toTensor()
@@ -32,12 +32,12 @@ class VerifyCodeCrack(context: Context, engineType : Engine) {
         val num = VerifyCodeClasses.names.length
         val dim = scores.size / num
         val sequence = IntArray(dim)
-        for (j in 0 until dim){
+        for (j in 0 until dim) {
             var max = scores[j * num]
             var maxIndex = 0
-            for (i in 0 until num){
-                if (scores[j*num + i] > max){
-                    max = scores[j*num + i]
+            for (i in 0 until num) {
+                if (scores[j * num + i] > max) {
+                    max = scores[j * num + i]
                     maxIndex = i
                 }
             }
@@ -46,19 +46,19 @@ class VerifyCodeCrack(context: Context, engineType : Engine) {
         return decode(sequence)
     }
 
-    private fun decode(sequence : IntArray) : String{
+    private fun decode(sequence: IntArray): String {
         val a = StringBuilder()
         val s = StringBuilder()
-        for (index in sequence){
+        for (index in sequence) {
             a.append(VerifyCodeClasses.names[index])
         }
-        for (j in 0..a.length-2){
-            if (a[j] != NAMES[0] && a[j] != a[j+1])
+        for (j in 0..a.length - 2) {
+            if (a[j] != NAMES[0] && a[j] != a[j + 1])
                 s.append(a[j])
         }
         Log.d(TAG, "a: $a")
         Log.d(TAG, "s: $s")
-        if (s.isEmpty()){
+        if (s.isEmpty()) {
             return ""
         }
         if (a.last() != NAMES[0] && s.last() != a.last())
@@ -86,11 +86,13 @@ class VerifyCodeCrack(context: Context, engineType : Engine) {
             return file.absolutePath
         }
     }
-    sealed class Engine{
+
+    sealed class Engine {
         object EngineOne : Engine()
         object EngineTwo : Engine()
     }
-    companion object{
+
+    companion object {
         const val TAG = "VerifyCodeCrack"
         const val NAMES = "-0123456789abcdefghijklmnopqrstuvwxyz"
 //        const val NAMES = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

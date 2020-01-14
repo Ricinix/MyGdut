@@ -16,11 +16,6 @@ import java.util.*
  */
 class ExampleUnitTest {
     private val c = MyRetrofit.newInstance.create(LoginApi::class.java)
-//    @Test
-    fun addition_isCorrect() = runBlocking{
-        val r = c.getLoginPage()
-        println(r.string())
-    }
     @Test
     fun getPic_test() {
         runBlocking {
