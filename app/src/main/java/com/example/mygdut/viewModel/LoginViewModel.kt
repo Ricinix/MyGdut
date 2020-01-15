@@ -3,15 +3,30 @@ package com.example.mygdut.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mygdut.data.LoginMessage
-import com.example.mygdut.net.login.FirstLogin
+import com.example.mygdut.data.NetResult
+import com.example.mygdut.model.LoginRepository
+import com.example.mygdut.viewModel.`interface`.LoginCallBack
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val firstLogin: FirstLogin) : ViewModel() {
+class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+    private var loginCallBack:LoginCallBack? = null
 
-    fun login(username : String, password : String){
+    fun setLoginCallBack(callBack : LoginCallBack){
+        loginCallBack = callBack
+    }
+
+    fun login(loginMessage: LoginMessage){
         viewModelScope.launch {
-
+            when(val result = loginRepository.login(loginMessage)){
+                is NetResult.Success->{
+                    loginCallBack?.onLoginSucceed()
+                }
+                is NetResult.Error->{
+                    loginCallBack?.onLoginFail(result.errorMessage)
+                }
+            }
         }
     }
+
 
 }

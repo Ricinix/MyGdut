@@ -1,13 +1,17 @@
 package com.example.mygdut.view.activity
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProviders
 import com.example.mygdut.R
+import com.example.mygdut.data.LoginMessage
+import com.example.mygdut.data.NetResult
 import com.example.mygdut.viewModel.LoginViewModel
+import com.example.mygdut.viewModel.LoginViewModelFactory
+import com.example.mygdut.viewModel.`interface`.LoginCallBack
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -18,8 +22,19 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        loginViewModel = ViewModelProviders.of(this)[LoginViewModel::class.java]
-
+        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory(this))[LoginViewModel::class.java]
+        loginViewModel.setLoginCallBack(object : LoginCallBack{
+            override fun onLoginSucceed() {
+                loading.visibility = View.GONE
+                MainActivity.startThisActivity()
+                finish()
+            }
+            override fun onLoginFail(msg : String) {
+                loading.visibility = View.GONE
+                showLoginFailed(msg)
+            }
+        })
+        initView()
 
     }
 
@@ -53,7 +68,9 @@ class LoginActivity : AppCompatActivity() {
             checkBtnEnable()
         }
         login.setOnClickListener {
-            loginViewModel.login(username.text.toString(), password.text.toString())
+            loading.visibility = View.VISIBLE
+            val loginMsg = LoginMessage(username.text.toString(), password.text.toString())
+            loginViewModel.login(loginMsg)
         }
     }
 
@@ -61,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
         login.isEnabled = finishInputStatus == BOTH_INPUT
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
+    private fun showLoginFailed(errorString: String) {
         Toast.makeText(this, errorString, Toast.LENGTH_SHORT).show()
     }
 

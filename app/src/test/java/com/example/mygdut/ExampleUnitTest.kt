@@ -2,7 +2,7 @@ package com.example.mygdut
 
 import android.graphics.BitmapFactory
 import com.example.mygdut.domain.VerifyCodeClasses
-import com.example.mygdut.net.MyRetrofit
+import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.LoginApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -15,7 +15,7 @@ import java.util.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    private val c = MyRetrofit.newInstance.create(LoginApi::class.java)
+    private val c = Extranet.instance.create(LoginApi::class.java)
     @Test
     fun getPic_test() {
         runBlocking {

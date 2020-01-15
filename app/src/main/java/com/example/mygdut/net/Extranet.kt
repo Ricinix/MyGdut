@@ -1,8 +1,11 @@
 package com.example.mygdut.net
 
+import com.example.mygdut.net.interceptor.GetCookieInterceptor
+import com.example.mygdut.net.interceptor.PutCookieInterceptor
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
@@ -10,16 +13,21 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
 
-class MyRetrofit {
+class Extranet {
     companion object {
-        val newInstance: Retrofit by lazy {
+        val instance: Retrofit by lazy {
+            val clientBuilder = initClient()
+            clientBuilder.addInterceptor(GetCookieInterceptor())
+                .addInterceptor(PutCookieInterceptor())
             Retrofit.Builder()
                 .baseUrl("https://jxfw.gdut.edu.cn/")
                 .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())
-                .client(initClient())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(clientBuilder.build())
                 .build()
         }
-        private fun initClient() : OkHttpClient{
+
+        private fun initClient(): OkHttpClient.Builder {
             val okHttpClient = OkHttpClient().newBuilder()
             //信任所有服务器地址
             //信任所有服务器地址
@@ -52,11 +60,11 @@ class MyRetrofit {
                 sslContext.init(null, trustAllCerts, SecureRandom())
                 //为OkHttpClient设置sslSocketFactory
                 okHttpClient.sslSocketFactory(sslContext.socketFactory, trustAllCerts[0])
-                return okHttpClient.build()
+                return okHttpClient
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            return OkHttpClient()
+            return OkHttpClient.Builder()
         }
     }
 

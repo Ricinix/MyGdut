@@ -3,17 +3,22 @@
   <component name="ChangeListManager">
     <list default="true" id="4392221e-c759-42a0-a218-8ebe7466df98" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/view/activity/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/androidTest/java/com/example/mygdut/NetWorkTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/androidTest/java/com/example/mygdut/NetWorkTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/data/LoginMessage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/data/LoginMessage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/data/Result.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/data/NetResult.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/domain/VerifyCodeCrack.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/domain/VerifyCodeCrack.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/MyRetrofit.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/MyRetrofit.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/MyRetrofit.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/Extranet.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/api/LoginApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/api/LoginApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/dimens.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/res/values/dimens.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/login/FirstLogin.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/login/Login.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/login/Login.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/net/login/UsualLogin.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/view/activity/LoginActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/view/activity/LoginActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/view/activity/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/view/activity/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/viewModel/LoginViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/viewModel/LoginViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/viewModel/LoginViewModelFactory.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/mygdut/viewModel/LoginViewModelFactory.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/src/test/java/com/example/mygdut/ExampleUnitTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/test/java/com/example/mygdut/ExampleUnitTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/test/java/com/example/mygdut/PytorchTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/test/java/com/example/mygdut/PytorchTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_cuda.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_cuda.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,7 +227,7 @@
       <workItem from="1578757723312" duration="2780000" />
       <workItem from="1578902326976" duration="544000" />
       <workItem from="1578902912742" duration="3927000" />
-      <workItem from="1578930208514" duration="2753000" />
+      <workItem from="1578930208514" duration="4553000" />
     </task>
     <servers />
   </component>

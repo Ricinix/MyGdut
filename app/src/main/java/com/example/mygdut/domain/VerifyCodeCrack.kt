@@ -57,12 +57,12 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
                 s.append(a[j])
         }
         Log.d(TAG, "a: $a")
-        Log.d(TAG, "s: $s")
         if (s.isEmpty()) {
             return ""
         }
         if (a.last() != NAMES[0] && s.last() != a.last())
             s.append(a.last())
+        Log.d(TAG, "s: $s")
         return s.toString()
     }
 

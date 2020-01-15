@@ -8,7 +8,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mygdut.R
 import com.example.mygdut.domain.VerifyCodeCrack
-import com.example.mygdut.net.MyRetrofit
+import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.LoginApi
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        val c = MyRetrofit.newInstance.create(LoginApi::class.java)
+        val c = Extranet.instance.create(LoginApi::class.java)
         verifyCodeCrack = VerifyCodeCrack(this, VerifyCodeCrack.Engine.EngineTwo)
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -62,6 +62,11 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+    companion object{
+        fun startThisActivity(){
+
         }
     }
 }

@@ -3,7 +3,7 @@ package com.example.mygdut
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.example.mygdut.net.MyRetrofit
+import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.LoginApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -15,7 +15,7 @@ import java.util.*
 
 
 class PytorchTest{
-    private val retrofit = MyRetrofit.newInstance
+    private val retrofit = Extranet.instance
     private val loginCall = retrofit.create(LoginApi::class.java)
     private val date = Date()
 
