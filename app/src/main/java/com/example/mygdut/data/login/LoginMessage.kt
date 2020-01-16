@@ -8,6 +8,7 @@ class LoginMessage(
     private val account: String,
     private val password: String
 ) {
+    fun isValid() : Boolean = account != "" && password != ""
 
     fun getRawAccount(): String = account
     fun getRawPassword(): String = password

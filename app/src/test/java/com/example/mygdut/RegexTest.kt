@@ -1,6 +1,8 @@
 package com.example.mygdut
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import java.util.*
 
 class RegexTest {
     @Test
@@ -162,8 +164,160 @@ class RegexTest {
     }
 
     @Test
+    fun termcode_for_schedule_test(){
+        val content = "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "<meta http-equiv=\"pragma\" content=\"no-cache\" /> \n" +
+                "<meta http-equiv=\"cache-control\" content=\"no-cache\" /> \n" +
+                "<meta http-equiv=\"expires\" content=\"0\" /> \n" +
+                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /> \n" +
+                "<title>学生个人课表</title>\n" +
+                "<link rel=\"stylesheet\" type=\"text/css\" href=\"/styles/themes/default/easyui.css\">\n" +
+                "<link rel='stylesheet' href='/styles/fullcalendar/cupertino/theme.css' />\n" +
+                "<link href='/styles/fullcalendar/fullcalendar.css' rel='stylesheet' />\n" +
+                "<script type=\"text/javascript\" src=\"/styles/js/jquery-1.8.0.min.js\"></script>\n" +
+                "<script type=\"text/javascript\" src=\"/styles/js/jquery.easyui.min.js\"></script>\n" +
+                "<script type=\"text/javascript\" src=\"/styles/js/easyui-lang-zh_CN.js\"></script>\n" +
+                "<script type=\"text/javascript\" src=\"/styles/layer/layer.min.js\"></script>\n" +
+                "<script type=\"text/javascript\" src=\"/styles/js/ntss.js\"></script>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" height='20px' style=\"width:600px;padding:5px;margin-top:5px;\">\n" +
+                "\t\t\t<tr>\t\t\t\t\n" +
+                "\t\t\t\t<td align=\"right\" >学期：</td>\n" +
+                "\t\t\t\t<td >\n" +
+                "\t\t\t\t\t<select id='xnxqdm' name='xnxqdm' style='width:120px' class='ntssselect' ><option value='202402' >2025春季</option><option value='202401' >2024秋季</option><option value='202302' >2024春季</option><option value='202301' >2023秋季</option><option value='202202' >2023春季</option><option value='202201' >2022秋季</option><option value='202102' >2022春季</option><option value='202101' >2021秋季</option><option value='202002' >2021春季</option><option value='202001' >2020秋季</option><option value='201902' >2020春季</option><option value='201901' selected>2019秋季</option><option value='201802' >2019春季</option><option value='201801' >2018秋季</option><option value='201702' >2018春季</option><option value='201701' >2017秋季</option><option value='201602' >2017春季</option><option value='201601' >2016秋季</option><option value='201502' >2016春季</option><option value='201501' >2015秋季</option><option value='201402' >2015春季</option><option value='201401' >2014秋季</option><option value='201302' >2014春季</option><option value='201301' >2013秋季</option><option value='201202' >2013春季</option><option value='201201' >2012秋季</option><option value='201102' >2012春季</option><option value='201101' >2011秋季</option><option value='201002' >2011春季</option><option value='201001' >2010秋季</option></select>\n" +
+                "\t\t\t\t</td>\n" +
+                "\t\t\t\t<td align=\"right\" >周次：</td>\n" +
+                "\t\t\t\t<td>\n" +
+                "\t\t\t\t\t<select id=\"zc\" class='ntssselect' style=\"width:80px;\"></select>\n" +
+                "\t\t\t\t</td>\n" +
+                "\t\t\t\t<td>\n" +
+                "\t\t\t\t\t<div class=\"fc-header\" style=\"margin-left:10px;\">\n" +
+                "\t\t\t\t\t\t<span id=\"preWeek\" class=\"fc-button fc-button-prev ui-state-default ui-corner-left selfB\">\n" +
+                "\t\t\t\t\t\t\t<span class=\"fc-icon-wrap\"><span class=\"ui-icon ui-icon-circle-triangle-w\"></span></span>\n" +
+                "\t\t\t\t\t\t</span>\n" +
+                "\t\t\t\t\t\t<span id=\"nextWeek\" class=\"fc-button fc-button-next ui-state-default ui-corner-right selfB\">\n" +
+                "\t\t\t\t\t\t\t<span class=\"fc-icon-wrap\"><span class=\"ui-icon ui-icon-circle-triangle-e\"></span></span>\n" +
+                "\t\t\t\t\t\t</span>\n" +
+                "\t\t\t\t\t</div>\n" +
+                "\t\t\t\t</td>\n" +
+                "\t       \t\t<td>\n" +
+                "\t\t\t\t\t<div class=\"fc-header\" style=\"margin-left:10px;\">\n" +
+                "\t\t\t\t\t<span class=\"fc-button fc-button-today ui-state-default ui-corner-left ui-corner-right selfB\" id=\"bfind\">查询课表</span>\n" +
+                "\t\t\t\t\t<span class=\"fc-button fc-button-today ui-state-default ui-corner-left ui-corner-right selfB\" id=\"blist\">列表展示</span>\n" +
+                "\t\t\t\t\t<!--  <span class=\"fc-button fc-button-today ui-state-default ui-corner-left ui-corner-right selfB\" id=\"exportkb\" data-printType=\"teakbPrint\">打印</span>-->\n" +
+                "\t\t\t\t\t</div>\n" +
+                "\t       \t\t</td>\n" +
+                "\t\t\t\t<td colspan=\"2\"></td>\n" +
+                "\t\t\t</tr>\n" +
+                "\t</table>\n" +
+                "\t<iframe id=\"list\" width=\"100%\" frameborder='no' border='0' src='' scrolling=\"yes\"></iframe>\n" +
+                "<div id=\"poplist\" style=\"width:0;height:0;\">\n" +
+                "    <iframe scrolling=\"auto\" id='frmlist' frameborder=\"0\"  src=\"\" style=\"width:100%;height:100%;\"></iframe>\n" +
+                "</div>\n" +
+                "</body>\n" +
+                "<script>\n" +
+                "\$(document).ready(function(){\n" +
+                "\tvar \$list = \$(\"#list\");\n" +
+                "\tif('' == 'false'){\n" +
+                "\t\t\$.messager.alert('信息','本学期课表还未发布，请稍后关注!','warning');\n" +
+                "\t}\n" +
+                "\t\$list.height(\$(document).height()-50);\n" +
+                "\t//初始化周次下拉框\n" +
+                "\tvar \$zc = \$('#zc');\n" +
+                "\t\$zc.append(\"<option value='' >全部</option>\");\n" +
+                "\tfor (var i = 0; i < 22; i++) {\n" +
+                "\t\t\$zc.append(\"<option value='\"+(i+1)+\"' >第\"+(i+1)+\"周</option>\");\n" +
+                "\t}\n" +
+                "\tvar val = '' || '' || \"\";\n" +
+                "\t\$zc.val(val);\n" +
+                "\t\n" +
+                "\t\$(\"#bfind\").click(function(){\n" +
+                "\t\tif(\$zc.val()=='')\n" +
+                "\t\t\t \$list.attr('src', 'xsgrkbcx!xsAllKbList.action?xnxqdm='+\$(\"#xnxqdm\").val());\n" +
+                "\t\telse\n" +
+                "\t\t\t \$list.attr('src', 'xsgrkbcx!xskbList.action?xnxqdm='+\$(\"#xnxqdm\").val()+'&zc='+\$zc.val());\n" +
+                "\t\n" +
+                "\t});\t\n" +
+                "\t\n" +
+                "\t\n" +
+                "\t//上一周，下一周\t\t\n" +
+                "\t\$('#preWeek').click(function() {\n" +
+                "\t\tif (\$zc.val() == \"\") {\n" +
+                "\t\t\t\$zc.val(22);//最后一周\n" +
+                "\t\t\t\$list.attr('src', 'xsgrkbcx!xskbList.action?xnxqdm='+\$(\"#xnxqdm\").val()\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t+'&zc='+22);\n" +
+                "\t\t}else if(\$zc.val()==1){//第一周\n" +
+                "\t\t\t\$zc.val('');//全部周\n" +
+                "\t\t\t\$list.attr('src', 'xsgrkbcx!xsAllKbList.action?xnxqdm='+\$(\"#xnxqdm\").val());\n" +
+                "\t\t}else {\n" +
+                "\t\t\tvar djz=parseInt(\$zc.val(),10)-1;\n" +
+                "\t\t\t\$zc.val(djz);\n" +
+                "\t\t\t\$list.attr('src', 'xsgrkbcx!xskbList.action?xnxqdm='+\$(\"#xnxqdm\").val()\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t+'&zc='+djz);\n" +
+                "\t\t}\n" +
+                "\t});\n" +
+                "\t\$('#nextWeek').click(function() {\n" +
+                "\t\tif (\$zc.val() == 22) {\n" +
+                "\t\t\t\$zc.val(\"\");\n" +
+                "\t\t\t\$list.attr('src', 'xsgrkbcx!xsAllKbList.action?xnxqdm='+\$(\"#xnxqdm\").val());\n" +
+                "\t\t}else if (\$zc.val() == \"\") {\n" +
+                "\t\t\t\$zc.val(1);//第一周\n" +
+                "\t\t\t\$list.attr('src', 'xsgrkbcx!xskbList.action?xnxqdm='+\$(\"#xnxqdm\").val()\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t+'&zc='+1);\n" +
+                "\t\t}else {\n" +
+                "\t\t\tvar djz=parseInt(\$zc.val(),10)+1;\n" +
+                "\t\t\t\$zc.val(djz);\t\n" +
+                "\t\t\t\$list.attr('src', 'xsgrkbcx!xskbList.action?xnxqdm='+\$(\"#xnxqdm\").val()\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t+'&zc='+djz);\n" +
+                "\t\t}\n" +
+                "\t});\n" +
+                "\t\n" +
+                "\t\$(\"#blist\").click(function(){\n" +
+                "\t\t\$('#frmlist').attr('src','xsgrkbcx!xskbList2.action?xnxqdm='+\$(\"#xnxqdm\").val()+'&zc='+\$(\"#zc\").val());\n" +
+                "\t\t\$('#poplist').dialog({\n" +
+                "\t\t\twidth:850,\n" +
+                "\t\t\theight:500,\n" +
+                "\t\t\ttitle:\"学生课表信息\",\n" +
+                "\t\t\tmodal:true,\n" +
+                "\t\t\threfMode:\"iframe\"\n" +
+                "\t\t});\n" +
+                "\t});\n" +
+                "\n" +
+                "\t\$('body').on('mouseover','.selfB',function(){\$(this).addClass('ui-state-hover');});\n" +
+                "\t\$('body').on('mouseout','.selfB',function(){\$(this).removeClass('ui-state-hover');});\n" +
+                "\t\n" +
+                "\t\$(\"#bfind\").click();\n" +
+                "});\n" +
+                "\n" +
+                "function doChangeXnxq(){\n" +
+                "\twindow.location=\"xsgrkbcx!xsgrkbMain.action?xnxqdm=\"+\$(\"#xnxqdm\").val();\n" +
+                "}\n" +
+                "</script>\n" +
+                "</html>"
+        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(content)?.value?:""
+        println(result)
+    }
+
+    @Test
     fun split_test(){
         val str = "1,7,16,15,14,13,12,11,10,9,8,6,4,3,2"
         println(str.split(",")[0])
     }
+
+    @Test
+    fun time_test(){
+        val cal: Calendar = Calendar.getInstance()
+        val month: Int = cal.get(Calendar.MONTH) + 1
+        val year: Int = cal.get(Calendar.YEAR)
+        print("$year, $month")
+    }
+
 }

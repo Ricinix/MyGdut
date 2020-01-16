@@ -11,3 +11,7 @@ data class Notice(
     val type: String, // 消息类别，cjtz为成绩通知，sh为审核，xkcl为选课处理,空就不管了
     val xxid: String // Id号
 )
+
+data class NoticeReadStatus(
+    val status : String
+)

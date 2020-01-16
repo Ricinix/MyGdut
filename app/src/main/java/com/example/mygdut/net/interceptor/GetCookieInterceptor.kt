@@ -11,12 +11,11 @@ class GetCookieInterceptor : Interceptor {
         val cookies  = mutableListOf<String>()
         response.headers("Set-Cookie").run {
             if (isNotEmpty()){
-                LoginCookie.cookies.clear()
                 forEach {
                     cookies.add(it)
                     Log.d(TAG, "cookie: $it")
-                    LoginCookie.cookies.add(it)
                 }
+                LoginCookie.cookies = cookies.joinToString(";"){ it }
             }
         }
         return response

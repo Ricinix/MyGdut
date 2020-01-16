@@ -1,6 +1,6 @@
 package com.example.mygdut.data.data
 
-data class ClassTable(
+data class ClassSchedule(
     val jcdm2: String, // 当天第几节
     val jxbmc: String, // 上课班级
     val jxcdmcs: String, // 课室号

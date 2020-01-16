@@ -11,13 +11,13 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 class VerifyCodeCrack(context: Context, engineType: Engine) {
-    private val mModule: Module by lazy {
+    private val mModule: Module =
         when (engineType) {
             Engine.EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
             Engine.EngineTwo -> Module.load(assetFilePath(context, "model2-script-local.pt"))
             Engine.EngineThree -> Module.load(assetFilePath(context, "model3-script-colab.pt"))
         }
-    }
+
 
     /**
      * 用异步来使用该方法
@@ -30,7 +30,7 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
         Log.d(TAG, "inputTensor: $inputTensor")
         val outputTensor = mModule.forward(IValue.from(inputTensor)).toTensor()
         val scores = outputTensor.dataAsFloatArray
-        val num = VerifyCodeClasses.names.length
+        val num = NAMES.length
         val dim = scores.size / num
         val sequence = IntArray(dim)
         for (j in 0 until dim) {
@@ -51,7 +51,7 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
         val a = StringBuilder()
         val s = StringBuilder()
         for (index in sequence) {
-            a.append(VerifyCodeClasses.names[index])
+            a.append(NAMES[index])
         }
         for (j in 0..a.length - 2) {
             if (a[j] != NAMES[0] && a[j] != a[j + 1])

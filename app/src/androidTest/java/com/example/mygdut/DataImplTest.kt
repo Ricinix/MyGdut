@@ -40,7 +40,8 @@ class DataImplTest {
     @Test
     fun get_classTable_test(){
         runBlocking {
-            val result = dataImpl.getClassTable("201901")
+//            val result = dataImpl.getClassTable("201901")
+            val result = dataImpl.getClassSchedule("201901")
             printResult(result)
         }
     }
