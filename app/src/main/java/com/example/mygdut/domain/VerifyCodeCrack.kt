@@ -14,7 +14,8 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
     private val mModule: Module by lazy {
         when (engineType) {
             Engine.EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
-            Engine.EngineTwo -> Module.load(assetFilePath(context, "model-script-local.pt"))
+            Engine.EngineTwo -> Module.load(assetFilePath(context, "model2-script-local.pt"))
+            Engine.EngineThree -> Module.load(assetFilePath(context, "model3-script-colab.pt"))
         }
     }
 
@@ -90,6 +91,7 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
     sealed class Engine {
         object EngineOne : Engine()
         object EngineTwo : Engine()
+        object EngineThree : Engine()
     }
 
     companion object {

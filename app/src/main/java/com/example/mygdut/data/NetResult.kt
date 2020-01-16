@@ -7,7 +7,7 @@ package com.example.mygdut.data
 sealed class NetResult<out T : Any> {
 
     data class Success<out T : Any>(val data: T) : NetResult<T>()
-    data class Error(val errorMessage : String) : NetResult<String>()
+    data class Error(val errorMessage : String) : NetResult<Nothing>()
 
     override fun toString(): String {
         return when (this) {

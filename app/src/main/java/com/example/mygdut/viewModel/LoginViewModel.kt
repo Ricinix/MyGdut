@@ -2,7 +2,7 @@ package com.example.mygdut.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mygdut.data.LoginMessage
+import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.model.LoginRepository
 import com.example.mygdut.viewModel.`interface`.LoginCallBack

@@ -1,6 +1,6 @@
 package com.example.mygdut.net.api
 
-import com.example.mygdut.data.LoginResult
+import com.example.mygdut.data.login.LoginResult
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
@@ -18,13 +18,13 @@ interface LoginApi {
         @Field("account") account: String,
         @Field("pwd") pwd: String,
         @Field("verifycode") verifyCode: String
-    ): Response<LoginResult>
+    ): LoginResult
 
     @GET("/login!logout.action")
     suspend fun logout()
 
     @GET("/yzm")
-    suspend fun getVerifyPic(@Query("d") d: Long): Response<ResponseBody>
+    suspend fun getVerifyPic(@Query("d") d: Long): ResponseBody
 
     @Headers("Referer: https://jxfw.gdut.edu.cn/")
     @GET("/login!welcome.action")

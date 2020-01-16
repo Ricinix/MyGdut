@@ -1,7 +1,7 @@
 package com.example.mygdut.net.interceptor
 
 import android.util.Log
-import com.example.mygdut.data.LoginCookie
+import com.example.mygdut.data.login.LoginCookie
 import okhttp3.Interceptor
 import okhttp3.Response
 

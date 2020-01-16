@@ -7,8 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProviders
 import com.example.mygdut.R
-import com.example.mygdut.data.LoginMessage
-import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.viewModel.LoginViewModel
 import com.example.mygdut.viewModel.LoginViewModelFactory
 import com.example.mygdut.viewModel.`interface`.LoginCallBack
@@ -69,7 +68,10 @@ class LoginActivity : AppCompatActivity() {
         }
         login.setOnClickListener {
             loading.visibility = View.VISIBLE
-            val loginMsg = LoginMessage(username.text.toString(), password.text.toString())
+            val loginMsg = LoginMessage(
+                username.text.toString(),
+                password.text.toString()
+            )
             loginViewModel.login(loginMsg)
         }
     }
