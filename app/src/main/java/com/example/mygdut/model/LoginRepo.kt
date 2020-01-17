@@ -12,9 +12,7 @@ class LoginRepo(context: Context) : BaseRepo(context) {
     suspend fun login(loginMessage: LoginMessage): NetResult<String> {
         val r = loginImpl.login(loginMessage)
         if (r is NetResult.Success) {
-            edit.putString("account", loginMessage.getRawAccount())
-            edit.putString("password", loginMessage.getRawPassword())
-            edit.commit()
+            saveLoginMessage(loginMessage)
             saveCookies()
         }
         return r

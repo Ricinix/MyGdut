@@ -1,5 +1,6 @@
 package com.example.mygdut.data.login
 
+import com.example.mygdut.domain.KeyEncrypt
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -8,13 +9,22 @@ class LoginMessage(
     private val account: String,
     private val password: String
 ) {
+    /**
+     * 判断是否有账号密码，其中一个为空则要求重新登录
+     */
     fun isValid() : Boolean = account != "" && password != ""
 
     fun getRawAccount(): String = account
     fun getRawPassword(): String = password
 
+    /**
+     * 暂时不需要账号加密
+     */
     fun getEncryptedAccount(): String = account
 
+    /**
+     * 用验证码来进行密码加密
+     */
     fun getEncryptedPassword(verifyCode: String): String {
         val key =
             SecretKeySpec((verifyCode + verifyCode + verifyCode + verifyCode).toByteArray(), "AES")
@@ -22,31 +32,7 @@ class LoginMessage(
             init(Cipher.ENCRYPT_MODE, key)
         }
         val encrypted = lockTool.doFinal(password.toByteArray())
-        return parseByte2HexStr(encrypted)
+        return KeyEncrypt.parseByte2HexStr(encrypted)
     }
 
-    /**
-     * 将二进制转换为十六进制
-     */
-    private fun parseByte2HexStr(buf: ByteArray): String {
-        val sb = StringBuffer()
-        for (i in buf.indices) {
-            var hex = Integer.toHexString(buf[i].toInt() and 0xFF)
-            if (hex.length == 1) {
-                hex = "0$hex"
-            }
-            sb.append(hex.toLowerCase(Locale.ROOT))
-        }
-        return sb.toString()
-    }
-    private fun parseHexStr2Byte(hexStr: String): ByteArray? {
-        if (hexStr.isEmpty()) return null
-        val result = ByteArray(hexStr.length / 2)
-        for (i in 0 until hexStr.length / 2) {
-            val high = hexStr.substring(i * 2, i * 2 + 1).toInt(16)
-            val low = hexStr.substring(i * 2 + 1, i * 2 + 2).toInt(16)
-            result[i] = (high * 16 + low).toByte()
-        }
-        return result
-    }
 }

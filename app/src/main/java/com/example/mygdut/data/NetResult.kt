@@ -1,5 +1,7 @@
 package com.example.mygdut.data
 
+import java.io.IOException
+
 /**
  * A generic class that holds a value with its loading status.
  * @param <T>
@@ -16,3 +18,5 @@ sealed class NetResult<out T : Any> {
         }
     }
 }
+
+class NotMatchException(val msg : String = "未匹配") : IOException()

@@ -2,6 +2,7 @@ package com.example.mygdut.net.impl
 
 import android.content.Context
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.data.ClassSchedule
 import com.example.mygdut.data.data.Notice
 import com.example.mygdut.data.data.NoticeReadStatus
@@ -57,12 +58,20 @@ class DataImpl(context: Context, private val loginMessage: LoginMessage) {
 
     private suspend fun getNowTermCodeForScores() : NetResult<String> = getData {
         val raw = dataCall.getTermCodeForScores().string()
-        Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value?:""
+        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value?:""
+        if (result.isNotEmpty())
+            result
+        else
+            throw NotMatchException()
     }
 
     private suspend fun getNowTermCodeForSchedule() : NetResult<String> = getData {
         val raw = dataCall.getTermcodeForSchedule().string()
-        Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value?:""
+        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value?:""
+        if (result.isNotEmpty())
+            result
+        else
+            throw NotMatchException()
     }
 
     /**
@@ -83,7 +92,8 @@ class DataImpl(context: Context, private val loginMessage: LoginMessage) {
     }
 
     private suspend fun <T : Any> getData(f: suspend () -> T): NetResult<T> {
-        for (i in 0..10) {
+        // 防止死循环，所以就两次
+        for (i in 0..1) {
             try {
                 val data = f()
                 return NetResult.Success(data)
@@ -91,7 +101,12 @@ class DataImpl(context: Context, private val loginMessage: LoginMessage) {
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return NetResult.Error("服务器崩了")
-            } catch (e: IllegalArgumentException) {
+            }catch (e : NotMatchException){
+                val loginResult = login.login(loginMessage)
+                if (loginResult is NetResult.Error)
+                    return NetResult.Error("服务器崩了")
+            }
+            catch (e: IllegalArgumentException) {
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return NetResult.Error("服务器崩了")
@@ -99,7 +114,7 @@ class DataImpl(context: Context, private val loginMessage: LoginMessage) {
                 return NetResult.Error("服务器崩了")
             }
         }
-        return NetResult.Error("服务器崩了")
+        return NetResult.Error("未获取数据")
     }
 
 }

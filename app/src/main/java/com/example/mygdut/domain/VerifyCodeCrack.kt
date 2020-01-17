@@ -10,12 +10,14 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
+/**
+ * 验证码破解
+ */
 class VerifyCodeCrack(context: Context, engineType: Engine) {
     private val mModule: Module =
         when (engineType) {
             Engine.EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
             Engine.EngineTwo -> Module.load(assetFilePath(context, "model2-script-local.pt"))
-            Engine.EngineThree -> Module.load(assetFilePath(context, "model3-script-colab.pt"))
         }
 
 
@@ -63,7 +65,7 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
         }
         if (a.last() != NAMES[0] && s.last() != a.last())
             s.append(a.last())
-        Log.d(TAG, "s: $s")
+        Log.d(TAG, "verifyCode: $s")
         return s.toString()
     }
 
@@ -88,10 +90,14 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
         }
     }
 
+    /**
+     * 三个破解模型
+     * [EngineOne] : 稳定可用，默认模型
+     * [EngineTwo] : 迭代次数更多，准确度更高
+     */
     sealed class Engine {
         object EngineOne : Engine()
         object EngineTwo : Engine()
-        object EngineThree : Engine()
     }
 
     companion object {

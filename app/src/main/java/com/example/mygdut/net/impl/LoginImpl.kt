@@ -11,12 +11,12 @@ import com.example.mygdut.net.api.LoginApi
 import java.net.SocketTimeoutException
 import java.util.*
 
-class LoginImpl(context: Context) {
+class LoginImpl(context: Context, crackEngine : VerifyCodeCrack.Engine = VerifyCodeCrack.Engine.EngineOne) {
     private val date = Date()
     private val verifyCodeCrack by lazy {
         VerifyCodeCrack(
             context,
-            VerifyCodeCrack.Engine.EngineOne
+            crackEngine
         )
     }
     private val loginCall by lazy { Extranet.instance.create(LoginApi::class.java) }
