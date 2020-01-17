@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_notice">
+
+    <fragment
+        android:id="@+id/navigation_notice"
+        android:name="com.example.mygdut.view.fragment.NoticeFragment"
+        android:label="@string/notice_title"
+        tools:layout="@layout/fragment_notice" />
+
+    <fragment
+        android:id="@+id/navigation_schedule"
+        android:name="com.example.mygdut.view.fragment.ScheduleFragment"
+        android:label="@string/schedule_title"
+        tools:layout="" />
+
+    <fragment
+        android:id="@+id/navigation_score"
+        android:name="com.example.mygdut.view.fragment.ScoreFragment"
+        android:label="@string/score_title"
+        tools:layout="" />
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.mygdut.view.fragment.SettingFragment"
+        android:label="@string/settings_title"
+        tools:layout=""/>
+
+</navigation>

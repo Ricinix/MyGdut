@@ -1,6 +1,6 @@
-package com.example.mygdut.data.data
+package com.example.mygdut.net.data
 
-data class Scores(
+data class ScoreFromNet(
     val rows: List<Teacher>, // 课程成绩列表
     val total: Int // 列表的元素个数
 )

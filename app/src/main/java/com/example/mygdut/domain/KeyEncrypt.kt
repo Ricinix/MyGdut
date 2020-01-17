@@ -2,6 +2,7 @@ package com.example.mygdut.domain
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Base64
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PublicKey
@@ -41,8 +42,8 @@ class KeyEncrypt(aesStr: String = "") {
      * 注：务必记得将AES密钥存储起来
      */
     fun encrypt(content: String): String {
-        val raw = lockTool.doFinal(parseHexStr2Byte(content))
-        return parseByte2HexStr(raw)
+        val raw = lockTool.doFinal(content.toByteArray())
+        return Base64.encodeToString(raw, Base64.DEFAULT)
     }
 
     /**
@@ -50,8 +51,8 @@ class KeyEncrypt(aesStr: String = "") {
      * 注：务必记得使用正确的AES密钥
      */
     fun decrypt(decryptText: String): String {
-        val raw = unlockTool.doFinal(parseHexStr2Byte(decryptText))
-        return parseByte2HexStr(raw)
+        val raw = unlockTool.doFinal(Base64.decode(decryptText.toByteArray(), Base64.DEFAULT))
+        return String(raw)
     }
 
     /**

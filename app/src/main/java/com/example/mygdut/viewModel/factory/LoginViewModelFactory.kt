@@ -1,14 +1,16 @@
-package com.example.mygdut.viewModel
+package com.example.mygdut.viewModel.factory
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.model.LoginRepo
+import com.example.mygdut.viewModel.LoginViewModel
+import javax.inject.Inject
 
-class LoginViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+@Suppress("UNCHECKED_CAST")
+class LoginViewModelFactory @Inject constructor(private val loginRepo: LoginRepo) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java))
-            return LoginViewModel(LoginRepo(context)) as T
+            return LoginViewModel(loginRepo) as T
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

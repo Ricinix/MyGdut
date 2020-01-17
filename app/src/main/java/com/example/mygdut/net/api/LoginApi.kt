@@ -2,7 +2,6 @@ package com.example.mygdut.net.api
 
 import com.example.mygdut.data.login.LoginResult
 import okhttp3.ResponseBody
-import retrofit2.Response
 import retrofit2.http.*
 
 

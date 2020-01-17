@@ -6,17 +6,15 @@ import com.example.mygdut.data.login.LoginCookie
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.domain.KeyEncrypt
 
+/**
+ * 封装了Cookies以及登录信息LoginMessage的存取
+ */
 abstract class BaseRepo(context: Context) {
-    protected val edit: SharedPreferences.Editor =
+    private val edit: SharedPreferences.Editor =
         context.getSharedPreferences("login_msg", Context.MODE_PRIVATE).edit()
     private val sf: SharedPreferences =
         context.getSharedPreferences("login_msg", Context.MODE_PRIVATE)
-    private val keyEncrypt: KeyEncrypt
-
-    init {
-        val aesKey = sf.getString("aes_key", "") ?: ""
-        keyEncrypt = KeyEncrypt(aesKey)
-    }
+    private val aesKey = sf.getString("aes_key", "") ?: ""
 
     protected fun saveCookies() {
         if (LoginCookie.needToSave()) {
@@ -26,6 +24,7 @@ abstract class BaseRepo(context: Context) {
     }
 
     protected fun provideLoginMessage(): LoginMessage {
+        val keyEncrypt = KeyEncrypt(aesKey)
         val accountRaw = sf.getString("account", "") ?: ""
         val passwordRaw = sf.getString("password", "") ?: ""
         return if (accountRaw.isNotEmpty() && passwordRaw.isNotEmpty()) {
@@ -37,10 +36,12 @@ abstract class BaseRepo(context: Context) {
     }
 
     protected fun saveLoginMessage(loginMessage: LoginMessage) {
+        val keyEncrypt = KeyEncrypt(aesKey)
         val account = keyEncrypt.encrypt(loginMessage.getRawAccount())
         val password = keyEncrypt.encrypt(loginMessage.getRawPassword())
         edit.putString("account", account)
         edit.putString("password", password)
+        edit.putString("aes_key", keyEncrypt.getStoredAesKey())
         edit.commit()
     }
 

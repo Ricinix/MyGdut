@@ -11,4 +11,14 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notice_title">公告</string>
+    <string name="schedule_title">课表</string>
+    <string name="score_title">成绩</string>
+    <string name="settings_title">设置</string>
+    <string name="empty_description">empty</string>
+    <string name="empty_text">空</string>
+    <string name="logo_description">logo</string>
 </resources>

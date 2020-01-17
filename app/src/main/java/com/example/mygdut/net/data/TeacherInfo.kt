@@ -1,4 +1,4 @@
-package com.example.mygdut.data.data
+package com.example.mygdut.net.data
 
 data class TeacherInfo(
     val rows: List<Teacher>,

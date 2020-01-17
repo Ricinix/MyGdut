@@ -1,6 +1,5 @@
 package com.example.mygdut
 
-import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.util.*
 

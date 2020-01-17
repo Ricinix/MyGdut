@@ -1,35 +1,43 @@
 package com.example.mygdut.view.activity
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProviders
 import com.example.mygdut.R
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.di.component.DaggerLoginComponent
+import com.example.mygdut.di.module.LoginModule
+import com.example.mygdut.view.BaseApplication
 import com.example.mygdut.viewModel.LoginViewModel
-import com.example.mygdut.viewModel.LoginViewModelFactory
 import com.example.mygdut.viewModel.`interface`.LoginCallBack
+import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_login.*
+import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var loginViewModel: LoginViewModel
+    @Inject
+    lateinit var loginViewModel: LoginViewModel
     private var finishInputStatus = NONE_INPUT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory(this))[LoginViewModel::class.java]
+        StatusBarUtil.setTransparent(this)
+        StatusBarUtil.setLightMode(this)
+        inject()
         loginViewModel.setLoginCallBack(object : LoginCallBack{
             override fun onLoginSucceed() {
-                loading.visibility = View.GONE
-                MainActivity.startThisActivity()
+                finishLoading()
+                MainActivity.startThisActivity(this@LoginActivity)
                 finish()
             }
             override fun onLoginFail(msg : String) {
-                loading.visibility = View.GONE
+                finishLoading()
                 showLoginFailed(msg)
             }
         })
@@ -67,13 +75,27 @@ class LoginActivity : AppCompatActivity() {
             checkBtnEnable()
         }
         login.setOnClickListener {
-            loading.visibility = View.VISIBLE
+            startLoading()
             val loginMsg = LoginMessage(
                 username.text.toString(),
                 password.text.toString()
             )
             loginViewModel.login(loginMsg)
         }
+    }
+
+    private fun finishLoading(){
+        loading.visibility = View.GONE
+        username.isEnabled = true
+        password.isEnabled =true
+        login.isEnabled =true
+    }
+
+    private fun startLoading(){
+        loading.visibility = View.VISIBLE
+        username.isEnabled = false
+        password.isEnabled =false
+        login.isEnabled =false
     }
 
     private fun checkBtnEnable(){
@@ -84,10 +106,24 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this, errorString, Toast.LENGTH_SHORT).show()
     }
 
+    private fun inject(){
+        DaggerLoginComponent.builder()
+            .baseComponent((application as BaseApplication).getBaseComponent())
+            .loginModule(LoginModule(this))
+            .build()
+            .inject(this)
+    }
+
     companion object {
         const val NONE_INPUT = 0
         const val USER_INPUT = 1
         const val PWD_INPUT = 2
         const val BOTH_INPUT = 3
+
+        @JvmStatic
+        fun startThisActivity(context : Context){
+            val intent = Intent(context, LoginActivity::class.java)
+            context.startActivity(intent)
+        }
     }
 }

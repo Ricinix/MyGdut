@@ -64,7 +64,7 @@ class LoginImpl(context: Context, crackEngine : VerifyCodeCrack.Engine = VerifyC
         }
 
     companion object {
-        const val TAG = "login"
+        const val TAG = "LoginImpl"
     }
 
 }
