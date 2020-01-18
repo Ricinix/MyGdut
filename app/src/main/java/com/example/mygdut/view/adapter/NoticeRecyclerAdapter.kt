@@ -3,30 +3,49 @@ package com.example.mygdut.view.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
 import com.example.mygdut.db.data.Notice
 
 class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHolder>() {
     private var mList = mutableListOf<Notice>()
+    private var mListener: AdapterListener? = null
+
+    private fun removeNotice(index: Int) {
+        mList.removeAt(index)
+        notifyDataSetChanged()
+    }
+
+    private fun position2Index(position: Int) = position - 1
+
+    fun setListener(li: AdapterListener) {
+        mListener = li
+    }
+
+    fun setData(l: List<Notice>) {
+        mList = l.toMutableList()
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-            TYPE_HEADER -> ViewHolder(
+            TYPE_HEADER -> ViewHolder.HeaderViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.header_notice,
                     parent,
                     false
                 )
             )
-            TYPE_EMPTY -> ViewHolder(
+            TYPE_EMPTY -> ViewHolder.EmptyViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_empty,
                     parent,
                     false
                 )
             )
-            else -> ViewHolder(
+            else -> ViewHolder.ItemViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_notice,
                     parent,
@@ -38,9 +57,27 @@ class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHol
 
     override fun getItemCount(): Int = if (mList.isNotEmpty()) mList.size else 1
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holderItem: ViewHolder, position: Int) {
+        val index = position2Index(position)
+        when (holderItem) {
+            is ViewHolder.ItemViewHolder -> {
+                holderItem.titleView.text = mList[index].title
+                holderItem.contentView.text = mList[index].msg
+                holderItem.closeBtn.setOnClickListener {
+                    mListener?.onNoticeRead(mList[index].noticeId)
+                    removeNotice(index)
+                }
+            }
+            is ViewHolder.EmptyViewHolder -> {
 
+            }
+            is ViewHolder.HeaderViewHolder -> {
+                holderItem.titleView.text = "您有${mList.size}条新信息"
+                holderItem.contentView.text = "可以点击卡片右上角的叉叉来关闭该项通知"
+            }
+        }
     }
+
 
     override fun getItemViewType(position: Int): Int {
         return if (position == 0) {
@@ -53,8 +90,23 @@ class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHol
     }
 
 
-    class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+    sealed class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        class ItemViewHolder(v: View) : ViewHolder(v) {
+            val titleView: AppCompatTextView = v.findViewById(R.id.item_notice_title)
+            val contentView: AppCompatTextView = v.findViewById(R.id.item_notice_content)
+            val closeBtn: AppCompatImageButton = v.findViewById(R.id.btn_item_notice_close)
+        }
 
+        class EmptyViewHolder(v: View) : ViewHolder(v)
+
+        class HeaderViewHolder(v: View) : ViewHolder(v) {
+            val titleView: AppCompatTextView = v.findViewById(R.id.header_notice_title)
+            val contentView: AppCompatTextView = v.findViewById(R.id.header_notice_content)
+        }
+    }
+
+    interface AdapterListener {
+        fun onNoticeRead(noticeId: String)
     }
 
     companion object {

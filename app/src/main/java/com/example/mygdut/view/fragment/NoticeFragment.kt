@@ -1,14 +1,13 @@
 package com.example.mygdut.view.fragment
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.mygdut.R
 import com.example.mygdut.di.component.DaggerNoticeComponent
 import com.example.mygdut.di.module.NoticeModule
@@ -24,9 +23,28 @@ class NoticeFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String = ""
     private var param2: String = ""
-    private var listener: OnNoticeFragmentListener? = null
     @Inject
     lateinit var mViewModel : NoticeViewModel
+
+    private fun setupSwipe(){
+        swipe_notice.setColorSchemeResources(R.color.colorAccent)
+        swipe_notice.setOnRefreshListener {
+            mViewModel.getNotice()
+        }
+    }
+
+    private fun setupRecyclerView(){
+        recycler_notice.layoutManager = LinearLayoutManager(context)
+        recycler_notice.adapter = mViewModel.provideRecyclerAdapter()
+        mViewModel.setCallBack(object : NoticeViewModel.ViewModelCallBack{
+            override fun onFail(msg: String) {
+                Toast.makeText(this@NoticeFragment.context, msg, Toast.LENGTH_SHORT).show()
+            }
+            override fun onSucceed() {
+                swipe_notice.isRefreshing =false
+            }
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +53,7 @@ class NoticeFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)?:""
         }
         inject()
+        Log.d(TAG, "onCreate: ");
     }
 
     override fun onCreateView(
@@ -42,31 +61,37 @@ class NoticeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        Log.d(TAG, "onCreateView: ");
         return inflater.inflate(R.layout.fragment_notice, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        recycler_notice.layoutManager = LinearLayoutManager(context)
-        recycler_notice.adapter = mViewModel.provideRecyclerAdapter()
+        setupRecyclerView()
+        setupSwipe()
+        mViewModel.getNotice()
+        swipe_notice.isRefreshing = true
+        Log.d(TAG, "onActivityCreated: ");
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnNoticeFragmentListener) {
-            listener = context
-        }
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause: ");
     }
 
-    fun setListener(li : OnNoticeFragmentListener){ listener = li }
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop: ");
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: ");
+    }
 
     override fun onDetach() {
         super.onDetach()
-        listener = null
-    }
-
-    interface OnNoticeFragmentListener {
-        fun onFragmentInteraction(uri: Uri)
+        Log.d(TAG, "onDetach: ");
     }
 
     private fun inject(){
@@ -86,7 +111,7 @@ class NoticeFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+        private const val TAG = "NoticeFragment"
     }
-
 
 }
