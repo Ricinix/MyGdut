@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.model.NoticeRepo
 import com.example.mygdut.view.adapter.NoticeRecyclerAdapter
+import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,8 +55,5 @@ class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
         callBack = li
     }
 
-    interface ViewModelCallBack{
-        fun onFail(msg : String)
-        fun onSucceed()
-    }
+
 }

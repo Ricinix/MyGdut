@@ -1,7 +1,9 @@
 package com.example.mygdut.net.data
 
+import com.example.mygdut.db.data.Score
+
 data class ScoreFromNet(
-    val rows: List<Teacher>, // 课程成绩列表
+    val rows: List<Row>, // 课程成绩列表
     val total: Int // 列表的元素个数
 )
 
@@ -34,21 +36,7 @@ data class Row(
     val xsxm: String, // 学生姓名
     val zcj: String, // 总成绩
     val zxs: String // 总学时
-){
-    fun toScore() = Score(zcj, cjjd, cjfsmc, zxs, xnxqmc, xdfsmc, kcmc, isactive)
+) {
+    fun toScore() =
+        Score(kcmc, zcj, cjjd, zxs, xf, xdfsmc, kcdlmc, kcflmc, ksxzmc, cjfsmc, isactive, bz, xnxqdm)
 }
-
-data class Score(
-    //成绩与绩点
-    val zcj : String,
-    val cjjd : String,
-    val cjfs : String,
-
-    // 课程信息
-    val zxs : String,
-    val xnxq : String,
-    val xdfs : String,
-    val kcmc : String,
-
-    val isactivite : String
-)

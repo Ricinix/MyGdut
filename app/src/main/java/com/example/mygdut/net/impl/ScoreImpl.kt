@@ -2,10 +2,10 @@ package com.example.mygdut.net.impl
 
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
-import com.example.mygdut.net.data.ScoreFromNet
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.ScoreAip
+import com.example.mygdut.net.data.ScoreFromNet
 
 class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, loginMessage) {
     private val scoreCall = Extranet.instance.create(ScoreAip::class.java)
@@ -27,12 +27,12 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, 
     /**
      * 获取最新的成绩
      */
-    suspend fun getNowTermScores(): NetResult<ScoreFromNet> = getData {
+    suspend fun getNowTermScores(): NetResult<Pair<ScoreFromNet, String>> = getData {
         val termResult = getNowTermCodeForScores()
         if (termResult is NetResult.Success && termResult.data.length == 6)
-            scoreCall.getScore(termResult.data)
+            scoreCall.getScore(termResult.data) to termResult.data
         else
-            scoreCall.getAllScore()
+            scoreCall.getAllScore() to ""
     }
 
     /**

@@ -13,6 +13,7 @@ import com.example.mygdut.di.component.DaggerNoticeComponent
 import com.example.mygdut.di.module.NoticeModule
 import com.example.mygdut.view.BaseApplication
 import com.example.mygdut.viewModel.NoticeViewModel
+import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
 import kotlinx.android.synthetic.main.fragment_notice.*
 import javax.inject.Inject
 
@@ -36,13 +37,14 @@ class NoticeFragment : Fragment() {
     private fun setupRecyclerView(){
         recycler_notice.layoutManager = LinearLayoutManager(context)
         recycler_notice.adapter = mViewModel.provideRecyclerAdapter()
-        mViewModel.setCallBack(object : NoticeViewModel.ViewModelCallBack{
+        mViewModel.setCallBack(object : ViewModelCallBack {
             override fun onFail(msg: String) {
                 Toast.makeText(this@NoticeFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
             override fun onSucceed() {
                 swipe_notice.isRefreshing =false
             }
+            override fun onRefresh() { swipe_notice.isRefreshing = true }
         })
     }
 
@@ -53,7 +55,7 @@ class NoticeFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)?:""
         }
         inject()
-        Log.d(TAG, "onCreate: ");
+        Log.d(TAG, "onCreate: ")
     }
 
     override fun onCreateView(
@@ -61,7 +63,7 @@ class NoticeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        Log.d(TAG, "onCreateView: ");
+        Log.d(TAG, "onCreateView: ")
         return inflater.inflate(R.layout.fragment_notice, container, false)
     }
 
@@ -71,27 +73,7 @@ class NoticeFragment : Fragment() {
         setupSwipe()
         mViewModel.getNotice()
         swipe_notice.isRefreshing = true
-        Log.d(TAG, "onActivityCreated: ");
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause: ");
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop: ");
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy: ");
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d(TAG, "onDetach: ");
+        Log.d(TAG, "onActivityCreated: ")
     }
 
     private fun inject(){

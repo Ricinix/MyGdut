@@ -319,4 +319,10 @@ class RegexTest {
         print("$year, $month")
     }
 
+    @Test
+    fun flatMap_test(){
+        val content = "201903"
+        println("${content.substring(0, content.lastIndex)}1")
+    }
+
 }

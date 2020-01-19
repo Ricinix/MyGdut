@@ -1,33 +1,29 @@
 package com.example.mygdut.view.fragment
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mygdut.R
+import com.example.mygdut.di.component.DaggerScoresComponent
+import com.example.mygdut.di.module.ScoresModule
+import com.example.mygdut.view.BaseApplication
+import com.example.mygdut.viewModel.ScoreViewModel
+import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
+import kotlinx.android.synthetic.main.fragment_score.*
+import javax.inject.Inject
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [ScoreFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [ScoreFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ScoreFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
+    @Inject
+    lateinit var mViewModel : ScoreViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +31,16 @@ class ScoreFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        inject()
+        mViewModel.setListener(object : ViewModelCallBack{
+            override fun onFail(msg: String) {
+                Toast.makeText(this@ScoreFragment.context, msg, Toast.LENGTH_SHORT).show()
+            }
+            override fun onSucceed() {
+                swipe_score.isRefreshing = false
+            }
+            override fun onRefresh() { swipe_score.isRefreshing = true }
+        })
     }
 
     override fun onCreateView(
@@ -45,37 +51,33 @@ class ScoreFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_score, container, false)
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setupRecyclerView()
+        setupSwipe()
+        mViewModel.getLatestData()
+        swipe_score.isRefreshing = true
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
+    private fun setupRecyclerView(){
+        recycler_score.layoutManager = LinearLayoutManager(context)
+        recycler_score.adapter = mViewModel.provideAdapter()
+    }
+
+    private fun setupSwipe(){
+        swipe_score.setColorSchemeResources(R.color.colorAccent)
+        swipe_score.setOnRefreshListener {
+            mViewModel.refreshData()
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
+    private fun inject(){
+        DaggerScoresComponent.builder()
+            .baseComponent((activity?.application as BaseApplication).getBaseComponent())
+            .scoresModule(ScoresModule(this))
+            .build()
+            .inject(this)
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
     }
 
     companion object {

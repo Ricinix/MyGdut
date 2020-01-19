@@ -16,6 +16,11 @@ abstract class BaseRepo(context: Context) {
         context.getSharedPreferences("login_msg", Context.MODE_PRIVATE)
     private val aesKey = sf.getString("aes_key", "") ?: ""
 
+    init {
+        if (LoginCookie.cookies.isEmpty())
+            LoginCookie.cookies = sf.getString("cookies", "")?:""
+    }
+
     protected fun saveCookies() {
         if (LoginCookie.needToSave()) {
             edit.putString("cookies", LoginCookie.cookies)
