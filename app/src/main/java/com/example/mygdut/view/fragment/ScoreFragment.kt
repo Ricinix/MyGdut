@@ -36,7 +36,7 @@ class ScoreFragment : Fragment() {
             override fun onFail(msg: String) {
                 Toast.makeText(this@ScoreFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
-            override fun onSucceed() {
+            override fun onFinish() {
                 swipe_score.isRefreshing = false
             }
             override fun onRefresh() { swipe_score.isRefreshing = true }

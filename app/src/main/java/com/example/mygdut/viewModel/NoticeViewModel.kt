@@ -41,7 +41,7 @@ class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
             when(val result = withContext(Dispatchers.IO){ noticeRepo.getNotice() }){
                 is NetResult.Success->{
                     mAdapter.setData(result.data)
-                    callBack?.onSucceed()
+                    callBack?.onFinish()
                 }
                 is NetResult.Error->{
                     callBack?.onFail(result.errorMessage)

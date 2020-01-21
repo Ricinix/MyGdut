@@ -44,7 +44,7 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
                         term
                     )
                     lastTermName = term
-                    callBack?.onSucceed()
+                    callBack?.onFinish()
                 }
                 is NetResult.Error -> {
                     callBack?.onFail(scoreResult.errorMessage)
@@ -79,7 +79,7 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
             when (scoreResult) {
                 is NetResult.Success -> {
                     mAdapter.setData(scoreResult.data, calculateAvgGpa(scoreResult.data))
-                    callBack?.onSucceed()
+                    callBack?.onFinish()
                 }
                 is NetResult.Error -> callBack?.onFail(scoreResult.errorMessage)
             }
@@ -94,8 +94,10 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
         var gpaSum = 0.0
         var creditSum = 0.0
         for (score in scoreList) {
-            gpaSum += score.getCreditForCalculate() * score.getGpaForCalculate()
-            creditSum += score.getCreditForCalculate()
+            score.getGpaForCalculate()?.run {
+                gpaSum += score.getCreditForCalculate() * this
+                creditSum += score.getCreditForCalculate()
+            }
         }
         return if (creditSum != 0.0) gpaSum / creditSum else null
     }

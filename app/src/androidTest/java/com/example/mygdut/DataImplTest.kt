@@ -4,7 +4,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.login.LoginMessage
-import com.example.mygdut.net.impl.*
+import com.example.mygdut.net.impl.LoginImpl
+import com.example.mygdut.net.impl.NoticeImpl
+import com.example.mygdut.net.impl.ScheduleImpl
+import com.example.mygdut.net.impl.ScoreImpl
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,9 +57,15 @@ class DataImplTest {
     fun get_classTable_test(){
         runBlocking {
             val result1 = scheduleImpl.getClassScheduleByTermCode("201901")
+            println("-----------1------------")
             printResult(result1)
             val result2 = scheduleImpl.getNowTermSchedule()
-            printResult(result2)
+            println("-----------2------------")
+            if (result2 is NetResult.Success){
+                println(result2.data.map { it.toSchedule() })
+            }else{
+                println(result2)
+            }
         }
     }
 

@@ -87,7 +87,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
                 holder.scoreNum.text = "共${mList.size}门课程"
                 holder.termSelect.setOnClickListener {
                     mContext?.run {
-                        TermSelectDialog(this, mTermName) {
+                        TermSelectDialog(this, mTermName, TermSelectDialog.MODE_ALL) {
                             refreshTermName(it)
                         }.show()
                     }
@@ -104,9 +104,9 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
             is ViewHolder.ItemViewHolder -> {
                 holder.name.text = mList[index].name
                 holder.credit.text = mList[index].credit
-                holder.gpa.text = mList[index].gpa
+                holder.gpa.text = mList[index].gpa?:"教评后可查看"
                 holder.period.text = mList[index].period
-                holder.score.text = mList[index].score
+                holder.score.text = mList[index].score?:"教评后可查看"
             }
         }
     }

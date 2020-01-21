@@ -41,7 +41,7 @@ class NoticeFragment : Fragment() {
             override fun onFail(msg: String) {
                 Toast.makeText(this@NoticeFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
-            override fun onSucceed() {
+            override fun onFinish() {
                 swipe_notice.isRefreshing =false
             }
             override fun onRefresh() { swipe_notice.isRefreshing = true }

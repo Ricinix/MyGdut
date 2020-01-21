@@ -2,6 +2,6 @@ package com.example.mygdut.viewModel.`interface`
 
 interface ViewModelCallBack{
     fun onFail(msg : String)
-    fun onSucceed()
+    fun onFinish()
     fun onRefresh()
 }

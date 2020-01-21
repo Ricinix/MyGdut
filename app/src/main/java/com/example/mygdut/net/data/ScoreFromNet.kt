@@ -12,7 +12,7 @@ data class Row(
     val cjbzmc: String,
     val cjdm: String, // 成绩代码
     val cjfsmc: String, // 成绩方式
-    val cjjd: String, // 成绩绩点
+    val cjjd: String?, // 成绩绩点
     val isactive: String, // 是否有效
     val kcbh: String, // 课程编号
     val kcdlmc: String, // 课程大类
@@ -34,7 +34,7 @@ data class Row(
     val xsbh: String, // 学生编号
     val xsdm: String, // 学生代码
     val xsxm: String, // 学生姓名
-    val zcj: String, // 总成绩
+    val zcj: String?, // 总成绩
     val zxs: String // 总学时
 ) {
     fun toScore() =

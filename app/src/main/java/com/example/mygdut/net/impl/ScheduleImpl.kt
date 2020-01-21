@@ -2,10 +2,10 @@ package com.example.mygdut.net.impl
 
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
-import com.example.mygdut.net.data.ScheduleFromNet
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.ScheduleApi
+import com.example.mygdut.net.data.ScheduleFromNet
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -20,17 +20,17 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(logi
         getClassSchedule(termCode)
     }
 
-    suspend fun getNowTermSchedule() : NetResult<List<ScheduleFromNet>> = getData {
+    suspend fun getNowTermSchedule() : NetResult<Pair<List<ScheduleFromNet>, String>> = getData {
         val termCodeResult = getNowTermCodeForSchedule()
         if (termCodeResult is NetResult.Success)
-            getClassSchedule(termCodeResult.data)
+            getClassSchedule(termCodeResult.data) to termCodeResult.data
         else
-            getClassSchedule(verifyTermCode(""))
+            getClassSchedule(verifyTermCode("")) to ""
     }
 
     private suspend fun getClassSchedule(termCode: String) : List<ScheduleFromNet>{
         val raw = scheduleCall.getClassSchedule(verifyTermCode(termCode)).string()
-        val gsonStr = Regex("(?<=var kbxx = )\\[.*]").find(raw)?.value
+        val gsonStr = Regex("(?<=var kbxx = )\\[.*]").find(raw)?.value ?: throw NotMatchException()
         return gson.fromJson<List<ScheduleFromNet>>(
             gsonStr,
             object : TypeToken<List<ScheduleFromNet>>() {}.type

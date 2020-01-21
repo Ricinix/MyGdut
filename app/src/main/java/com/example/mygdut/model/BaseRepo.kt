@@ -10,10 +10,9 @@ import com.example.mygdut.domain.KeyEncrypt
  * 封装了Cookies以及登录信息LoginMessage的存取
  */
 abstract class BaseRepo(context: Context) {
-    private val edit: SharedPreferences.Editor =
-        context.getSharedPreferences("login_msg", Context.MODE_PRIVATE).edit()
     private val sf: SharedPreferences =
         context.getSharedPreferences("login_msg", Context.MODE_PRIVATE)
+    private val edit: SharedPreferences.Editor = sf.edit()
     private val aesKey = sf.getString("aes_key", "") ?: ""
 
     init {

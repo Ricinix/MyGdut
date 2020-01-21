@@ -12,8 +12,10 @@ import kotlin.math.max
 class TermSelectDialog(
     context: Context,
     private val termNameChosen: String,
+    private val mode : String,
     private val onSelect: (termName: String) -> Unit = {}
 ) : Dialog(context) {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_term_select)
@@ -38,7 +40,10 @@ class TermSelectDialog(
      * 设置选择器
      */
     private fun setupNumPicker(): Array<String> {
-        val termNameArray = context.resources.getStringArray(R.array.term_name)
+        val termNameArray =
+            if (mode == MODE_ALL) context.resources.getStringArray(R.array.term_name) else context.resources.getStringArray(
+                R.array.term_name_simplify
+            )
         num_picker.displayedValues = termNameArray
         num_picker.minValue = 0
         num_picker.maxValue = termNameArray.size - 1
@@ -63,6 +68,8 @@ class TermSelectDialog(
     }
 
     companion object {
+        const val MODE_ALL = "all"
+        const val MODE_SIMPLIFY = "simplify"
         private const val SCALA = 0.8
     }
 }

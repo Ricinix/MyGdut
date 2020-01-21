@@ -2,8 +2,8 @@ package com.example.mygdut.db.data
 
 data class Score (
     val name : String,
-    val score : String,
-    val gpa : String,
+    val score : String?,
+    val gpa : String?,
     val period : String,
     val credit : String,
     val studyMode : String,
@@ -17,9 +17,9 @@ data class Score (
 ){
     var termName  = ""
 
-    fun getGpaForCalculate() : Double{
+    fun getGpaForCalculate() : Double?{
         return try {
-            gpa.toDouble()
+            gpa?.toDouble()
         }catch (e : NumberFormatException){
             0.0
         }
