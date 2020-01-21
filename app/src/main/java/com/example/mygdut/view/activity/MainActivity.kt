@@ -13,11 +13,13 @@ import com.example.mygdut.view.fragment.SettingFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener {
+
+
     private val noticeFragment = NoticeFragment()
     private val scheduleFragment = ScheduleFragment()
     private val scoreFragment = ScoreFragment()
-    private val settingFragment = SettingFragment()
+    private val settingFragment = SettingFragment().apply { setListener(this@MainActivity) }
     private var nowFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +30,15 @@ class MainActivity : AppCompatActivity() {
         checkLogin()
         setupNavigationView()
 
+    }
+
+    override fun onLogout() {
+        val editor = getSharedPreferences("login_msg", Context.MODE_PRIVATE).edit()
+        editor.putString("account", "")
+        editor.putString("password", "")
+        editor.apply()
+        LoginActivity.startThisActivity(this)
+        finish()
     }
 
     private fun checkLogin() {

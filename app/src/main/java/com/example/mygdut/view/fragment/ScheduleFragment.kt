@@ -80,7 +80,7 @@ class ScheduleFragment : Fragment() {
     }
 
     /**
-     * 设置recycleriew
+     * 设置recyclerView
      */
     private fun setupRecyclerView() {
         recycler_schedule.layoutManager = LinearLayoutManager(context)
