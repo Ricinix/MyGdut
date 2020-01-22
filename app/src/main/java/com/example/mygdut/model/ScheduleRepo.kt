@@ -21,6 +21,14 @@ class ScheduleRepo @Inject constructor(context: Context, login: LoginImpl) : Bas
         transformer = TermTransformer(context, account)
     }
 
+    fun saveSchoolDay(termName: String, date : Int){
+        editor.putInt(termName, date)
+        editor.apply()
+    }
+
+    fun getSchoolDay(termName: String) : Int = settingSf.getInt(termName, 0)
+
+
     fun getChosenName() : String =settingSf.getString("schedule_term_name", "")?:""
 
     suspend fun getScheduleByTermName(termName: String): NetResult<List<Schedule>> {

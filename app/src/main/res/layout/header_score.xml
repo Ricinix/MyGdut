@@ -33,13 +33,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="50dp"
         android:text="@string/score_num_text"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/header_score_wrong_msg"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_gpa" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/header_score_wrong_msg"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -51,7 +62,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_score_num">
+        app:layout_constraintTop_toBottomOf="@id/header_score_wrong_msg">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/header_score_select_termName"
@@ -74,6 +85,6 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:entries="@array/mode_name"
-        app:layout_constraintTop_toBottomOf="@id/header_score_num"
+        app:layout_constraintTop_toBottomOf="@id/header_score_wrong_msg"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

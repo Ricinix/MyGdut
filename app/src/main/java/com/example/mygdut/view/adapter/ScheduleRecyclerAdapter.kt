@@ -10,8 +10,18 @@ import com.example.mygdut.view.widget.ClassInfoDialog
 import com.example.mygdut.view.widget.TimeTableView
 
 class ScheduleRecyclerAdapter : RecyclerView.Adapter<ScheduleRecyclerAdapter.ViewHolder>() {
-    private var maxWeek = 0
+    var maxWeek = 0
+        private set
     private var mList = listOf<Schedule>()
+    private var schoolDay : Int? = null
+
+    /**
+     * 在[setData]之后调用
+     */
+    fun setSchoolDay(date : Int){
+        schoolDay = date
+        notifyDataSetChanged()
+    }
 
     fun setData(schedules : List<Schedule>){
         var temp = 0
@@ -36,6 +46,7 @@ class ScheduleRecyclerAdapter : RecyclerView.Adapter<ScheduleRecyclerAdapter.Vie
                         ClassInfoDialog(view.context, schedule).show()
                     }
                 })
+                schoolDay?.let {  holder.table.setSchoolDay(it)}
             }
         }
     }

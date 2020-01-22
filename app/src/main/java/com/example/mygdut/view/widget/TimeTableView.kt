@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.mygdut.R
 import com.example.mygdut.db.data.Schedule
+import java.util.*
 
 
 class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -16,8 +17,10 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null)
 
-    private var listener : TimeTableListener? = null
-    fun setListener(li : TimeTableListener){listener = li}
+    private var listener: TimeTableListener? = null
+    fun setListener(li: TimeTableListener) {
+        listener = li
+    }
 
     private var weekNum = 1
 
@@ -25,14 +28,20 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     private val weekNames = context.resources.getStringArray(R.array.week_name)
 
     // 颜色
-    private val colorArray = arrayOf(R.drawable.selector_block_blue,
+    private val colorArray = arrayOf(
+        R.drawable.selector_block_blue,
         R.drawable.selector_block_green,
         R.drawable.selector_block_orange,
         R.drawable.selector_block_pink,
-        R.drawable.selector_block_violet)
+        R.drawable.selector_block_violet
+    )
 
     // 数据
-    private val mData = List<MutableList<Schedule>>(weekNames.size){ mutableListOf()}
+    private val mData = List<MutableList<Schedule>>(weekNames.size) { mutableListOf() }
+    private var schoolDay: Int? = null
+        set(value) {
+           field =  if (value != 0) value else null
+        }
 
 
     init {
@@ -63,28 +72,28 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
-    private fun setupClass(){
+    private fun setupClass() {
         val weekShow = (getChildAt(0) as LinearLayout).getChildAt(0) as AppCompatTextView
         weekShow.text = weekNum.toString()
-        for (i in 1 until childCount){
+        for (i in 1 until childCount) {
             val layout = getChildAt(i) as LinearLayout
-            for (j in layout.childCount-1 downTo 1)
+            for (j in layout.childCount - 1 downTo 1)
                 layout.removeViewAt(j)
-            val list = mData[i-1]
+            val list = mData[i - 1]
             // 全空时
-            if (list.isEmpty()){
+            if (list.isEmpty()) {
                 layout.addView(getEmptyView(MAX_NUM, i, 1))
-            }else{
+            } else {
                 var start = 1
-                for (s in list){
-                    if (start != s.classOrderInDay.first()){
-                        layout.addView(getEmptyView(s.classOrderInDay.first()-start, i, start))
+                for (s in list) {
+                    if (start != s.classOrderInDay.first()) {
+                        layout.addView(getEmptyView(s.classOrderInDay.first() - start, i, start))
                     }
-                    start = s.classOrderInDay.last()+1
+                    start = s.classOrderInDay.last() + 1
                     layout.addView(getClassBlockView(s, start * i + start))
                 }
-                if(start!= MAX_NUM){
-                    layout.addView(getEmptyView(MAX_NUM-start+1, i, start))
+                if (start != MAX_NUM) {
+                    layout.addView(getEmptyView(MAX_NUM - start + 1, i, start))
                 }
             }
         }
@@ -93,36 +102,37 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     /**
      * 获取课程块的view
      */
-    private fun getClassBlockView(schedule: Schedule, colorPosition : Int): View {
+    private fun getClassBlockView(schedule: Schedule, colorPosition: Int): View {
         val container = LinearLayout(context)
         // 容器
         container.run {
             orientation = VERTICAL
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
                 weight = schedule.classOrderInDay.size.toFloat()
-                setMargins(MARGIN,MARGIN,MARGIN,MARGIN)
+                setMargins(MARGIN, MARGIN, MARGIN, MARGIN)
             }
             isClickable = true
             background = context.getDrawable(colorArray[colorPosition % colorArray.size])
         }
         // 课程名字
         val name = AppCompatTextView(context).apply {
-            text = if(schedule.className.length < 10)
+            text = if (schedule.className.length < 10)
                 schedule.className
             else
                 schedule.className.substring(0, 9)
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
                 weight = 1f
-                setMargins(MARGIN+2,MARGIN,MARGIN+2,MARGIN)
+                setMargins(MARGIN + 2, MARGIN, MARGIN + 2, MARGIN)
             }
             setTextColor(context.getColor(R.color.white))
         }
         // 课室
         val room = AppCompatTextView(context).apply {
             text = schedule.classRoom
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                setMargins(MARGIN+1,MARGIN,MARGIN+1,MARGIN)
-            }
+            layoutParams =
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                    setMargins(MARGIN + 1, MARGIN, MARGIN + 1, MARGIN)
+                }
             gravity = Gravity.CENTER
             textSize = 12f
             isSingleLine = true
@@ -151,14 +161,14 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     /**
      * 获取空白view
      */
-    private fun getEmptyView(length : Int, col : Int, rowStart : Int) : View{
+    private fun getEmptyView(length: Int, col: Int, rowStart: Int): View {
         return AppCompatTextView(context).apply {
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
                 weight = length.toFloat()
                 Log.d(TAG, "empty: $weight")
             }
             setOnLongClickListener {
-                listener?.onEmptyClick(col, rowStart, rowStart+length-1)
+                listener?.onEmptyClick(col, rowStart, rowStart + length - 1)
                 true
             }
         }
@@ -203,16 +213,63 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
-
-    fun setTimeTable(list: List<Schedule>, week : Int) {
-        weekNum = week
-        mData.forEach { it.clear() }
-        for (s in list){
-            if (s.weekDay in 1..7){
-                mData[s.weekDay-1].add(s)
+    /**
+     * 刷新header（添加具体日期）
+     */
+    private fun refreshHeader() {
+        schoolDay?.let {
+            val arr = getDateArray(it)
+            for (i in 1..weekNames.size) {
+                val layout = getChildAt(i) as LinearLayout
+                val header = layout.getChildAt(0) as AppCompatTextView
+                header.text = "${weekNames[i - 1]}\n${arr[i - 1]}"
+            }
+        }?: kotlin.run{
+            for (i in 1..weekNames.size) {
+                val layout = getChildAt(i) as LinearLayout
+                val header = layout.getChildAt(0) as AppCompatTextView
+                header.text = weekNames[i - 1]
             }
         }
-        mData.forEach {dayList->
+    }
+
+    /**
+     * 获取这周7天的所有日期（格式：MM-DD）
+     */
+    private fun getDateArray(date: Int): Array<String> {
+        val theDay = Calendar.getInstance().apply {
+            val year = date / 10000
+            val day = date % 100
+            val month = (date % 10000) / 100
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month - 1)
+            set(Calendar.DAY_OF_MONTH, day)
+        }
+        theDay.add(Calendar.DATE, weekNames.size * (weekNum - 1))
+        val arr = Array(weekNames.size) { "" }
+        for (i in 1..weekNames.size) {
+            arr[i - 1] = "${theDay.get(Calendar.MONTH) + 1}-${theDay.get(Calendar.DAY_OF_MONTH)}"
+            theDay.add(Calendar.DATE, 1)
+        }
+        return arr
+    }
+
+    fun setSchoolDay(date: Int) {
+        schoolDay = date
+        refreshHeader()
+        invalidate()
+    }
+
+
+    fun setTimeTable(list: List<Schedule>, week: Int) {
+        weekNum = week
+        mData.forEach { it.clear() }
+        for (s in list) {
+            if (s.weekDay in 1..7) {
+                mData[s.weekDay - 1].add(s)
+            }
+        }
+        mData.forEach { dayList ->
             dayList.sortBy { it.classOrderInDay.first() }
         }
         setupClass()
@@ -230,7 +287,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     interface TimeTableListener {
         fun onEmptyClick(column: Int, startRow: Int, endRow: Int)
-        fun onClassClick(schedule: Schedule, view : View)
+        fun onClassClick(schedule: Schedule, view: View)
     }
 
     companion object {

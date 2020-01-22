@@ -26,6 +26,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
     private var mTermName = "大学全部"
     private var mContext: Context? = null
     private var modeArray : Array<String>? = null
+    private var inVaildNum = 0
 
     private fun refreshTermName(name : String){
         mTermName = name
@@ -39,6 +40,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
     fun setData(list: List<Score>, avgGpa: Double?) {
         mList = list
         mAvgGpa = avgGpa
+        inVaildNum = mList.count { it.gpa == null }
         notifyDataSetChanged()
     }
 
@@ -49,6 +51,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
         mList = list
         mAvgGpa = avgGpa
         mTermName = termName
+        inVaildNum = mList.count { it.gpa == null }
         notifyDataSetChanged()
     }
 
@@ -85,6 +88,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
                 holder.title.text = mTermName
                 holder.termShow.text = mTermName
                 holder.scoreNum.text = "共${mList.size}门课程"
+                holder.wrongMsg.text = if (inVaildNum == 0) "" else "其中有${inVaildNum}门成绩因未教评而无法查看，故暂不计入绩点"
                 holder.termSelect.setOnClickListener {
                     mContext?.run {
                         TermSelectDialog(this, mTermName, TermSelectDialog.MODE_ALL) {
@@ -104,9 +108,9 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
             is ViewHolder.ItemViewHolder -> {
                 holder.name.text = mList[index].name
                 holder.credit.text = mList[index].credit
-                holder.gpa.text = mList[index].gpa?:"教评后可查看"
+                holder.gpa.text = mList[index].gpa?:"^_^"
                 holder.period.text = mList[index].period
-                holder.score.text = mList[index].score?:"教评后可查看"
+                holder.score.text = mList[index].score?:"^_^"
             }
         }
     }
@@ -133,6 +137,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
             val modeSelect: Spinner = v.findViewById(R.id.header_score_spinner_mode)
             val termSelect: LinearLayout = v.findViewById(R.id.header_score_btn_termName)
             val termShow : AppCompatTextView = v.findViewById(R.id.header_score_select_termName)
+            val wrongMsg : AppCompatTextView = v.findViewById(R.id.header_score_wrong_msg)
         }
 
         class ItemViewHolder(v: View) : ViewHolder(v) {

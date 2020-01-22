@@ -39,4 +39,5 @@
     <string name="class_type">课程类型</string>
     <string name="close">关闭</string>
     <string name="classmate">上课班级</string>
+    <string name="schedule_refresh">schedule refresh</string>
 </resources>
