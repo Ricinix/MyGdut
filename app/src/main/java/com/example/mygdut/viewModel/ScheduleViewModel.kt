@@ -5,71 +5,57 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.model.ScheduleRepo
 import com.example.mygdut.view.adapter.ScheduleRecyclerAdapter
 import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.math.min
+import kotlinx.coroutines.withContext
 
 class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
-    private var callBack : ViewModelCallBack? = null
+    private var callBack: ViewModelCallBack? = null
     private val mAdapter = ScheduleRecyclerAdapter()
 
-    fun provideAdapter() = mAdapter
-    fun setCallBack(cb : ViewModelCallBack){callBack = cb}
+    // 用于显示当前学期
     val termName = MutableLiveData<String>()
+    // 用于滑动到当前周次
     val nowWeekPosition = MutableLiveData<Int>()
+    // 用于sidebar的生成
     val maxWeek = MutableLiveData<Int>()
-    private var schoolDay : Int? = null
-        set(value) {
-            field = if (value != 0) value else null
-        }
 
     /**
      * 计算现在是第几周来滑动
      */
-    private fun calculateTimeDiff(date: Int){
-        val theDay = Calendar.getInstance().apply {
-            val year = date / 10000
-            val day = date % 100
-            val month = (date %10000) / 100
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month-1)
-            set(Calendar.DAY_OF_MONTH, day)
-        }
-        val today = Calendar.getInstance()
-        val distance = today.timeInMillis - theDay.timeInMillis
-        if (distance >= 0){
-            val day = distance / (1000 * 60 * 60 * 24 * 7)
-            nowWeekPosition.value = min(day.toInt(), mAdapter.maxWeek-1)
-        }
+    private fun setWeekPosition(date: SchoolCalendar) {
+        nowWeekPosition.value = date.calculateWeekPosition(mAdapter.maxWeek)
     }
 
     /**
      * 参数格式参考:20200101
      */
-    fun setSchoolDay(date : Int){
-        schoolDay = date
+    fun setSchoolDay(date: Int) {
         termName.value?.let {
-            scheduleRepo.saveSchoolDay(it, date)
+            val calendar = SchoolCalendar(it, date)
+            mAdapter.schoolDay = calendar
+            scheduleRepo.saveSchoolDay(calendar)
+            setWeekPosition(calendar)
         }
-        mAdapter.setSchoolDay(date)
-        calculateTimeDiff(date)
     }
 
     /**
      * 学期名字来获取数据，场景是用户自己选择了某个学期
      */
-    fun getData(termName : String){
+    fun getData(termName: String) {
         viewModelScope.launch {
-            val result = scheduleRepo.getScheduleByTermName(termName)
-            schoolDay = scheduleRepo.getSchoolDay(termName)
-            when (result){
-                is NetResult.Success->{
-                    onSucceedDataSetting(result.data)
+            val backup = scheduleRepo.getBackupScheduleByTermName(termName)
+            dataSetting(backup, termName, false)
+            when (val result =
+                withContext(Dispatchers.IO) { scheduleRepo.getScheduleByTermName(termName) }) {
+                is NetResult.Success -> {
+                    dataSetting(result.data, termName)
                 }
-                is NetResult.Error->{
+                is NetResult.Error -> {
                     callBack?.onFinish()
                     callBack?.onFail(result.errorMessage)
                 }
@@ -77,24 +63,21 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         }
     }
 
-    /**
-     * 从下一层获取用户自己上一次选择的学期，用于初始化
-     */
-    fun getChosenTerm() :String = scheduleRepo.getChosenName()
 
     /**
      * 获取初始化数据
      * 如果用户选择过某个学期，则获取那个学期的数据
      * 如果用户没有获取过数据，则自动获取教务系统中默认显示的数据（若非在假期时间，则一般是最新数据）
      */
-    fun getInitData(){
+    fun getInitData() {
         viewModelScope.launch {
-            when(val result = scheduleRepo.getLatestSchedule()){
-                is NetResult.Success->{
-                    schoolDay = scheduleRepo.getSchoolDay(result.data.second)
-                    onSucceedDataSetting(result.data.first, result.data.second)
+            val backup = scheduleRepo.getBackupSchedule()
+            dataSetting(backup.first, backup.second, false)
+            when (val result = withContext(Dispatchers.IO) { scheduleRepo.getCurrentSchedule() }) {
+                is NetResult.Success -> {
+                    dataSetting(result.data.first, result.data.second)
                 }
-                is NetResult.Error->{
+                is NetResult.Error -> {
                     callBack?.onFinish()
                     callBack?.onFail(result.errorMessage)
                 }
@@ -106,16 +89,37 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     /**
      * 统一处理获取到的数据
      */
-    private fun onSucceedDataSetting(dataList: List<Schedule>, term: String?=null){
+    private fun dataSetting(
+        dataList: List<Schedule>,
+        term: String,
+        finish: Boolean = true
+    ) {
         // 给课程表设置开学日和数据
-        mAdapter.setSchoolDay(schoolDay?:0)
+        mAdapter.schoolDay = scheduleRepo.getSchoolDay(term)
         mAdapter.setData(dataList)
         // 设置选择器的学期显示
-        term?.let { termName.value = it }
+        termName.value = term
         // 全都设置好了再滑动recyclerView
-        schoolDay?.let { calculateTimeDiff(it) }
+        mAdapter.schoolDay?.let { setWeekPosition(it) }
         // 设置并重绘sidebar
         maxWeek.value = mAdapter.maxWeek
-        callBack?.onFinish()
+        if (finish) callBack?.onFinish()
+    }
+
+    /**
+     * 从下一层获取用户自己上一次选择的学期，用于初始化
+     */
+    fun getChosenTerm(): String = scheduleRepo.getChosenName()
+
+    /**
+     * 提供给fragment设置recyclerView
+     */
+    fun provideAdapter() = mAdapter
+
+    /**
+     * 务必设置来响应某些ui
+     */
+    fun setCallBack(cb: ViewModelCallBack) {
+        callBack = cb
     }
 }

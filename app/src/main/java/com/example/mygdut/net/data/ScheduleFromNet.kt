@@ -13,7 +13,7 @@ data class ScheduleFromNet(
     val xq: String, //星期几
     val zcs: String // 哪几周
 ) {
-    fun toSchedule() : Schedule{
+    fun toSchedule(termName : String) : Schedule{
         return try {
             Schedule(
                 kcmc,
@@ -22,7 +22,8 @@ data class ScheduleFromNet(
                 jxcdmcs,
                 zcs.split(",").map { it.toInt() }.sorted(),
                 teaxms,
-                jxbmc
+                jxbmc,
+                termName
             )
         }catch (e : NumberFormatException){
             Schedule(
@@ -32,7 +33,8 @@ data class ScheduleFromNet(
                 jxcdmcs,
                 listOf(),
                 teaxms,
-                jxbmc
+                jxbmc,
+                termName
             )
         }
 

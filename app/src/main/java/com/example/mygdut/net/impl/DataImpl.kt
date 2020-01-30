@@ -24,6 +24,9 @@ abstract class DataImpl(private val login: LoginImpl, private val loginMessage: 
             "${year}01"
     }
 
+    /**
+     * 网络请求模板
+     */
     protected suspend fun <T : Any> getData(f: suspend () -> T): NetResult<T> {
         // 防止死循环，所以就两次
         for (i in 0..1) {
@@ -37,13 +40,13 @@ abstract class DataImpl(private val login: LoginImpl, private val loginMessage: 
             } catch (e: NotMatchException) {
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
-                    return NetResult.Error("服务器崩了")
+                    return NetResult.Error("服务器连接超时")
             } catch (e: IllegalArgumentException) {
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
-                    return NetResult.Error("服务器崩了")
+                    return NetResult.Error("服务器连接超时")
             } catch (e: SocketTimeoutException) {
-                return NetResult.Error("服务器崩了")
+                return NetResult.Error("服务器连接超时")
             }
         }
         return NetResult.Error("未获取数据")

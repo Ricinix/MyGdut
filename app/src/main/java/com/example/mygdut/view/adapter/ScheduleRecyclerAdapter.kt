@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
 import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.view.widget.ClassInfoDialog
 import com.example.mygdut.view.widget.TimeTableView
 
@@ -13,15 +14,19 @@ class ScheduleRecyclerAdapter : RecyclerView.Adapter<ScheduleRecyclerAdapter.Vie
     var maxWeek = 0
         private set
     private var mList = listOf<Schedule>()
-    private var schoolDay : Int? = null
-
     /**
-     * 在[setData]之后调用
+     * 在[setData]之后设置
      */
-    fun setSchoolDay(date : Int){
-        schoolDay = date
-        notifyDataSetChanged()
-    }
+    var schoolDay : SchoolCalendar? = null
+        set(value) {
+            if (value?.isValid() == true) {
+                field = value
+                notifyDataSetChanged()
+            } else{
+                field = null
+            }
+        }
+
 
     fun setData(schedules : List<Schedule>){
         var temp = 0
@@ -46,7 +51,7 @@ class ScheduleRecyclerAdapter : RecyclerView.Adapter<ScheduleRecyclerAdapter.Vie
                         ClassInfoDialog(view.context, schedule).show()
                     }
                 })
-                schoolDay?.let {  holder.table.setSchoolDay(it)}
+                schoolDay?.let {  holder.table.schoolDay = it}
             }
         }
     }

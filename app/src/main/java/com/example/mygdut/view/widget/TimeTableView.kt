@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.mygdut.R
 import com.example.mygdut.db.data.Schedule
-import java.util.*
+import com.example.mygdut.domain.SchoolCalendar
 
 
 class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -38,9 +38,11 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     // 数据
     private val mData = List<MutableList<Schedule>>(weekNames.size) { mutableListOf() }
-    private var schoolDay: Int? = null
+    var schoolDay: SchoolCalendar? = null
         set(value) {
-           field =  if (value != 0) value else null
+            field = value
+            refreshHeader()
+            invalidate()
         }
 
 
@@ -218,46 +220,19 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
      */
     private fun refreshHeader() {
         schoolDay?.let {
-            val arr = getDateArray(it)
+            val arr = it.getDateArray(weekNames.size, weekNum)
             for (i in 1..weekNames.size) {
                 val layout = getChildAt(i) as LinearLayout
                 val header = layout.getChildAt(0) as AppCompatTextView
                 header.text = "${weekNames[i - 1]}\n${arr[i - 1]}"
             }
-        }?: kotlin.run{
+        } ?: kotlin.run {
             for (i in 1..weekNames.size) {
                 val layout = getChildAt(i) as LinearLayout
                 val header = layout.getChildAt(0) as AppCompatTextView
                 header.text = weekNames[i - 1]
             }
         }
-    }
-
-    /**
-     * 获取这周7天的所有日期（格式：MM-DD）
-     */
-    private fun getDateArray(date: Int): Array<String> {
-        val theDay = Calendar.getInstance().apply {
-            val year = date / 10000
-            val day = date % 100
-            val month = (date % 10000) / 100
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month - 1)
-            set(Calendar.DAY_OF_MONTH, day)
-        }
-        theDay.add(Calendar.DATE, weekNames.size * (weekNum - 1))
-        val arr = Array(weekNames.size) { "" }
-        for (i in 1..weekNames.size) {
-            arr[i - 1] = "${theDay.get(Calendar.MONTH) + 1}-${theDay.get(Calendar.DAY_OF_MONTH)}"
-            theDay.add(Calendar.DATE, 1)
-        }
-        return arr
-    }
-
-    fun setSchoolDay(date: Int) {
-        schoolDay = date
-        refreshHeader()
-        invalidate()
     }
 
 

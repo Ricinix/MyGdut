@@ -34,7 +34,7 @@ class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
     }
 
     /**
-     * 获取所有通知
+     * 获取所有通知(fragment中调用)
      */
     fun getNotice(){
         viewModelScope.launch {
@@ -45,6 +45,7 @@ class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
                 }
                 is NetResult.Error->{
                     callBack?.onFail(result.errorMessage)
+                    callBack?.onFinish()
                 }
             }
         }

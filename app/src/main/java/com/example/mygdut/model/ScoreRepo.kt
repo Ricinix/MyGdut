@@ -2,6 +2,7 @@ package com.example.mygdut.model
 
 import android.content.Context
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.db.dao.ScoreDao
 import com.example.mygdut.db.data.Score
 import com.example.mygdut.domain.TermTransformer
 import com.example.mygdut.net.data.ScoreFromNet
@@ -9,9 +10,15 @@ import com.example.mygdut.net.impl.LoginImpl
 import com.example.mygdut.net.impl.ScoreImpl
 import javax.inject.Inject
 
-class ScoreRepo @Inject constructor(context: Context, login: LoginImpl) : BaseRepo(context) {
+class ScoreRepo @Inject constructor(
+    context: Context,
+    login: LoginImpl,
+    private val scoreDao: ScoreDao
+) : BaseRepo(context) {
     private val scoreImpl: ScoreImpl
     private val termTransformer: TermTransformer
+    private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
+    private val editor = settingSf.edit()
 
     init {
         val loginMsg = provideLoginMessage()
@@ -20,15 +27,27 @@ class ScoreRepo @Inject constructor(context: Context, login: LoginImpl) : BaseRe
         termTransformer = TermTransformer(context, account)
     }
 
+    suspend fun getBackupScore(): Pair<List<Score>, String> {
+        val termName = settingSf.getString("score_term_name", "") ?: ""
+        val data = scoreDao.getScoreByTermName(termName)
+        return data to termName
+    }
+
+    suspend fun getBackupScoreByTermName(termName: String, includeElective: Boolean): List<Score> {
+        val rawData = scoreDao.getScoreByTermName(termName)
+        return rawData.filter { includeElective || it.studyMode != "选修" }
+    }
+
     /**
      * 获取最新绩点
      */
     suspend fun getLatestScore(): NetResult<Pair<List<Score>, String>> {
         return when (val result = scoreImpl.getNowTermScores()) {
             is NetResult.Success -> {
-                NetResult.Success(result.data.first.rows.map {
-                    it.toScore().apply { termName = termTransformer.termCode2TermName(termCode) }
-                } to termTransformer.termCode2TermName(result.data.second))
+                val termName = termTransformer.termCode2TermName(result.data.second)
+                val scores = result.data.first.rows.map { it.toScore(termTransformer) }
+                save2DataBase(scores, termName)
+                NetResult.Success(scores to termName)
             }
             is NetResult.Error -> {
                 result
@@ -44,19 +63,12 @@ class ScoreRepo @Inject constructor(context: Context, login: LoginImpl) : BaseRe
         includeElective: Boolean
     ): NetResult<List<Score>> {
         val termCode = termTransformer.termName2TermCode(termName)
-        val scoreResult = getScoreByTermCode(termCode)
-        val scoreList = mutableListOf<Score>()
-        return when (scoreResult) {
+        return when (val scoreResult = getScoreByTermCode(termCode)) {
             is NetResult.Success -> {
-                for (raw in scoreResult.data.rows) {
-                    val score = raw.toScore()
-                        .also { it.termName = termTransformer.termCode2TermName(it.termCode) }
-                    // 筛选去选修/必修
-                    if (!includeElective && score.studyMode == "选修")
-                        continue
-                    scoreList.add(score)
-                }
-                NetResult.Success(scoreList)
+                // 转换成Score并根据是否包含选修决定是否去掉选修课程
+                val data = scoreResult.data.rows.map { it.toScore(termTransformer) }
+                    .filter { includeElective || it.studyMode != "选修" }
+                NetResult.Success(data)
             }
             is NetResult.Error -> {
                 scoreResult
@@ -84,6 +96,17 @@ class ScoreRepo @Inject constructor(context: Context, login: LoginImpl) : BaseRe
             scoreImpl.getAllScores()
         } else
             scoreImpl.getScoresByTerm(termCode)
+    }
+
+    /**
+     * 本地存储
+     */
+    private suspend fun save2DataBase(data: List<Score>, termName: String? = null) {
+        scoreDao.saveAllScore(data)
+        termName?.let {
+            editor.putString("score_term_name", it)
+            editor.apply()
+        }
     }
 
 }

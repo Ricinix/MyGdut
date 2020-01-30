@@ -17,13 +17,8 @@ import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
 import kotlinx.android.synthetic.main.fragment_notice.*
 import javax.inject.Inject
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class NoticeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String = ""
-    private var param2: String = ""
     @Inject
     lateinit var mViewModel : NoticeViewModel
 
@@ -41,19 +36,13 @@ class NoticeFragment : Fragment() {
             override fun onFail(msg: String) {
                 Toast.makeText(this@NoticeFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
-            override fun onFinish() {
-                swipe_notice.isRefreshing =false
-            }
+            override fun onFinish() { swipe_notice.isRefreshing =false }
             override fun onRefresh() { swipe_notice.isRefreshing = true }
         })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)?:""
-            param2 = it.getString(ARG_PARAM2)?:""
-        }
         inject()
         Log.d(TAG, "onCreate: ")
     }
@@ -85,14 +74,6 @@ class NoticeFragment : Fragment() {
     }
 
     companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NoticeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
         private const val TAG = "NoticeFragment"
     }
 

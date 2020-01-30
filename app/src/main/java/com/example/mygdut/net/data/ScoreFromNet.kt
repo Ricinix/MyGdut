@@ -1,6 +1,7 @@
 package com.example.mygdut.net.data
 
 import com.example.mygdut.db.data.Score
+import com.example.mygdut.domain.TermTransformer
 
 data class ScoreFromNet(
     val rows: List<Row>, // 课程成绩列表
@@ -28,7 +29,7 @@ data class Row(
     val wzc: String,
     val wzcbz: String,
     val xdfsmc: String, // 修读方式
-    val xf: String,
+    val xf: String,  // 学分
     val xnxqdm: String, // 学年学期代码
     val xnxqmc: String, // 学年学期
     val xsbh: String, // 学生编号
@@ -37,6 +38,6 @@ data class Row(
     val zcj: String?, // 总成绩
     val zxs: String // 总学时
 ) {
-    fun toScore() =
-        Score(kcmc, zcj, cjjd, zxs, xf, xdfsmc, kcdlmc, kcflmc, ksxzmc, cjfsmc, isactive, bz, xnxqdm)
+    fun toScore(transformer: TermTransformer) =
+        Score(kcmc, zcj, cjjd, zxs, xf, xdfsmc, kcdlmc, kcflmc, ksxzmc, cjfsmc, isactive, bz, transformer.termCode2TermName(xnxqdm))
 }

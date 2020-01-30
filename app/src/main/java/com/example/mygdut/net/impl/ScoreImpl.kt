@@ -1,5 +1,6 @@
 package com.example.mygdut.net.impl
 
+import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
@@ -29,6 +30,7 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, 
      */
     suspend fun getNowTermScores(): NetResult<Pair<ScoreFromNet, String>> = getData {
         val termResult = getNowTermCodeForScores()
+        Log.d(TAG, "termCode: $termResult")
         if (termResult is NetResult.Success && termResult.data.length == 6)
             scoreCall.getScore(termResult.data) to termResult.data
         else
@@ -40,10 +42,15 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, 
      */
     private suspend fun getNowTermCodeForScores(): NetResult<String> = getData {
         val raw = scoreCall.getTermCodeForScores().string()
+        // 匹配选择的学期代码
         val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value ?: ""
         if (result.isNotEmpty())
             result
         else
             throw NotMatchException()
+    }
+
+    companion object{
+        private const val TAG = "ScoreImpl"
     }
 }

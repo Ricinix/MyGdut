@@ -1,6 +1,8 @@
 package com.example.mygdut.di.module
 
 import android.content.Context
+import androidx.room.Room
+import com.example.mygdut.db.LocalDataBase
 import com.example.mygdut.di.scope.AppScope
 import com.example.mygdut.domain.VerifyCodeCrack
 import com.example.mygdut.net.impl.LoginImpl
@@ -20,4 +22,8 @@ class BaseModule(private val appContext: Context) {
             else -> LoginImpl(appContext)
         }
     }
+
+    @Provides
+    @AppScope
+    fun provideLocalDataBase(): LocalDataBase = Room.databaseBuilder(appContext, LocalDataBase::class.java, "myGdut_database").build()
 }

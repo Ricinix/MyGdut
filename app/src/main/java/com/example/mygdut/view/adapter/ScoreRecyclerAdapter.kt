@@ -17,21 +17,24 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
     RecyclerView.Adapter<ScoreRecyclerAdapter.ViewHolder>() {
     private var mList = listOf<Score>()
     private var mAvgGpa: Double? = null
-    private var includeElective = true
-        set(value) {
+    var includeElective = true
+        private set(value) {
             field = value
             notifyDataSetChanged()
-            getData(mTermName, value)
+            getData(currentTermName, value)
         }
-    private var mTermName = "大学全部"
+    var currentTermName = "大学全部"
+        set(value) {
+            field = if (value.isNotEmpty()) value else "大学全部"
+        }
     private var mContext: Context? = null
     private var modeArray : Array<String>? = null
-    private var inVaildNum = 0
+    private var inValidNum = 0
 
     private fun refreshTermName(name : String){
-        mTermName = name
+        currentTermName = name
         notifyDataSetChanged()
-        getData(mTermName, includeElective)
+        getData(currentTermName, includeElective)
     }
 
     /**
@@ -40,7 +43,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
     fun setData(list: List<Score>, avgGpa: Double?) {
         mList = list
         mAvgGpa = avgGpa
-        inVaildNum = mList.count { it.gpa == null }
+        inValidNum = mList.count { it.gpa == null }
         notifyDataSetChanged()
     }
 
@@ -48,11 +51,8 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
      * 获取最新成绩时需要设置学期
      */
     fun setData(list: List<Score>, avgGpa: Double?, termName: String){
-        mList = list
-        mAvgGpa = avgGpa
-        mTermName = termName
-        inVaildNum = mList.count { it.gpa == null }
-        notifyDataSetChanged()
+        currentTermName = termName
+        setData(list, avgGpa)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -85,13 +85,13 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
         when (holder) {
             is ViewHolder.HeaderViewHolder -> {
                 holder.gpa.text = mAvgGpa?.run { String.format("%.3f", mAvgGpa) } ?: "暂无成绩"
-                holder.title.text = mTermName
-                holder.termShow.text = mTermName
+                holder.title.text = currentTermName
+                holder.termShow.text = currentTermName
                 holder.scoreNum.text = "共${mList.size}门课程"
-                holder.wrongMsg.text = if (inVaildNum == 0) "" else "其中有${inVaildNum}门成绩因未教评而无法查看，故暂不计入绩点"
+                holder.wrongMsg.text = if (inValidNum == 0) "" else "其中有${inValidNum}门成绩因未教评而无法查看，故暂不计入绩点"
                 holder.termSelect.setOnClickListener {
                     mContext?.run {
-                        TermSelectDialog(this, mTermName, TermSelectDialog.MODE_ALL) {
+                        TermSelectDialog(this, currentTermName, TermSelectDialog.MODE_ALL) {
                             refreshTermName(it)
                         }.show()
                     }
@@ -108,9 +108,9 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
             is ViewHolder.ItemViewHolder -> {
                 holder.name.text = mList[index].name
                 holder.credit.text = mList[index].credit
-                holder.gpa.text = mList[index].gpa?:"^_^"
+                holder.gpa.text = mList[index].gpa?:"?"
                 holder.period.text = mList[index].period
-                holder.score.text = mList[index].score?:"^_^"
+                holder.score.text = mList[index].score?:"?"
             }
         }
     }

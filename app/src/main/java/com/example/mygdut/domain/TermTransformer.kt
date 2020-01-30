@@ -22,7 +22,7 @@ class TermTransformer(context: Context, account: String) {
     }
 
     /**
-     * 学期名字转学期代码
+     * 学期名字转学期代码(若非法，则为空)
      */
     fun termName2TermCode(termName: String): String {
         val offset = termOffset[max(termNameList.indexOf(termName), 0)]
@@ -35,6 +35,7 @@ class TermTransformer(context: Context, account: String) {
      */
     fun termCode2TermName(termCode: String): String {
         return try {
+            // termCode为空的处理方式为“大学全部”
             val code = if (termCode.isNotEmpty()) termCode.toInt() else admissionYear
             termNameList[termOffset.indexOf(max(code - admissionYear, 0))]
         } catch (e: NumberFormatException) {

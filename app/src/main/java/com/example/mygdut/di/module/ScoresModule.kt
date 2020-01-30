@@ -2,6 +2,8 @@ package com.example.mygdut.di.module
 
 import android.content.Context
 import androidx.lifecycle.ViewModelProviders
+import com.example.mygdut.db.LocalDataBase
+import com.example.mygdut.db.dao.ScoreDao
 import com.example.mygdut.di.scope.FragmentScope
 import com.example.mygdut.view.fragment.ScoreFragment
 import com.example.mygdut.viewModel.ScoreViewModel
@@ -20,4 +22,8 @@ class ScoresModule(private val fragment: ScoreFragment) {
     @Provides
     @FragmentScope
     fun provideContext(): Context = fragment.context ?: fragment.requireContext()
+
+    @Provides
+    @FragmentScope
+    fun provideScoreDao(db : LocalDataBase) : ScoreDao = db.scoreDao()
 }

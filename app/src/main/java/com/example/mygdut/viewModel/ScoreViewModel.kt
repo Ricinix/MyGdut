@@ -15,73 +15,56 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
     private val mAdapter = ScoreRecyclerAdapter { termName, includeElective ->
         getData(termName, includeElective)
     }
-    private var lastTermName: String? = null
-    private var lastIncludeElective = true
 
     private var callBack: ViewModelCallBack? = null
-
-    fun setListener(cb: ViewModelCallBack) {
-        callBack = cb
-    }
-
-    fun provideAdapter() = mAdapter
 
     /**
      * 获取最新的成绩
      */
     fun getLatestData() {
         viewModelScope.launch {
-            val scoreResult = withContext(Dispatchers.IO) {
-                scoreRepo.getLatestScore()
-            }
-            when (scoreResult) {
+            val backup = scoreRepo.getBackupScore()
+            mAdapter.setData(backup.first, calculateAvgGpa(backup.first), backup.second)
+
+            when (val scoreResult = withContext(Dispatchers.IO) { scoreRepo.getLatestScore() }) {
                 is NetResult.Success -> {
-                    val term =
-                        if (scoreResult.data.first.isNotEmpty()) scoreResult.data.first[0].termName else scoreResult.data.second
                     mAdapter.setData(
                         scoreResult.data.first,
                         calculateAvgGpa(scoreResult.data.first),
-                        term
+                        scoreResult.data.second
                     )
-                    lastTermName = term
                     callBack?.onFinish()
                 }
                 is NetResult.Error -> {
+                    callBack?.onFinish()
                     callBack?.onFail(scoreResult.errorMessage)
                 }
             }
         }
     }
 
-    /**
-     * 刷新数据
-     */
-    fun refreshData() {
-        lastTermName?.run {
-            getData(this, lastIncludeElective)
-        }
-    }
 
     /**
      * 常规的通过学期名字和是否包含选修来获取数据
      */
     private fun getData(termName: String, includeElective: Boolean) {
-        lastTermName = termName
-        lastIncludeElective = includeElective
         callBack?.onRefresh()
         viewModelScope.launch {
+            val backup = scoreRepo.getBackupScoreByTermName(termName, includeElective)
+            mAdapter.setData(backup, calculateAvgGpa(backup))
+
             val scoreResult = withContext(Dispatchers.IO) {
-                scoreRepo.getScoreByTermName(
-                    termName,
-                    includeElective
-                )
+                scoreRepo.getScoreByTermName(termName, includeElective)
             }
             when (scoreResult) {
                 is NetResult.Success -> {
                     mAdapter.setData(scoreResult.data, calculateAvgGpa(scoreResult.data))
                     callBack?.onFinish()
                 }
-                is NetResult.Error -> callBack?.onFail(scoreResult.errorMessage)
+                is NetResult.Error -> {
+                    callBack?.onFail(scoreResult.errorMessage)
+                    callBack?.onFinish()
+                }
             }
 
         }
@@ -102,5 +85,21 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
         return if (creditSum != 0.0) gpaSum / creditSum else null
     }
 
+    /**
+     * 刷新数据
+     */
+    fun refreshData() {
+        getData(mAdapter.currentTermName, mAdapter.includeElective)
+    }
+
+    /**
+     * 务必设置来响应某些ui
+     */
+    fun setListener(cb: ViewModelCallBack) { callBack = cb }
+
+    /**
+     * 提供以设置recyclerView
+     */
+    fun provideAdapter() = mAdapter
 
 }

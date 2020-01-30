@@ -1,5 +1,6 @@
 package com.example.mygdut.net.impl
 
+import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
@@ -22,6 +23,7 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(logi
 
     suspend fun getNowTermSchedule() : NetResult<Pair<List<ScheduleFromNet>, String>> = getData {
         val termCodeResult = getNowTermCodeForSchedule()
+        Log.d(TAG, "termCode: $termCodeResult")
         if (termCodeResult is NetResult.Success)
             getClassSchedule(termCodeResult.data) to termCodeResult.data
         else
@@ -47,5 +49,9 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(logi
             result
         else
             throw NotMatchException()
+    }
+
+    companion object{
+        private const val TAG = "ScheduleImpl"
     }
 }
