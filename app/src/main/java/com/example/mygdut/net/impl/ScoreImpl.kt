@@ -27,14 +27,13 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, 
 
     /**
      * 获取最新的成绩
+     * @return ScoreFromNet和学期代码
      */
     suspend fun getNowTermScores(): NetResult<Pair<ScoreFromNet, String>> = getData {
         val termResult = getNowTermCodeForScores()
         Log.d(TAG, "termCode: $termResult")
-        if (termResult is NetResult.Success && termResult.data.length == 6)
-            scoreCall.getScore(termResult.data) to termResult.data
-        else
-            scoreCall.getAllScore() to ""
+        val term = if (termResult is NetResult.Success) termResult.data else ""
+        scoreCall.getScore(verifyTermCode(term)) to term
     }
 
     /**

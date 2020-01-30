@@ -6,6 +6,7 @@ import com.example.mygdut.db.dao.ScoreDao
 import com.example.mygdut.db.data.Score
 import com.example.mygdut.domain.TermTransformer
 import com.example.mygdut.net.data.ScoreFromNet
+import com.example.mygdut.net.impl.AssessImpl
 import com.example.mygdut.net.impl.LoginImpl
 import com.example.mygdut.net.impl.ScoreImpl
 import javax.inject.Inject
@@ -16,6 +17,7 @@ class ScoreRepo @Inject constructor(
     private val scoreDao: ScoreDao
 ) : BaseRepo(context) {
     private val scoreImpl: ScoreImpl
+    private val assessImpl: AssessImpl
     private val termTransformer: TermTransformer
     private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
     private val editor = settingSf.edit()
@@ -23,6 +25,7 @@ class ScoreRepo @Inject constructor(
     init {
         val loginMsg = provideLoginMessage()
         scoreImpl = ScoreImpl(login, loginMsg)
+        assessImpl = AssessImpl(login, loginMsg)
         val account = loginMsg.getRawAccount()
         termTransformer = TermTransformer(context, account)
     }
@@ -42,8 +45,29 @@ class ScoreRepo @Inject constructor(
      * 获取最新绩点
      */
     suspend fun getLatestScore(): NetResult<Pair<List<Score>, String>> {
+        val autoAssess = settingSf.getBoolean("auto_assess", true)
+        return getLatestScore(autoAssess)
+    }
+
+    /**
+     * 获取最新绩点（带自动教评）
+     */
+    private suspend fun getLatestScore(autoAssess: Boolean): NetResult<Pair<List<Score>, String>> {
         return when (val result = scoreImpl.getNowTermScores()) {
             is NetResult.Success -> {
+                if (autoAssess) {
+                    var autoAssessNum = 0
+                    result.data.first.rows.forEach {
+                        if (it.needToAssess()) {
+                            val assessResult = assessImpl.assess(it.xnxqdm, it.kcmc)
+                            if (assessResult is NetResult.Success && assessResult.data == "1")
+                                autoAssessNum++
+                        }
+                    }
+                    if (autoAssessNum > 0)
+                        return getLatestScore(false)
+                }
+
                 val termName = termTransformer.termCode2TermName(result.data.second)
                 val scores = result.data.first.rows.map { it.toScore(termTransformer) }
                 save2DataBase(scores, termName)
@@ -62,12 +86,38 @@ class ScoreRepo @Inject constructor(
         termName: String,
         includeElective: Boolean
     ): NetResult<List<Score>> {
+        val autoAssess = settingSf.getBoolean("auto_assess", true)
+        return getScoreByTermName(termName, includeElective, autoAssess)
+    }
+
+    /**
+     * 根据学期名字获取绩点（带自动教评）
+     */
+    private suspend fun getScoreByTermName(
+        termName: String,
+        includeElective: Boolean,
+        autoAssess: Boolean
+    ): NetResult<List<Score>> {
         val termCode = termTransformer.termName2TermCode(termName)
         return when (val scoreResult = getScoreByTermCode(termCode)) {
             is NetResult.Success -> {
+                if (autoAssess) {
+                    var autoAssessNum = 0
+                    scoreResult.data.rows.forEach {
+                        if (it.needToAssess()) {
+                            val assessResult = assessImpl.assess(it.xnxqdm, it.kcmc)
+                            if (assessResult is NetResult.Success && assessResult.data == "1")
+                                autoAssessNum++
+                        }
+                    }
+                    if (autoAssessNum > 0)
+                        return getScoreByTermName(termName, includeElective, false)
+                }
+
                 // 转换成Score并根据是否包含选修决定是否去掉选修课程
                 val data = scoreResult.data.rows.map { it.toScore(termTransformer) }
                     .filter { includeElective || it.studyMode != "选修" }
+                save2DataBase(data, termName)
                 NetResult.Success(data)
             }
             is NetResult.Error -> {
@@ -101,12 +151,10 @@ class ScoreRepo @Inject constructor(
     /**
      * 本地存储
      */
-    private suspend fun save2DataBase(data: List<Score>, termName: String? = null) {
+    private suspend fun save2DataBase(data: List<Score>, termName: String) {
         scoreDao.saveAllScore(data)
-        termName?.let {
-            editor.putString("score_term_name", it)
-            editor.apply()
-        }
+        editor.putString("score_term_name", termName)
+        editor.apply()
     }
 
 }

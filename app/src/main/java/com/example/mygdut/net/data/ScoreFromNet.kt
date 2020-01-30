@@ -40,4 +40,6 @@ data class Row(
 ) {
     fun toScore(transformer: TermTransformer) =
         Score(kcmc, zcj, cjjd, zxs, xf, xdfsmc, kcdlmc, kcflmc, ksxzmc, cjfsmc, isactive, bz, transformer.termCode2TermName(xnxqdm))
+
+    fun needToAssess() : Boolean = zcj == null || cjjd == null
 }

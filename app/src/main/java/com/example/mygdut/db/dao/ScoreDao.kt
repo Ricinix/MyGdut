@@ -17,4 +17,7 @@ interface ScoreDao {
 
     @Query("SELECT * FROM score_table WHERE termName = :termName")
     suspend fun getScoreByTermName(termName : String) : List<Score>
+
+    @Query("DELETE FROM score_table")
+    suspend fun deleteAll() : Int
 }

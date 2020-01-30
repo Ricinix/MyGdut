@@ -27,4 +27,72 @@ data class Teacher(
     val yjjymc: String,
     val yxfbl: String,
     val yxfmc: String
-)
+) {
+    var isEmpty = false
+        private set
+
+    fun toDataQueryMap() =
+        mapOf(
+            "wjaplx" to wjaplx,
+            "pdm" to pdm,
+            "xnxqdm" to xnxqdm,
+            "pjdxlxdm" to pjdxlxdm,
+            "pjlxdm" to pjlxdm,
+            "pjdxdm" to pjdxdm,
+            "pjdxmc" to pjdxmc,
+            "jxhjdm" to jxhjdm,
+            "pjdxbh" to pjdxbh,
+            "kcptdm" to kcptdm,
+            "wjdm" to wjdm,
+            "jxhjmc" to jxhjmc,
+            "isyxf" to isyxf,
+            "yxfbl" to yxfbl,
+            "yxfmc" to yxfmc,
+            "isyjjy" to isyjjy,
+            "yjjymc" to yjjymc,
+            "wjlx" to wjlx,
+            "kcmc" to kcmc,
+            "isdczbzl" to isdczbzl,
+            "rownum_" to rownum_
+        )
+
+    fun toSubmitQueryMap() =
+        mapOf(
+            "pdm" to pdm,
+            "wjdm" to wjdm,
+            "pjdxlxdm" to pjdxlxdm,
+            "pjlxdm" to pjlxdm,
+            "kcptdm" to kcptdm,
+            "pjdxbh" to pjdxbh,
+            "pjdxdm" to pjdxdm,
+            "xnxqdm" to xnxqdm,
+            "pjdxmc" to pjdxmc
+        )
+
+    companion object {
+        @JvmStatic
+        fun getEmptyInstance() = Teacher(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ).apply { isEmpty = true }
+    }
+}

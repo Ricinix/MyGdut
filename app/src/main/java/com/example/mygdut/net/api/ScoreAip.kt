@@ -11,8 +11,7 @@ interface ScoreAip {
     @FormUrlEncoded
     @POST("/xskccjxx!getDataList.action")
     suspend fun getScore(
-        @Field("xnxqdm") xnxqdm: String = "", // 学期代码(如201901)
-        @Field("jhlxdm:") jhlxdm: String = "",
+        @Field("xnxqdm") xnxqdm: String, // 学期代码(如201901)
         @Field("page") page: Int = 1,
         @Field("rows") rows: Int = 50,
         @Field("sort") sort: String = "xnxqdm",
