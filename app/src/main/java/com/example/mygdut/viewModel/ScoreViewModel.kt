@@ -25,7 +25,6 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
         viewModelScope.launch {
             val backup = scoreRepo.getBackupScore()
             mAdapter.setData(backup.first, calculateAvgGpa(backup.first), backup.second)
-
             when (val scoreResult = withContext(Dispatchers.IO) { scoreRepo.getLatestScore() }) {
                 is NetResult.Success -> {
                     mAdapter.setData(

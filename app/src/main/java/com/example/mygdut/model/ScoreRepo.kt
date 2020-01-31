@@ -32,12 +32,29 @@ class ScoreRepo @Inject constructor(
 
     suspend fun getBackupScore(): Pair<List<Score>, String> {
         val termName = settingSf.getString("score_term_name", "") ?: ""
-        val data = scoreDao.getScoreByTermName(termName)
-        return data to termName
+        return if (termName.isEmpty()){
+            scoreDao.getAllScore() to "大学全部"
+        }else{
+            getBackupScoreByTermName(termName, true) to termName
+        }
     }
 
     suspend fun getBackupScoreByTermName(termName: String, includeElective: Boolean): List<Score> {
-        val rawData = scoreDao.getScoreByTermName(termName)
+        // 为了解决两个学期的问题，还是需要转换成学期代码来判断
+        val code = termTransformer.termName2TermCode(termName)
+        val rawData = when {
+            code.isEmpty() -> {
+                scoreDao.getAllScore()
+            }
+            code.last() == '3' -> {
+                val termOne = termTransformer.termCode2TermName("${code.substring(0, code.lastIndex)}1")
+                val termTwo = termTransformer.termCode2TermName("${code.substring(0, code.lastIndex)}2")
+                scoreDao.getScoreByTermName(termOne) + scoreDao.getScoreByTermName(termTwo)
+            }
+            else -> {
+                scoreDao.getScoreByTermName(termName)
+            }
+        }
         return rawData.filter { includeElective || it.studyMode != "选修" }
     }
 
@@ -154,7 +171,7 @@ class ScoreRepo @Inject constructor(
     private suspend fun save2DataBase(data: List<Score>, termName: String) {
         scoreDao.saveAllScore(data)
         editor.putString("score_term_name", termName)
-        editor.apply()
+        editor.commit()
     }
 
 }

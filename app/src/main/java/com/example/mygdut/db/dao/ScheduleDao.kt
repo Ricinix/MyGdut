@@ -1,9 +1,6 @@
 package com.example.mygdut.db.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.mygdut.db.data.Schedule
 
 @Dao
@@ -17,4 +14,13 @@ interface ScheduleDao {
 
     @Query("SELECT * FROM schedule_table WHERE termName = :termName")
     suspend fun getScheduleByTermName(termName : String) : List<Schedule>
+
+    @Query("DELETE FROM schedule_table WHERE type=:type")
+    suspend fun deleteAllScheduleFromNet(type : Int)
+
+    @Insert
+    suspend fun saveSchedule(schedule: Schedule)
+
+    @Delete
+    suspend fun deleteSchedule(schedule: Schedule)
 }

@@ -40,4 +40,6 @@
     <string name="close">关闭</string>
     <string name="classmate">上课班级</string>
     <string name="schedule_refresh">schedule refresh</string>
+    <string name="diy_class">自定义课程-</string>
+    <string name="delete">删除</string>
 </resources>

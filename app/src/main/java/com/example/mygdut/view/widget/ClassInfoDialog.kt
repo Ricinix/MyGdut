@@ -4,17 +4,21 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Point
 import android.os.Bundle
+import android.view.View
 import com.example.mygdut.R
 import com.example.mygdut.db.data.Schedule
 import kotlinx.android.synthetic.main.dialog_class_info.*
 
-class ClassInfoDialog(context: Context, private val schedule: Schedule) : Dialog(context) {
+class ClassInfoDialog(context: Context, private val schedule: Schedule, private val deleteSchedule : (Schedule)->Unit) : Dialog(context) {
     private val startTime = context.resources.getStringArray(R.array.time_schedule_start)
     private val endTime = context.resources.getStringArray(R.array.time_schedule_end)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_class_info)
+        if (schedule.type == Schedule.TYPE_FROM_LOCAL)
+            dialog_class_btn_delete.visibility = View.VISIBLE
+
         setWidth()
         setText()
         setClickListener()
@@ -23,6 +27,10 @@ class ClassInfoDialog(context: Context, private val schedule: Schedule) : Dialog
 
     private fun setClickListener(){
         dialog_class_btn_close.setOnClickListener {
+            dismiss()
+        }
+        dialog_class_btn_delete.setOnClickListener {
+            deleteSchedule(schedule)
             dismiss()
         }
     }

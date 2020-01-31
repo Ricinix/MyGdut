@@ -1,6 +1,7 @@
 package com.example.mygdut.view.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +16,14 @@ import com.example.mygdut.view.widget.TermSelectDialog
 
 class ScoreRecyclerAdapter(private val getData: (termName: String, includeElective: Boolean) -> Unit = { _, _ -> }) :
     RecyclerView.Adapter<ScoreRecyclerAdapter.ViewHolder>() {
+    // 设置这个标志位防止spinner初始化时触发监听
+    private var firstInit = true
     private var mList = listOf<Score>()
     private var mAvgGpa: Double? = null
     var includeElective = true
         private set(value) {
             field = value
-            notifyDataSetChanged()
+//            notifyDataSetChanged()
             getData(currentTermName, value)
         }
     var currentTermName = "大学全部"
@@ -96,12 +99,18 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
                         }.show()
                     }
                 }
+                // 这个坑货设置监听的时候居然会触发一次onItemSelected
                 holder.modeSelect.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                     }
                     override fun onItemSelected(parent: AdapterView<*>?, v: View?, pos: Int, id: Long) {
                         val mode = modeArray?.get(pos)
+                        if (firstInit){
+                            firstInit = false
+                            return
+                        }
                         includeElective = mode != "不含选修"
+                        Log.d("ScoreAdapter", "mode select: ");
                     }
                 }
             }

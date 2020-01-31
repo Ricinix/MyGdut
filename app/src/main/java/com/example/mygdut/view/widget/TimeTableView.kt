@@ -170,7 +170,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 Log.d(TAG, "empty: $weight")
             }
             setOnLongClickListener {
-                listener?.onEmptyClick(col, rowStart, rowStart + length - 1)
+                listener?.onEmptyClick(col, rowStart, rowStart + length - 1, it)
                 true
             }
         }
@@ -261,7 +261,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     }
 
     interface TimeTableListener {
-        fun onEmptyClick(column: Int, startRow: Int, endRow: Int)
+        fun onEmptyClick(column: Int, startRow: Int, endRow: Int, view : View)
         fun onClassClick(schedule: Schedule, view: View)
     }
 

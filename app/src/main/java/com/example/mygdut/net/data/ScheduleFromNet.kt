@@ -23,7 +23,8 @@ data class ScheduleFromNet(
                 zcs.split(",").map { it.toInt() }.sorted(),
                 teaxms,
                 jxbmc,
-                termName
+                termName,
+                Schedule.TYPE_FROM_NET
             )
         }catch (e : NumberFormatException){
             Schedule(
@@ -34,7 +35,8 @@ data class ScheduleFromNet(
                 listOf(),
                 teaxms,
                 jxbmc,
-                termName
+                termName,
+                Schedule.TYPE_FROM_NET
             )
         }
 

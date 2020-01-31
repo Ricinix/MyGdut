@@ -24,7 +24,21 @@ class ScheduleRepo @Inject constructor(context: Context, login: LoginImpl, priva
     }
 
     /**
-     * 存储
+     * 删除课程
+     */
+    suspend fun deleteSchedule(schedule: Schedule){
+        scheduleDao.deleteSchedule(schedule)
+    }
+
+    /**
+     * 存储新添加的课程
+     */
+    suspend fun saveSchedule(schedule : Schedule){
+        scheduleDao.saveSchedule(schedule)
+    }
+
+    /**
+     * 存储开学日
      */
     fun saveSchoolDay(schoolCalendar: SchoolCalendar) {
         editor.putInt(schoolCalendar.termName, schoolCalendar.schoolDay)
@@ -37,7 +51,10 @@ class ScheduleRepo @Inject constructor(context: Context, login: LoginImpl, priva
 
     suspend fun getBackupSchedule() : Pair<List<Schedule>, String>{
         val chooseTerm = settingSf.getString("schedule_term_name", "") ?: ""
-        val schedules = scheduleDao.getAllSchedule()
+        val schedules =if (chooseTerm.isNotEmpty())
+         scheduleDao.getScheduleByTermName(chooseTerm)
+        else
+            scheduleDao.getAllSchedule()
         return schedules to chooseTerm
     }
 
@@ -55,7 +72,7 @@ class ScheduleRepo @Inject constructor(context: Context, login: LoginImpl, priva
             is NetResult.Success -> {
                 val data = result.data.map { it.toSchedule(termName) }
                     .filter { it.isValid() }
-                scheduleDao.saveAllSchedule(data)
+                save2DataBase(data)
                 NetResult.Success(data)
             }
             is NetResult.Error -> result
@@ -71,7 +88,7 @@ class ScheduleRepo @Inject constructor(context: Context, login: LoginImpl, priva
                 is NetResult.Success -> {
                     val data = result.data.map { it.toSchedule(chooseTerm) }
                         .filter { it.isValid() }
-                    scheduleDao.saveAllSchedule(data)
+                    save2DataBase(data)
                     NetResult.Success(data to chooseTerm)
                 }
                 is NetResult.Error -> result
@@ -84,11 +101,23 @@ class ScheduleRepo @Inject constructor(context: Context, login: LoginImpl, priva
                 // 为了程序不crash，把不合规范的数据筛选掉
                 val data = result.data.first.map { it.toSchedule(termName) }
                     .filter { it.isValid() }
-                scheduleDao.saveAllSchedule(data)
+                save2DataBase(data, termName)
                 NetResult.Success(data to termName)
 
             }
             is NetResult.Error -> result
         }
+    }
+
+    /**
+     * 存储到本地
+     */
+    private suspend fun save2DataBase(list : List<Schedule>, termName : String?=null){
+        termName?.run {
+            editor.putString("schedule_term_name", this)
+            editor.commit()
+        }
+        scheduleDao.deleteAllScheduleFromNet(Schedule.TYPE_FROM_NET)
+        scheduleDao.saveAllSchedule(list)
     }
 }

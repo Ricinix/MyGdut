@@ -3,11 +3,12 @@ package com.example.mygdut.net.impl
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Log
-import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.domain.VerifyCodeCrack
 import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.LoginApi
+import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
 
@@ -31,6 +32,8 @@ class LoginImpl(context: Context, crackEngine : VerifyCodeCrack.Engine = VerifyC
                 verifyCode = verifyCodeCrack.getVerifyCode(bitmap)
             } catch (e: SocketTimeoutException) {
                 return showServerShutDown()
+            }catch (e : HttpException){
+                return NetResult.Error(e.message())
             }
         }
 
@@ -54,6 +57,8 @@ class LoginImpl(context: Context, crackEngine : VerifyCodeCrack.Engine = VerifyC
                 }
         } catch (e: SocketTimeoutException) {
             return showServerShutDown()
+        }catch (e : HttpException){
+            return NetResult.Error(e.message())
         }
 
     }

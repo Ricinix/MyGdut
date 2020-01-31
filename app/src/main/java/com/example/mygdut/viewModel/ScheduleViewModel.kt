@@ -15,7 +15,15 @@ import kotlinx.coroutines.withContext
 
 class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     private var callBack: ViewModelCallBack? = null
-    private val mAdapter = ScheduleRecyclerAdapter()
+    private val mAdapter = ScheduleRecyclerAdapter(object : ScheduleRecyclerAdapter.ScheduleRecyclerCallBack{
+        override fun getTermName(): String = termName.value?:""
+        override fun saveSchedule(schedule: Schedule) {
+            viewModelScope.launch { scheduleRepo.saveSchedule(schedule) }
+        }
+        override fun deleteSchedule(schedule: Schedule) {
+            viewModelScope.launch { scheduleRepo.deleteSchedule(schedule) }
+        }
+    })
 
     // 用于显示当前学期
     val termName = MutableLiveData<String>()
@@ -49,11 +57,11 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     fun getData(termName: String) {
         viewModelScope.launch {
             val backup = scheduleRepo.getBackupScheduleByTermName(termName)
-            dataSetting(backup, termName, false)
+            dataSetting(backup, termName, totalFromNet = false, finish = false)
             when (val result =
                 withContext(Dispatchers.IO) { scheduleRepo.getScheduleByTermName(termName) }) {
                 is NetResult.Success -> {
-                    dataSetting(result.data, termName)
+                    dataSetting(result.data, termName, true)
                 }
                 is NetResult.Error -> {
                     callBack?.onFinish()
@@ -72,10 +80,10 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     fun getInitData() {
         viewModelScope.launch {
             val backup = scheduleRepo.getBackupSchedule()
-            dataSetting(backup.first, backup.second, false)
+            dataSetting(backup.first, backup.second, totalFromNet = false, finish = false)
             when (val result = withContext(Dispatchers.IO) { scheduleRepo.getCurrentSchedule() }) {
                 is NetResult.Success -> {
-                    dataSetting(result.data.first, result.data.second)
+                    dataSetting(result.data.first, result.data.second, true)
                 }
                 is NetResult.Error -> {
                     callBack?.onFinish()
@@ -92,11 +100,12 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     private fun dataSetting(
         dataList: List<Schedule>,
         term: String,
+        totalFromNet : Boolean,
         finish: Boolean = true
     ) {
         // 给课程表设置开学日和数据
         mAdapter.schoolDay = scheduleRepo.getSchoolDay(term)
-        mAdapter.setData(dataList)
+        mAdapter.setData(dataList, totalFromNet)
         // 设置选择器的学期显示
         termName.value = term
         // 全都设置好了再滑动recyclerView
