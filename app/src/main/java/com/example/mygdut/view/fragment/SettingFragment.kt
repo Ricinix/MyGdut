@@ -1,10 +1,10 @@
 package com.example.mygdut.view.fragment
 
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.mygdut.R
+import com.example.mygdut.view.widget.AppInfoDialog
 
 class SettingFragment : PreferenceFragmentCompat() {
     private var mListener: SettingChangeListener? = null
@@ -27,12 +27,7 @@ class SettingFragment : PreferenceFragmentCompat() {
      */
     private fun setupClickListener() {
         findPreference<Preference>("about_btn")?.setOnPreferenceClickListener {
-            val msg = (context?:it.context).resources.getString(R.string.about_msg)
-            AlertDialog.Builder(context ?: it.context)
-                .setTitle("关于")
-                .setMessage(msg)
-                .create()
-                .show()
+            AppInfoDialog(context?:it.context).show()
             true
         }
         findPreference<Preference>("logout_btn")?.setOnPreferenceClickListener {

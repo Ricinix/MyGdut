@@ -3,6 +3,7 @@ package com.example.mygdut.domain
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import com.example.mygdut.domain.VerifyCodeCrack.Engine.EngineOne
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.torchvision.TensorImageUtils
@@ -16,8 +17,7 @@ import java.io.IOException
 class VerifyCodeCrack(context: Context, engineType: Engine) {
     private val mModule: Module =
         when (engineType) {
-            Engine.EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
-            Engine.EngineTwo -> Module.load(assetFilePath(context, "model2-script-local.pt"))
+            EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
         }
 
 
@@ -97,7 +97,6 @@ class VerifyCodeCrack(context: Context, engineType: Engine) {
      */
     sealed class Engine {
         object EngineOne : Engine()
-        object EngineTwo : Engine()
     }
 
     companion object {
