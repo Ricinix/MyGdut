@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tab_title">
+        <item>@string/notice_title</item>
+        <item>@string/exam</item>
+    </string-array>
+</resources>

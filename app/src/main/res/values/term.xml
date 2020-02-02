@@ -33,7 +33,7 @@
         <item>大四上</item>
         <item>大四下</item>
     </string-array>
-    
+
     <integer-array name="term_code_offset">
         <item>0000</item>
 
@@ -53,57 +53,10 @@
         <item>0302</item>
         <item>0303</item>
     </integer-array>
+
     <string-array name="mode_name">
         <item>包含选修</item>
         <item>不含选修</item>
     </string-array>
 
-    <string-array name="week_name">
-        <item>周一</item>
-        <item>周二</item>
-        <item>周三</item>
-        <item>周四</item>
-        <item>周五</item>
-        <item>周六</item>
-        <item>周日</item>
-    </string-array>
-
-    <string-array name="time_schedule_start">
-        <item>8:30</item>
-        <item>9:20</item>
-
-        <item>10:25</item>
-        <item>11:15</item>
-
-        <item>13:50</item>
-
-        <item>14:40</item>
-        <item>15:30</item>
-
-        <item>16:30</item>
-        <item>17:20</item>
-
-        <item>18:30</item>
-        <item>19:20</item>
-        <item>20:10</item>
-    </string-array>
-    <string-array name="time_schedule_end">
-        <item>9:15</item>
-        <item>10:05</item>
-
-        <item>11:10</item>
-        <item>12:00</item>
-
-        <item>14:35</item>
-
-        <item>15:25</item>
-        <item>16:15</item>
-
-        <item>17:15</item>
-        <item>18:05</item>
-
-        <item>19:15</item>
-        <item>20:05</item>
-        <item>20:55</item>
-    </string-array>
 </resources>

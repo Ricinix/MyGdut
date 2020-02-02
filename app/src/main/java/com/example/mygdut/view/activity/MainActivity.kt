@@ -6,17 +6,18 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.mygdut.R
-import com.example.mygdut.view.fragment.NoticeFragment
+import com.example.mygdut.view.fragment.HomeFragment
 import com.example.mygdut.view.fragment.ScheduleFragment
 import com.example.mygdut.view.fragment.ScoreFragment
 import com.example.mygdut.view.fragment.SettingFragment
-import kotlinx.android.synthetic.main.activity_main.*
+import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener {
 
 
-    private val noticeFragment = NoticeFragment()
+//    private val noticeFragment = NoticeFragment()
+    private val homeFragment = HomeFragment()
     private val scheduleFragment = ScheduleFragment()
     private val scoreFragment = ScoreFragment()
     private val settingFragment = SettingFragment().apply { setListener(this@MainActivity) }
@@ -25,7 +26,8 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        StatusBarUtil.setTransparent(this)
+        StatusBarUtil.setLightMode(this)
 
         checkLogin()
         setupNavigationView()
@@ -54,8 +56,8 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     private fun setupNavigationView() {
         nav_view.setOnNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.navigation_notice -> {
-                    switchToFragment(noticeFragment)
+                R.id.navigation_home -> {
+                    switchToFragment(homeFragment)
                 }
                 R.id.navigation_schedule -> {
                     switchToFragment(scheduleFragment)
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
             }
             true
         }
-        nav_view.selectedItemId = R.id.navigation_notice
+        nav_view.selectedItemId = R.id.navigation_home
     }
 
     private fun switchToFragment(fragment: Fragment) {

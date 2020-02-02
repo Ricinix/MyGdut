@@ -31,7 +31,7 @@ class ScoreRepo @Inject constructor(
     }
 
     suspend fun getBackupScore(): Pair<List<Score>, String> {
-        val termName = settingSf.getString("score_term_name", "") ?: ""
+        val termName = settingSf.getString(SF_SCORE_KEY, "") ?: ""
         return if (termName.isEmpty()){
             scoreDao.getAllScore() to "大学全部"
         }else{
@@ -62,7 +62,7 @@ class ScoreRepo @Inject constructor(
      * 获取最新绩点
      */
     suspend fun getLatestScore(): NetResult<Pair<List<Score>, String>> {
-        val autoAssess = settingSf.getBoolean("auto_assess", true)
+        val autoAssess = settingSf.getBoolean(SF_ASSESS_KEY, true)
         return getLatestScore(autoAssess)
     }
 
@@ -74,13 +74,14 @@ class ScoreRepo @Inject constructor(
             is NetResult.Success -> {
                 if (autoAssess) {
                     var autoAssessNum = 0
-                    result.data.first.rows.forEach {
-                        if (it.needToAssess()) {
-                            val assessResult = assessImpl.assess(it.xnxqdm, it.kcmc)
+                    for (row in result.data.first.rows){
+                        if (row.needToAssess()) {
+                            val assessResult = assessImpl.assess(row.xnxqdm, row.kcmc)
                             if (assessResult is NetResult.Success && assessResult.data == "1")
                                 autoAssessNum++
                         }
                     }
+
                     if (autoAssessNum > 0)
                         return getLatestScore(false)
                 }
@@ -103,7 +104,7 @@ class ScoreRepo @Inject constructor(
         termName: String,
         includeElective: Boolean
     ): NetResult<List<Score>> {
-        val autoAssess = settingSf.getBoolean("auto_assess", true)
+        val autoAssess = settingSf.getBoolean(SF_ASSESS_KEY, true)
         return getScoreByTermName(termName, includeElective, autoAssess)
     }
 
@@ -170,8 +171,12 @@ class ScoreRepo @Inject constructor(
      */
     private suspend fun save2DataBase(data: List<Score>, termName: String) {
         scoreDao.saveAllScore(data)
-        editor.putString("score_term_name", termName)
+        editor.putString(SF_SCORE_KEY, termName)
         editor.commit()
+    }
+    companion object{
+        private const val SF_SCORE_KEY = "score_term_name"
+        private const val SF_ASSESS_KEY = "auto_assess"
     }
 
 }

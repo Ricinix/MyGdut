@@ -1,15 +1,13 @@
 package com.example.mygdut.view.widget
 
-import android.app.Dialog
 import android.content.Context
-import android.graphics.Point
 import android.os.Bundle
 import android.view.View
 import com.example.mygdut.R
 import com.example.mygdut.db.data.Schedule
 import kotlinx.android.synthetic.main.dialog_class_info.*
 
-class ClassInfoDialog(context: Context, private val schedule: Schedule, private val deleteSchedule : (Schedule)->Unit) : Dialog(context) {
+class ClassInfoDialog(context: Context, private val schedule: Schedule, private val deleteSchedule : (Schedule)->Unit) : BaseDialog(context) {
     private val startTime = context.resources.getStringArray(R.array.time_schedule_start)
     private val endTime = context.resources.getStringArray(R.array.time_schedule_end)
 
@@ -19,7 +17,7 @@ class ClassInfoDialog(context: Context, private val schedule: Schedule, private 
         if (schedule.type == Schedule.TYPE_FROM_LOCAL)
             dialog_class_btn_delete.visibility = View.VISIBLE
 
-        setWidth()
+        setSize(SCALA)
         setText()
         setClickListener()
         setCanceledOnTouchOutside(true)
@@ -48,21 +46,6 @@ class ClassInfoDialog(context: Context, private val schedule: Schedule, private 
         val start = startTime[orderList.first()-1]
         val end = endTime[orderList.last()-1]
         return "$start-$end"
-    }
-
-    /**
-     * 设置宽度为0.9倍
-     */
-    private fun setWidth() {
-        val mWindowManager = window?.windowManager
-        val display = mWindowManager?.defaultDisplay
-        // 获取属性集
-        val params = window?.attributes
-        val size = Point()
-        // 获取size
-        display?.getSize(size)
-        params?.width = (size.x * SCALA).toInt()
-        window?.attributes = params
     }
 
     companion object {

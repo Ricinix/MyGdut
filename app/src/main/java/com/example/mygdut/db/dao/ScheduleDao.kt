@@ -15,8 +15,8 @@ interface ScheduleDao {
     @Query("SELECT * FROM schedule_table WHERE termName = :termName")
     suspend fun getScheduleByTermName(termName : String) : List<Schedule>
 
-    @Query("DELETE FROM schedule_table WHERE type=:type")
-    suspend fun deleteAllScheduleFromNet(type : Int)
+    @Query("DELETE FROM schedule_table WHERE type=:type AND termName= :termName")
+    suspend fun deleteScheduleByTermName(termName: String,type : Int)
 
     @Insert
     suspend fun saveSchedule(schedule: Schedule)

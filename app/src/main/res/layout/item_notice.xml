@@ -28,6 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
+            android:padding="6dp"
             android:src="@drawable/ic_close_black_12dp"
             android:background="?android:selectableItemBackground"
             android:id="@+id/btn_item_notice_close"

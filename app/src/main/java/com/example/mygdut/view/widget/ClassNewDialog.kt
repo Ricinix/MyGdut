@@ -1,8 +1,6 @@
 package com.example.mygdut.view.widget
 
-import android.app.Dialog
 import android.content.Context
-import android.graphics.Point
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -24,7 +22,7 @@ class ClassNewDialog(
     disableClasses: List<Schedule>,
     private val addNewSchedule: (Schedule) -> Unit
 ) :
-    Dialog(context) {
+    BaseDialog(context) {
 
     private val startTimeArr = context.resources.getStringArray(R.array.time_schedule_start)
     private val endTimeArr = context.resources.getStringArray(R.array.time_schedule_end)
@@ -74,7 +72,7 @@ class ClassNewDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_new_class)
-        setSize()
+        setSize(WIDTH_SCALA)
         setupRecyclerView()
         setClickListener()
         setCanceledOnTouchOutside(false)
@@ -124,20 +122,6 @@ class ClassNewDialog(
         dialog_new_order_recycler.adapter = orderAdapter
     }
 
-    /**
-     * 设置对话框大小
-     */
-    private fun setSize() {
-        val mWindowManager = window?.windowManager
-        val display = mWindowManager?.defaultDisplay
-        // 获取属性集
-        val params = window?.attributes
-        val size = Point()
-        // 获取size
-        display?.getSize(size)
-        params?.width = (size.x * WIDTH_SCALA).toInt()
-        window?.attributes = params
-    }
 
     companion object {
         private const val WIDTH_SCALA = 0.9

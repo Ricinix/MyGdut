@@ -42,11 +42,8 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, 
     private suspend fun getNowTermCodeForScores(): NetResult<String> = getData {
         val raw = scoreCall.getTermCodeForScores().string()
         // 匹配选择的学期代码
-        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value ?: ""
-        if (result.isNotEmpty())
-            result
-        else
-            throw NotMatchException()
+        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
+        result?:throw NotMatchException()
     }
 
     companion object{

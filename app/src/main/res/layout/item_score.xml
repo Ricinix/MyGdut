@@ -17,7 +17,7 @@
             android:id="@+id/item_score_name_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/class_name"
+            android:text="@string/classes"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@id/item_score_name_content"
             app:layout_constraintStart_toStartOf="parent"

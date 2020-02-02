@@ -26,5 +26,6 @@ data class Schedule(
     companion object{
         const val TYPE_FROM_NET = 0
         const val TYPE_FROM_LOCAL = 1
+        const val TYPE_EXAM = 2
     }
 }

@@ -24,7 +24,7 @@
     <string name="class_score">课程成绩</string>
     <string name="score_num_text">共X门成绩</string>
     <string name="gpa_text">暂无成绩</string>
-    <string name="class_name">课程</string>
+    <string name="classes">课程</string>
     <string name="mark">成绩</string>
     <string name="gpa">绩点</string>
     <string name="period">学时</string>
@@ -42,4 +42,24 @@
     <string name="schedule_refresh">schedule refresh</string>
     <string name="diy_class">自定义课程-</string>
     <string name="delete">删除</string>
+    <string name="exam">考试安排</string>
+    <string name="week">周次</string>
+    <string name="time">时间</string>
+    <string name="seat">座位号</string>
+    <string name="exam_place">考试地点</string>
+    <string name="exam_mode">考试形式</string>
+    <string name="title">标题</string>
+    <string name="next_exam">下一门考试科目</string>
+    <string name="paper_num">试卷编号</string>
+    <string name="exam_date">考试日期</string>
+    <string name="arrange_type">安排类型</string>
+    <string name="exam_type">考试类别</string>
+    <string name="choose_week">请选择周次</string>
+    <string name="choose_order">请选择第几节课</string>
+    <string name="building">教学楼</string>
+    <string name="room_num">课室号</string>
+    <string name="class_name">课程名称</string>
+    <string name="chosen_week">已选周次:</string>
+    <string name="chosen_time">时间:</string>
+    <string name="home_title">主页</string>
 </resources>

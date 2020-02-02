@@ -44,11 +44,8 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(logi
      */
     private suspend fun getNowTermCodeForSchedule(): NetResult<String> = getData {
         val raw = scheduleCall.getTermcodeForSchedule().string()
-        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value ?: ""
-        if (result.isNotEmpty())
-            result
-        else
-            throw NotMatchException()
+        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
+        result?:throw NotMatchException()
     }
 
     companion object{

@@ -4,11 +4,11 @@ import com.example.mygdut.db.data.Score
 import com.example.mygdut.domain.TermTransformer
 
 data class ScoreFromNet(
-    val rows: List<Row>, // 课程成绩列表
+    val rows: List<ScoreRow>, // 课程成绩列表
     val total: Int // 列表的元素个数
 )
 
-data class Row(
+data class ScoreRow(
     val bz: String, // 备注
     val cjbzmc: String,
     val cjdm: String, // 成绩代码
