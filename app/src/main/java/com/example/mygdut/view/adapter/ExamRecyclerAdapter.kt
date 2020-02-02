@@ -15,24 +15,30 @@ import com.example.mygdut.view.widget.TermSelectDialog
 class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getData: (String) -> Unit) :
     RecyclerView.Adapter<ExamRecyclerAdapter.ViewHolder>() {
 
-    private var finishList = listOf<Exam>()
-    var examList = listOf<Exam>()
-        private set
+    private val finishList = mutableListOf<Exam>()
+    val examList = mutableListOf<Exam>()
     var termName = "大学全部"
         private set
 
+    fun refreshTime(){
+        if (examList.isEmpty())return
+        val exam = examList.first()
+        if (exam.getState() == ExamDate.EXAM_FINISH){
+            finishList.add(0, exam)
+            examList.remove(exam)
+        }
+        notifyDataSetChanged()
+    }
+
     fun setData(dataList: List<Exam>, termName: String? = null) {
-        val examTempList = mutableListOf<Exam>()
-        val finishTempList = mutableListOf<Exam>()
+        finishList.clear()
+        examList.clear()
         dataList.forEach {
             if (it.getState() == ExamDate.EXAM_FINISH)
-                finishTempList.add(0, it)
+                finishList.add(0, it)
             else
-                examTempList.add(it)
+                examList.add(it)
         }
-
-        examList = examTempList
-        finishList = finishTempList
         termName?.run { this@ExamRecyclerAdapter.termName = this }
         notifyDataSetChanged()
     }

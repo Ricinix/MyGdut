@@ -15,11 +15,14 @@ import com.example.mygdut.view.widget.TimeLineDecoration
 import com.example.mygdut.viewModel.ExamViewModel
 import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
 import kotlinx.android.synthetic.main.fragment_exam.*
+import kotlinx.coroutines.*
+import java.util.*
 import javax.inject.Inject
 
 class ExamFragment : Fragment() {
     @Inject
     lateinit var mViewModel : ExamViewModel
+    private val scope = MainScope() + CoroutineName("examScope")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,23 @@ class ExamFragment : Fragment() {
         setupSwipeRefresh()
         mViewModel.getInitExamData()
         swipe_exam.isRefreshing = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        scope.launch {
+            val second = 60-Calendar.getInstance().get(Calendar.SECOND)
+            delay(second * 1000L)
+            while (true){
+                mViewModel.refreshTime()
+                delay(60000L)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        scope.cancel()
     }
 
     private fun setupSwipeRefresh(){

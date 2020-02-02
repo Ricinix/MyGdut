@@ -1,6 +1,7 @@
 package com.example.mygdut.view.fragment
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.mygdut.R
@@ -27,11 +28,16 @@ class SettingFragment : PreferenceFragmentCompat() {
      */
     private fun setupClickListener() {
         findPreference<Preference>("about_btn")?.setOnPreferenceClickListener {
-            AppInfoDialog(context?:it.context).show()
+            AppInfoDialog(context ?: it.context).show()
             true
         }
         findPreference<Preference>("logout_btn")?.setOnPreferenceClickListener {
             mListener?.onLogout()
+            true
+        }
+        findPreference<Preference>("check_update_btn")?.setOnPreferenceClickListener {
+            // 先偷个懒...
+            Toast.makeText(context, "目前是最新版本", Toast.LENGTH_SHORT).show()
             true
         }
     }

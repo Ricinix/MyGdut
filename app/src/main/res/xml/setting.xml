@@ -2,21 +2,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="功能">
         <SwitchPreference
-            android:key="auto_assess"
             android:defaultValue="true"
-            android:title="自动教评"
-            />
+            android:key="auto_assess"
+            android:title="自动教评" />
     </PreferenceCategory>
     <PreferenceCategory android:title="其他">
         <Preference
             android:key="check_update_btn"
-            android:title="检查更新"/>
+            android:title="检查更新" />
         <Preference
             android:key="logout_btn"
-            android:title="注销"/>
+            android:title="注销" />
         <Preference
             android:key="about_btn"
-            android:title="关于"/>
+            android:title="关于" />
     </PreferenceCategory>
 
 </PreferenceScreen>

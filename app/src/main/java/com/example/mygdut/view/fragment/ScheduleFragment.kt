@@ -23,7 +23,7 @@ import com.example.mygdut.view.BaseApplication
 import com.example.mygdut.view.widget.OnChooseLetterChangedListener
 import com.example.mygdut.view.widget.TermSelectDialog
 import com.example.mygdut.viewModel.ScheduleViewModel
-import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
+import com.example.mygdut.viewModel.`interface`.ScheduleViewModelCallBack
 import kotlinx.android.synthetic.main.fragment_schedule.*
 import javax.inject.Inject
 
@@ -44,7 +44,19 @@ class ScheduleFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inject()
-        mViewModel.setCallBack(object : ViewModelCallBack {
+        mViewModel.setCallBack(object : ScheduleViewModelCallBack {
+            private var isShown = false
+            override fun schoolDayEmpty() {
+                if (!isShown){
+                    AlertDialog.Builder(this@ScheduleFragment.context)
+                        .setTitle("提醒")
+                        .setMessage("该学期还没有设置开学日\n\n请点击右上角的齿轮以设置开学日来开启完整功能")
+                        .setOnDismissListener { isShown = false }
+                        .setPositiveButton("了解"){ _, _-> }.show()
+                    isShown = true
+                }
+
+            }
             override fun onFail(msg: String) {
                 Toast.makeText(this@ScheduleFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
@@ -66,11 +78,6 @@ class ScheduleFragment : Fragment() {
         setClickListener()
         mViewModel.getInitData()
         schedule_refresh.startAnimation(anim)
-        checkSchoolDay()
-    }
-
-    private fun checkSchoolDay(){
-        mViewModel
     }
 
     private fun setSchoolDay(){

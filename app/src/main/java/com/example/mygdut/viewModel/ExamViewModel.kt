@@ -14,6 +14,9 @@ class ExamViewModel(weekNames : Array<String> ,private val examRepo: ExamRepo) :
     }
     private var cb: ViewModelCallBack? = null
 
+    fun refreshTime(){
+        mAdapter.refreshTime()
+    }
 
     fun getInitExamData() {
         viewModelScope.launch {

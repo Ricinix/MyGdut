@@ -39,7 +39,7 @@ abstract class DataImpl(private val login: LoginImpl, private val loginMessage: 
                 Log.d(TAG, "MalformedJsonException")
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
-                    return NetResult.Error("服务器崩了")
+                    return NetResult.Error("数据异常")
             } catch (e: NotMatchException) {
                 Log.d(TAG, "NotMatchException")
                 val loginResult = login.login(loginMessage)

@@ -8,13 +8,13 @@ import com.example.mygdut.db.data.Schedule
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.model.ScheduleRepo
 import com.example.mygdut.view.adapter.ScheduleRecyclerAdapter
-import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
+import com.example.mygdut.viewModel.`interface`.ScheduleViewModelCallBack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
-    private var callBack: ViewModelCallBack? = null
+    private var callBack: ScheduleViewModelCallBack? = null
     private val mAdapter = ScheduleRecyclerAdapter(object : ScheduleRecyclerAdapter.ScheduleRecyclerCallBack{
         override fun getTermName(): String = termName.value?:""
         override fun saveSchedule(schedule: Schedule) {
@@ -105,6 +105,9 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     ) {
         // 给课程表设置开学日和数据
         mAdapter.schoolDay = scheduleRepo.getSchoolDay(term)
+        if (mAdapter.schoolDay == null){
+            callBack?.schoolDayEmpty()
+        }
         mAdapter.setData(dataList, totalFromNet)
         // 设置选择器的学期显示
         termName.value = term
@@ -128,7 +131,8 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     /**
      * 务必设置来响应某些ui
      */
-    fun setCallBack(cb: ViewModelCallBack) {
+    fun setCallBack(cb: ScheduleViewModelCallBack) {
         callBack = cb
     }
+
 }
