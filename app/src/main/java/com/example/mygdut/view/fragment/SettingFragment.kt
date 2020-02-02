@@ -1,7 +1,6 @@
 package com.example.mygdut.view.fragment
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -14,12 +13,12 @@ class SettingFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        preferenceManager.sharedPreferencesName = "setting"
         setPreferencesFromResource(R.xml.setting, rootKey)
-        preferenceManager.sharedPreferencesName = "general_setting"
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         setupClickListener()
     }
 
@@ -28,10 +27,7 @@ class SettingFragment : PreferenceFragmentCompat() {
      */
     private fun setupClickListener() {
         findPreference<Preference>("about_btn")?.setOnPreferenceClickListener {
-            val msg =
-                context?.resources?.getString(R.string.about_msg) ?: it.context.resources.getString(
-                    R.string.about_msg
-                )
+            val msg = (context?:it.context).resources.getString(R.string.about_msg)
             AlertDialog.Builder(context ?: it.context)
                 .setTitle("关于")
                 .setMessage(msg)
@@ -49,6 +45,4 @@ class SettingFragment : PreferenceFragmentCompat() {
         fun onLogout()
     }
 
-    companion object {
-    }
 }

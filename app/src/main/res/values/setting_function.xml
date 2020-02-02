@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="setting_function_content">
+        <item>自动教评</item>
+    </string-array>
+
+    <integer-array name="setting_function_type">
+        <!--开关-->
+        <item>2</item>
+    </integer-array>
+
+    <string-array name="setting_function_key">
+        <item>auto_assess</item>
+    </string-array>
+</resources>

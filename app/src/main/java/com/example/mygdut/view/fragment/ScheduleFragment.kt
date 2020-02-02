@@ -27,12 +27,7 @@ import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
 import kotlinx.android.synthetic.main.fragment_schedule.*
 import javax.inject.Inject
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class ScheduleFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
 
     @Inject
     lateinit var mViewModel: ScheduleViewModel
@@ -48,10 +43,6 @@ class ScheduleFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
         inject()
         mViewModel.setCallBack(object : ViewModelCallBack {
             override fun onFail(msg: String) {
@@ -75,10 +66,11 @@ class ScheduleFragment : Fragment() {
         setClickListener()
         mViewModel.getInitData()
         schedule_refresh.startAnimation(anim)
+        checkSchoolDay()
     }
 
     private fun checkSchoolDay(){
-
+        mViewModel
     }
 
     private fun setSchoolDay(){

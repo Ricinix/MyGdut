@@ -2,18 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="功能">
         <SwitchPreference
-            android:key="auto_teacher_value"
-            android:defaultValue="false"
-            android:title="自动教评(画个饼)"
+            android:key="auto_assess"
+            android:defaultValue="true"
+            android:title="自动教评"
             />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="auto_check_update"
-            android:title="自动检测更新"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="界面">
-        <Preference
-            android:title="占个位"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="其他">
         <Preference

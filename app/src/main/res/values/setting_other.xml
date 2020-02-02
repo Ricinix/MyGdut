@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="setting_other_content">
+        <item>检查更新</item>
+        <item>注销</item>
+        <item>关于</item>
+    </string-array>
+
+    <integer-array name="setting_other_type">
+        <!--按钮-->
+        <item>1</item>
+        <item>1</item>
+        <item>1</item>
+    </integer-array>
+
+</resources>
