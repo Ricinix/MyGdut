@@ -10,10 +10,10 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.mygdut"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 29
-        versionCode 3
-        versionName "1.1-beta1"
+        versionCode 4
+        versionName "v1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        ndk {
 //            abiFilters "armeabi","armeabi-v7a"
@@ -27,6 +27,18 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    //自动生成指定名称的release发布版的 apk文件
+    android.applicationVariants.all { variant ->
+        def appName
+        if (project.hasProperty("applicationName")) {
+            appName = applicationName
+        } else {
+            appName = parent.name
+        }
+        variant.outputs.all { output ->
+            outputFileName = appName + "-v1.1.apk"
+        }
     }
 }
 

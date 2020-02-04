@@ -7,19 +7,22 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.example.mygdut.R
 import com.example.mygdut.view.fragment.ExamFragment
 import com.example.mygdut.view.fragment.NoticeFragment
+import com.example.mygdut.view.fragment.RoomFragment
 
 class HomeViewPagerAdapter(context: Context, fragmentManager: FragmentManager) :
-    FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)  {
+    FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private val titles = context.resources.getStringArray(R.array.tab_title)
 
     private val noticeFragment = NoticeFragment()
     private val examFragment = ExamFragment()
+    private val roomFragment = RoomFragment()
 
     override fun getItem(position: Int): Fragment {
-        return when(position){
-            0-> noticeFragment
+        return when (position) {
+            0 -> noticeFragment
             1 -> examFragment
-            else->throw IllegalArgumentException()
+            2 -> roomFragment
+            else -> throw IllegalArgumentException()
         }
     }
 

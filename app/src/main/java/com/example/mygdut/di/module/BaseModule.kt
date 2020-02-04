@@ -13,9 +13,12 @@ class BaseModule(private val appContext: Context) {
 
     @Provides
     @AppScope
-    fun provideLoginImpl(): LoginImpl =LoginImpl(appContext)
+    fun provideLoginImpl(): LoginImpl = LoginImpl(appContext)
 
     @Provides
     @AppScope
-    fun provideLocalDataBase(): LocalDataBase = Room.databaseBuilder(appContext, LocalDataBase::class.java, "myGdut_database").build()
+    fun provideLocalDataBase(): LocalDataBase =
+        Room.databaseBuilder(appContext, LocalDataBase::class.java, "myGdut_database")
+            .fallbackToDestructiveMigration()
+            .build()
 }

@@ -59,9 +59,15 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
                     }.show()
                 }
                 if (examList.isNotEmpty()){
-                    holder.tipsTextView.visibility = View.VISIBLE
-                    holder.titleTextView.text = examList.first().className
-                    holder.timeTextView.text = examList.first().dateTime.getDistance()
+                    if(examList.first().getState() == ExamDate.EXAM_ING){
+                        holder.tipsTextView.visibility = View.GONE
+                        holder.titleTextView.text = examList.first().className
+                        holder.timeTextView.text = "正在考试中"
+                    }else{
+                        holder.tipsTextView.visibility = View.VISIBLE
+                        holder.titleTextView.text = examList.first().className
+                        holder.timeTextView.text = examList.first().dateTime.getDistance()
+                    }
                 }else{
                     holder.tipsTextView.visibility = View.GONE
                     holder.titleTextView.text = "暂无考试"

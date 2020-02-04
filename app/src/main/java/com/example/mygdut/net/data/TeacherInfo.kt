@@ -1,9 +1,9 @@
 package com.example.mygdut.net.data
 
 data class TeacherInfo(
-    val rows: List<Teacher>,
-    val total: Int
-)
+    override val rows: List<Teacher>,
+    override val total: Int
+) : DataFromNetWithRows<Teacher>
 
 data class Teacher(
     val isdczbzl: String,

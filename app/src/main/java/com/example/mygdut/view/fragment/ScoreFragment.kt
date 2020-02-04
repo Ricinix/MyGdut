@@ -29,9 +29,9 @@ class ScoreFragment : Fragment() {
                 Toast.makeText(this@ScoreFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
             override fun onFinish() {
-                swipe_score.isRefreshing = false
+                swipe_score?.isRefreshing = false
             }
-            override fun onRefresh() { swipe_score.isRefreshing = true }
+            override fun onRefresh() { swipe_score?.isRefreshing = true }
         })
     }
 

@@ -3,5 +3,6 @@
     <string-array name="tab_title">
         <item>@string/notice_title</item>
         <item>@string/exam</item>
+        <item>空课室</item>
     </string-array>
 </resources>

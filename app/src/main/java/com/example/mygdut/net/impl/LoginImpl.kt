@@ -47,14 +47,17 @@ class LoginImpl(context: Context, crackEngine : VerifyCodeCrack.Engine = VerifyC
             // 验证码错误，再来一次
             if (r.message == "验证码不正确")
                 return login(loginMessage)
-            return if (r.code >= 0)
-                NetResult.Success(r.data ?: "null").also {
+            return when {
+                r.code >= 0 -> NetResult.Success(r.data ?: "null").also {
                     Log.d(TAG, "succeed, data: ${r.data}")
                 }
-            else
-                NetResult.Error(r.message ?: "null").also {
+                r.message == "连接已过期" -> {
+                    return login(loginMessage)
+                }
+                else -> NetResult.Error(r.message ?: "null").also {
                     Log.d(TAG, "Error, message: ${r.message}")
                 }
+            }
         } catch (e: SocketTimeoutException) {
             return showServerShutDown()
         }catch (e : HttpException){

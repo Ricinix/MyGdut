@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dxc">大学城校区</string>
+    <string name="ld">龙洞校区</string>
+    <string name="dfl">东风路校区</string>
+    <string name="py">番禺校区</string>
+
+    <string-array name="campus_name">
+        <item>大学城校区</item>
+        <item>龙洞校区</item>
+        <item>东风路校区</item>
+        <item>番禺校区</item>
+    </string-array>
+    <string-array name="campus_code">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="building_name_1">
+        <item>教学一号楼</item>
+        <item>教学二号楼</item>
+        <item>教学三号楼</item>
+        <item>教学四号楼</item>
+        <item>教学五号楼</item>
+        <item>教学六号楼</item>
+        <item>公共场地</item>
+        <item>独立大课室</item>
+        <item>实验楼</item>
+        <item>实验一号楼</item>
+        <item>实验三号楼</item>
+        <item>实验四号楼</item>
+        <item>实验室</item>
+        <item>综合楼</item>
+    </string-array>
+    <string-array name="building_code_1">
+        <item>0008</item>
+        <item>0003</item>
+        <item>0005</item>
+        <item>0006</item>
+        <item>0007</item>
+        <item>0004</item>
+        <item>0002</item>
+        <item>0001</item>
+        <item>0009</item>
+        <item>0013</item>
+        <item>0010</item>
+        <item>0012</item>
+        <item>0011</item>
+        <item>0014</item>
+    </string-array>
+
+    <string-array name="building_name_2">
+        <item>教学楼</item>
+        <item>运动场</item>
+        <item>龙洞舞蹈房</item>
+        <item>实验楼</item>
+        <item>实验A楼</item>
+        <item>实验B楼</item>
+        <item>实验C1楼</item>
+        <item>实验C2楼</item>
+        <item>实验D楼</item>
+        <item>行政楼</item>
+    </string-array>
+    <string-array name="building_code_2">
+        <item>0029</item>
+        <item>0037</item>
+        <item>0030</item>
+        <item>0036</item>
+        <item>0031</item>
+        <item>0032</item>
+        <item>0033</item>
+        <item>0034</item>
+        <item>0035</item>
+        <item>0028</item>
+    </string-array>
+
+    <string-array name="building_name_3">
+        <item>教学楼</item>
+        <item>教学一号楼</item>
+        <item>教学二号楼</item>
+        <item>教学四号楼</item>
+        <item>教学五号楼</item>
+        <item>教学六号楼</item>
+        <item>教学七号楼</item>
+        <item>公共场地</item>
+        <item>文法楼</item>
+        <item>图书馆</item>
+    </string-array>
+    <string-array name="building_code_3">
+        <item>0018</item>
+        <item>0022</item>
+        <item>0016</item>
+        <item>0020</item>
+        <item>0021</item>
+        <item>0017</item>
+        <item>0019</item>
+        <item>0015</item>
+        <item>0024</item>
+        <item>0023</item>
+    </string-array>
+
+    <string-array name="building_name_4">
+        <item>教学楼</item>
+        <item>运动场</item>
+        <item>实验楼</item>
+    </string-array>
+    <string-array name="building_code_4">
+        <item>0025</item>
+        <item>0027</item>
+        <item>0026</item>
+    </string-array>
+</resources>

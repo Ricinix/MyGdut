@@ -6,6 +6,7 @@ import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
+import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
 
@@ -29,39 +30,44 @@ abstract class DataImpl(private val login: LoginImpl, private val loginMessage: 
     /**
      * 网络请求模板
      */
-    protected suspend fun <T : Any> getData(f: suspend () -> T): NetResult<T> {
+    protected suspend fun <T : Any> getData(
+        f: suspend () -> T
+    ): NetResult<T> {
         // 防止死循环，所以就两次
         for (i in 0..1) {
             try {
                 val data = f()
                 return NetResult.Success(data)
             } catch (e: MalformedJsonException) {
-                Log.d(TAG, "MalformedJsonException")
+                Log.d(TAG, e.toString())
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
-                    return NetResult.Error("数据异常")
+                    return loginResult
             } catch (e: NotMatchException) {
-                Log.d(TAG, "NotMatchException")
+                Log.d(TAG, e.toString())
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
-                    return NetResult.Error("服务器连接超时")
+                    return loginResult
             } catch (e: IllegalArgumentException) {
-                Log.d(TAG, "IllegalArgumentException")
+                Log.d(TAG, e.toString())
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
-                    return NetResult.Error("服务器连接超时")
+                    return loginResult
             } catch (e: SocketTimeoutException) {
-                Log.d(TAG, "SocketTimeoutException")
+                Log.d(TAG, e.toString())
                 return NetResult.Error("服务器连接超时")
-            } catch (e : JsonSyntaxException) {
-                Log.d(TAG, "JsonSyntaxException")
+            } catch (e: JsonSyntaxException) {
+                Log.d(TAG, e.toString())
                 return NetResult.Error("获取数据失败，可能是接口改变")
+            } catch (e: HttpException) {
+                Log.d(TAG, e.toString())
+                return NetResult.Error("HTTP 错误")
             }
         }
         return NetResult.Error("未获取数据")
     }
 
-    companion object{
+    companion object {
         private const val TAG = "DataImpl"
     }
 

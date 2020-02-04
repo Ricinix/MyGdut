@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 以下均是按名字顺序，而不是代号顺序 -->
+    <!--  大学城：教一  -->
+    <string-array name="room_of_building_1">
+        <item>306</item>
+        <item>308</item>
+        <item>310</item>
+        <item>314</item>
+        <item>316</item>
+        <item>318</item>
+        <item>319</item>
+        <item>320</item>
+        <item>321</item>
+        <item>322</item>
+        <item>323</item>
+        <item>324</item>
+        <item>325</item>
+        <item>326</item>
+        <item>328</item>
+        <item>330</item>
+        <item>331</item>
+        <item>333</item>
+        <item>335</item>
+        <item>337</item>
+        <item>339</item>
+        <item>401</item>
+        <item>402</item>
+        <item>403</item>
+        <item>404</item>
+        <item>406</item>
+        <item>407</item>
+        <item>408</item>
+        <item>409</item>
+        <item>410</item>
+        <item>411</item>
+        <item>414</item>
+        <item>415</item>
+        <item>416</item>
+        <item>418</item>
+        <item>419</item>
+        <item>421</item>
+        <item>422</item>
+        <item>423</item>
+        <item>424</item>
+        <item>425</item>
+        <item>426</item>
+        <item>427</item>
+        <item>428</item>
+        <item>429</item>
+        <item>433</item>
+        <item>435</item>
+        <item>501</item>
+        <item>503A</item>
+        <item>503B</item>
+        <item>504</item>
+        <item>505A</item>
+        <item>511</item>
+        <item>512</item>
+        <item>513</item>
+        <item>515</item>
+        <item>517</item>
+        <item>519</item>
+    </string-array>
+
+    <!--  大学城：教二  -->
+    <string-array name="room_of_building_2">
+        <item>201</item>
+        <item>202</item>
+        <item>203</item>
+        <item>204</item>
+        <item>205</item>
+        <item>206</item>
+        <item>207</item>
+        <item>208</item>
+        <item>209</item>
+        <item>211</item>
+        <item>212</item>
+        <item>213</item>
+        <item>214</item>
+        <item>215</item>
+        <item>216</item>
+        <item>217</item>
+        <item>218</item>
+        <item>219</item>
+        <item>220</item>
+        <item>221</item>
+        <item>222</item>
+        <item>223</item>
+        <item>224</item>
+        <item>225</item>
+        <item>227</item>
+        <item>301</item>
+        <item>303</item>
+        <item>304</item>
+        <item>305</item>
+        <item>307</item>
+        <item>308</item>
+        <item>309</item>
+        <item>311</item>
+        <item>312</item>
+        <item>313</item>
+        <item>314</item>
+        <item>315</item>
+        <item>316</item>
+        <item>317</item>
+        <item>318</item>
+        <item>319</item>
+        <item>320</item>
+        <item>321</item>
+        <item>322</item>
+        <item>323</item>
+        <item>324</item>
+        <item>325</item>
+        <item>327</item>
+        <item>418</item>
+        <item>420</item>
+        <item>422</item>
+        <item>424</item>
+        <item>429</item>
+        <item>501</item>
+        <item>502</item>
+        <item>503</item>
+        <item>504</item>
+        <item>506</item>
+        <item>508</item>
+        <item>512</item>
+        <item>514</item>
+        <item>515</item>
+        <item>516</item>
+        <item>517</item>
+        <item>518</item>
+        <item>519</item>
+        <item>520</item>
+        <item>523</item>
+        <item>525</item>
+        <item>527</item>
+        <item>529</item>
+        <item>实验二号楼实验室</item>
+    </string-array>
+
+    <!--  大学城：教三  -->
+    <string-array name="room_of_building_3">
+        <item>101</item>
+        <item>102</item>
+        <item>103</item>
+        <item>104</item>
+        <item>105</item>
+        <item>106</item>
+        <item>107</item>
+        <item>109</item>
+        <item>110</item>
+        <item>112</item>
+        <item>201</item>
+        <item>202</item>
+        <item>203</item>
+        <item>204</item>
+        <item>205</item>
+        <item>206</item>
+        <item>207</item>
+        <item>209</item>
+        <item>210</item>
+        <item>212</item>
+        <item>301</item>
+        <item>302</item>
+        <item>303</item>
+        <item>304</item>
+        <item>305</item>
+        <item>306</item>
+        <item>307</item>
+        <item>309</item>
+        <item>310</item>
+        <item>312</item>
+    </string-array>
+
+    <!--  大学城：教四  -->
+    <string-array name="room_of_building_4">
+        <item>201</item>
+        <item>202</item>
+        <item>203</item>
+        <item>204</item>
+        <item>205</item>
+        <item>206</item>
+        <item>207</item>
+        <item>209</item>
+        <item>210</item>
+        <item>212</item>
+        <item>301</item>
+        <item>302</item>
+        <item>303</item>
+        <item>304</item>
+        <item>305</item>
+        <item>306</item>
+        <item>307</item>
+        <item>309</item>
+        <item>310</item>
+        <item>312</item>
+    </string-array>
+
+    <!--  大学城：教五  -->
+    <string-array name="room_of_building_5">
+        <item>102</item>
+        <item>103</item>
+        <item>104</item>
+        <item>105</item>
+        <item>106</item>
+        <item>107</item>
+        <item>202</item>
+        <item>203</item>
+        <item>204</item>
+        <item>205</item>
+        <item>206</item>
+        <item>207</item>
+        <item>302</item>
+        <item>303</item>
+        <item>304</item>
+        <item>305</item>
+        <item>306</item>
+        <item>307</item>
+    </string-array>
+
+    <!--  大学城：教六  -->
+    <string-array name="room_of_building_6" />
+
+    <!--  大学城：公共场地  -->
+    <string-array name="room_of_building_7">
+        <item>2号大教室门口</item>
+        <item>3号大教室门口</item>
+        <item>教6-二楼平台</item>
+        <item>公共场地1</item>
+        <item>图书馆前广场</item>
+        <item>专用教室</item>
+    </string-array>
+
+    <!--  大学城：独立大课室  -->
+    <string-array name="room_of_building_8">
+        <item>1号大教室</item>
+        <item>2号大教室</item>
+        <item>3号大教室</item>
+        <item>4号大教室</item>
+        <item>5号大教室</item>
+    </string-array>
+
+    <!--  大学城：实验楼  -->
+    <string-array name="room_of_building_9">
+        <item>机房（大学城）</item>
+    </string-array>
+    <!--  大学城：实验一号楼  -->
+    <string-array name="room_of_building_10">
+        <item>603</item>
+    </string-array>
+    <!--  大学城：实验三号楼  -->
+    <string-array name="room_of_building_11">
+        <item>401</item>
+        <item>403</item>
+        <item>404</item>
+        <item>405</item>
+        <item>407</item>
+        <item>408</item>
+        <item>409</item>
+        <item>413</item>
+        <item>415</item>
+        <item>417</item>
+        <item>601</item>
+        <item>603</item>
+        <item>606</item>
+        <item>607</item>
+        <item>611</item>
+        <item>实验三号楼3楼</item>
+        <item>实验三号楼4楼</item>
+        <item>实验三号楼实验室</item>
+    </string-array>
+
+    <!--  大学城：实验四号楼  -->
+    <string-array name="room_of_building_12">
+        <item>105</item>
+        <item>209</item>
+        <item>211</item>
+        <item>213</item>
+        <item>215</item>
+        <item>313</item>
+        <item>315</item>
+        <item>401</item>
+        <item>403</item>
+        <item>404</item>
+        <item>405</item>
+        <item>406</item>
+        <item>407</item>
+        <item>408</item>
+        <item>409</item>
+        <item>501</item>
+        <item>503</item>
+        <item>504</item>
+        <item>506</item>
+        <item>507</item>
+        <item>509</item>
+        <item>510</item>
+        <item>511</item>
+        <item>610</item>
+        <item>实验四号楼1楼</item>
+        <item>实验四号楼5楼</item>
+        <item>实验四号楼实验室</item>
+    </string-array>
+
+    <!--  大学城：实验室  -->
+    <string-array name="room_of_building_13">
+        <item>实验室</item>
+    </string-array>
+
+    <!--  大学城：综合楼  -->
+    <string-array name="room_of_building_14">
+        <item>图书馆二楼</item>
+        <item>310</item>
+        <item>501</item>
+        <item>502</item>
+        <item>503</item>
+        <item>504</item>
+        <item>509</item>
+        <item>511</item>
+        <item>601</item>
+        <item>602</item>
+        <item>603</item>
+        <item>608</item>
+        <item>701</item>
+    </string-array>
+
+    <!--  龙洞：教学楼  -->
+    <string-array name="room_of_building_15">
+        <item>101</item>
+        <item>102</item>
+        <item>103</item>
+        <item>105</item>
+        <item>107</item>
+        <item>109</item>
+        <item>110</item>
+        <item>201</item>
+        <item>202</item>
+        <item>203</item>
+        <item>204</item>
+        <item>205</item>
+        <item>206</item>
+        <item>207</item>
+        <item>208</item>
+        <item>210</item>
+        <item>211</item>
+        <item>212</item>
+        <item>213</item>
+        <item>214</item>
+        <item>215</item>
+        <item>216</item>
+        <item>217</item>
+        <item>301</item>
+        <item>302</item>
+        <item>303</item>
+        <item>304</item>
+        <item>305</item>
+        <item>306</item>
+        <item>307</item>
+        <item>308</item>
+        <item>309</item>
+        <item>310</item>
+        <item>311</item>
+        <item>312</item>
+        <item>313</item>
+        <item>314</item>
+        <item>315</item>
+        <item>316</item>
+        <item>317</item>
+        <item>401</item>
+        <item>402</item>
+        <item>403</item>
+        <item>404</item>
+        <item>405</item>
+        <item>406</item>
+        <item>407</item>
+        <item>408</item>
+        <item>409</item>
+        <item>410</item>
+        <item>411</item>
+        <item>412</item>
+        <item>413</item>
+        <item>414</item>
+        <item>415</item>
+        <item>501</item>
+        <item>502</item>
+        <item>503</item>
+        <item>504</item>
+        <item>505</item>
+        <item>506</item>
+        <item>507</item>
+        <item>508</item>
+        <item>509</item>
+        <item>510</item>
+        <item>511</item>
+        <item>512</item>
+        <item>513</item>
+        <item>514</item>
+        <item>515</item>
+        <item>516</item>
+        <item>517</item>
+        <item>601</item>
+        <item>602</item>
+        <item>603</item>
+        <item>604</item>
+        <item>605</item>
+        <item>606</item>
+        <item>607</item>
+        <item>608</item>
+        <item>609</item>
+        <item>610</item>
+        <item>611</item>
+        <item>612</item>
+        <item>614</item>
+        <item>615</item>
+        <item>801</item>
+        <item>901</item>
+    </string-array>
+
+    <!--  龙洞：运动场  -->
+    <string-array name="room_of_building_16">
+        <item>运动场1</item>
+        <item>运动场2</item>
+        <item>运动场3</item>
+        <item>运动场4</item>
+        <item>运动场5</item>
+        <item>运动场6</item>
+        <item>运动场7</item>
+        <item>运动场8</item>
+        <item>运动场9</item>
+        <item>运动场10</item>
+    </string-array>
+
+    <!--  龙洞：龙洞舞蹈房  -->
+    <string-array name="room_of_building_17" />
+
+    <!--  龙洞：实验楼  -->
+    <string-array name="room_of_building_18" />
+
+    <!--  龙洞：实验A楼  -->
+    <string-array name="room_of_building_19">
+        <item>南-406</item>
+        <item>南-507</item>
+        <item>南-607</item>
+        <item>南-607</item>
+        <item>南-704</item>
+        <item>南-803</item>
+        <item>南-806</item>
+        <item>实验室</item>
+    </string-array>
+
+    <!--  龙洞：实验B楼  -->
+    <string-array name="room_of_building_20">
+        <item>北-401</item>
+        <item>北-404</item>
+        <item>北-502</item>
+        <item>北-503</item>
+        <item>北-504</item>
+        <item>北-507</item>
+        <item>南-301</item>
+        <item>南-501</item>
+        <item>南-502</item>
+        <item>南-504</item>
+        <item>南-505</item>
+        <item>南-803</item>
+        <item>南-806</item>
+    </string-array>
+
+    <!--  龙洞：实验C1楼  -->
+    <string-array name="room_of_building_21" />
+
+    <!--  龙洞：实验C2楼  -->
+    <string-array name="room_of_building_22">
+        <item>204</item>
+        <item>205</item>
+        <item>206</item>
+        <item>304</item>
+        <item>305</item>
+        <item>306</item>
+        <item>404</item>
+        <item>405</item>
+        <item>406</item>
+        <item>503</item>
+        <item>504</item>
+        <item>506</item>
+        <item>507</item>
+        <item>603</item>
+        <item>604</item>
+        <item>606</item>
+        <item>607</item>
+    </string-array>
+
+    <!--  龙洞：实验D楼  -->
+    <string-array name="room_of_building_23">
+        <item>302</item>
+        <item>303</item>
+        <item>402</item>
+        <item>403</item>
+        <item>503</item>
+        <item>602</item>
+        <item>实验D实验室</item>
+    </string-array>
+
+    <!--  龙洞：行政楼  -->
+    <string-array name="room_of_building_24" />
+
+    <!--  东风路：教学楼  -->
+    <string-array name="room_of_building_25">
+        <item>机房（东风路）</item>
+        <item>新媒体实验室102</item>
+    </string-array>
+
+    <!--  东风路：教学一号楼  -->
+    <string-array name="room_of_building_26" />
+
+    <!--  东风路：教学二号楼  -->
+    <string-array name="room_of_building_27">
+        <item>508</item>
+        <item>512</item>
+    </string-array>
+
+    <!--  东风路：教学四号楼  -->
+    <string-array name="room_of_building_28">
+        <item>306</item>
+        <item>307</item>
+        <item>308</item>
+        <item>601</item>
+        <item>602</item>
+        <item>603</item>
+    </string-array>
+
+    <!--  东风路：教学五号楼  -->
+    <string-array name="room_of_building_29">
+        <item>1001</item>
+        <item>1004</item>
+        <item>1005</item>
+        <item>1006</item>
+        <item>1007</item>
+        <item>1008</item>
+        <item>101</item>
+        <item>102</item>
+        <item>103</item>
+        <item>104</item>
+        <item>105</item>
+        <item>106</item>
+        <item>1101</item>
+        <item>1102</item>
+        <item>1103</item>
+        <item>1104</item>
+        <item>1105</item>
+        <item>1201</item>
+        <item>1202</item>
+        <item>1203</item>
+        <item>1204</item>
+        <item>1205</item>
+        <item>1206</item>
+        <item>201</item>
+        <item>202</item>
+        <item>204</item>
+        <item>301</item>
+        <item>401</item>
+        <item>403</item>
+        <item>404</item>
+        <item>410</item>
+        <item>411</item>
+        <item>602</item>
+        <item>604</item>
+        <item>607</item>
+        <item>608</item>
+        <item>609</item>
+        <item>701</item>
+        <item>707</item>
+        <item>708</item>
+        <item>709</item>
+        <item>801</item>
+        <item>805</item>
+        <item>806</item>
+        <item>807</item>
+        <item>901</item>
+        <item>904</item>
+        <item>906</item>
+        <item>908</item>
+    </string-array>
+
+    <!--  东风路：教学六号楼  -->
+    <string-array name="room_of_building_30">
+        <item>201</item>
+        <item>202</item>
+        <item>301</item>
+    </string-array>
+
+    <!--  东风路：教学七号楼  -->
+    <string-array name="room_of_building_31">
+        <item>1001</item>
+        <item>1003</item>
+        <item>1004</item>
+        <item>1005</item>
+        <item>1006</item>
+        <item>1007</item>
+        <item>1008</item>
+        <item>1101</item>
+        <item>1104</item>
+        <item>1105</item>
+        <item>1106</item>
+        <item>1107</item>
+        <item>1108</item>
+        <item>203</item>
+        <item>301</item>
+        <item>303</item>
+        <item>304</item>
+        <item>305</item>
+        <item>306</item>
+        <item>307</item>
+        <item>308</item>
+        <item>401</item>
+        <item>404</item>
+        <item>405</item>
+        <item>406</item>
+        <item>407</item>
+        <item>408</item>
+        <item>501</item>
+        <item>503</item>
+        <item>504</item>
+        <item>505</item>
+        <item>506</item>
+        <item>507</item>
+        <item>508</item>
+        <item>601</item>
+        <item>603</item>
+        <item>604</item>
+        <item>605</item>
+        <item>606</item>
+        <item>607</item>
+        <item>608</item>
+        <item>701</item>
+        <item>703</item>
+        <item>704</item>
+        <item>705</item>
+        <item>706</item>
+        <item>707</item>
+        <item>708</item>
+        <item>901</item>
+        <item>903</item>
+        <item>904</item>
+        <item>905</item>
+        <item>906</item>
+        <item>907</item>
+        <item>908</item>
+        <item>语音室7-1502</item>
+        <item>语音室7-1502</item>
+        <item>语音室7-1503</item>
+    </string-array>
+
+    <!--  东风路：公共场地  -->
+    <string-array name="room_of_building_32">
+        <item>公共场地3</item>
+    </string-array>
+
+    <!--  东风路：文法楼  -->
+    <string-array name="room_of_building_33"/>
+
+    <!--  东风路：图书馆  -->
+    <string-array name="room_of_building_34">
+        <item>102</item>
+        <item>201-1</item>
+    </string-array>
+
+    <!--  番禺：教学楼  -->
+    <string-array name="room_of_building_35">
+        <item>101</item>
+        <item>102</item>
+        <item>103</item>
+        <item>109</item>
+        <item>116</item>
+        <item>117</item>
+        <item>118</item>
+        <item>201</item>
+        <item>202</item>
+        <item>203</item>
+        <item>208</item>
+        <item>209</item>
+        <item>210</item>
+        <item>213</item>
+        <item>214</item>
+        <item>215</item>
+        <item>216</item>
+        <item>303</item>
+        <item>309</item>
+    </string-array>
+
+    <!--  番禺：运动场  -->
+    <string-array name="room_of_building_36">
+        <item>公共场地</item>
+        <item>篮球场</item>
+        <item>乒乓球室</item>
+        <item>商-网球场</item>
+    </string-array>
+
+    <!--  番禺：实验楼  -->
+    <string-array name="room_of_building_37">
+        <item>101</item>
+        <item>109</item>
+        <item>111</item>
+        <item>118</item>
+        <item>119</item>
+        <item>207</item>
+        <item>208</item>
+        <item>210</item>
+        <item>219</item>
+        <item>220</item>
+    </string-array>
+
+</resources>

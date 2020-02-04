@@ -31,8 +31,8 @@ class ExamFragment : Fragment() {
             override fun onFail(msg: String) {
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             }
-            override fun onFinish() { swipe_exam.isRefreshing = false }
-            override fun onRefresh() { swipe_exam.isRefreshing = true }
+            override fun onFinish() { swipe_exam?.isRefreshing = false }
+            override fun onRefresh() { swipe_exam?.isRefreshing = true }
         })
     }
 
