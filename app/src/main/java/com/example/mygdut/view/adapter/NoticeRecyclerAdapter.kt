@@ -55,7 +55,7 @@ class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHol
         }
     }
 
-    override fun getItemCount(): Int = if (mList.isNotEmpty()) mList.size else 1
+    override fun getItemCount(): Int = 1+if (mList.isNotEmpty()) mList.size else 0
 
     override fun onBindViewHolder(holderItem: ViewHolder, position: Int) {
         val index = position2Index(position)

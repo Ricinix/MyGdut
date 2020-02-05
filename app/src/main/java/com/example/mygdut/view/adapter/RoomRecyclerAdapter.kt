@@ -22,7 +22,7 @@ import org.xmlpull.v1.XmlPullParser
 
 class RoomRecyclerAdapter(
     private val resourceHolder: BuildingResourceHolder,
-    campusNameChosenLastTime : String,
+    campusNameChosenLastTime: String,
     private val onGetData: () -> Unit
 ) :
     RecyclerView.Adapter<RoomRecyclerAdapter.ViewHolder>() {
@@ -49,7 +49,7 @@ class RoomRecyclerAdapter(
             is ViewHolder.HeaderHolder -> {
                 holder.title.text =
                     if (resourceHolder.nowBuilding.isNotEmpty()) resourceHolder.nowBuilding else resourceHolder.nowCampus
-                if (resourceHolder.nowCampus.isNotEmpty()) holder.campus.setSelection(resourceHolder.getCampusIndex(), true)
+                holder.campus.setSelection(resourceHolder.getCampusIndex())
                 holder.campus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                     override fun onItemSelected(
@@ -64,6 +64,7 @@ class RoomRecyclerAdapter(
                     }
                 }
                 holder.refreshDate()
+                holder.date.setSelection(resourceHolder.getDateIndex())
                 holder.date.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     private var first = true
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -78,7 +79,6 @@ class RoomRecyclerAdapter(
                             first = false
                             return
                         }
-                        notifyDataSetChanged()
                         getData()
                     }
                 }

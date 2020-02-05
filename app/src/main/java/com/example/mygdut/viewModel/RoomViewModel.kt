@@ -45,6 +45,8 @@ class RoomViewModel(private val roomRepo: RoomRepo, private val resourceHolder: 
     fun refreshData(){
         if (resourceHolder.isReadyToGetData())
             getData()
+        else
+            callBack?.onFinish()
     }
 
     fun setCallBack(cb: ViewModelCallBack) {

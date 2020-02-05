@@ -40,8 +40,13 @@ class BuildingResourceHolder(context: Context) {
 
     fun getCampusIndex() = campusNames.indexOf(nowCampus)
 
-    fun setInitCampus(campusName : String){
-        nowCampus = campusName
+    fun getDateIndex() = dateList.indexOf(nowDate)
+
+    fun setInitCampus(campusName: String) {
+        nowCampus = if (campusName.isEmpty())
+            campusNames[0]
+        else
+            campusName
     }
 
     fun setCampus(index: Int, context: Context) {
@@ -96,7 +101,7 @@ class BuildingResourceHolder(context: Context) {
         val list = roomNum.split("-")
         if (list.size > 1) {
             var index = list.lastIndex
-            list.forEachIndexed {i,s-> if (s.length>=3) index = i}
+            list.forEachIndexed { i, s -> if (s.length >= 3) index = i }
             return try {
                 list[index].substring(0, 3).toInt() / 100
             } catch (e: NumberFormatException) {
