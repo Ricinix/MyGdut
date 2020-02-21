@@ -5,6 +5,11 @@
             android:defaultValue="true"
             android:key="auto_assess"
             android:title="自动教评" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="intra_net_choose"
+            android:title="使用内网" />
+
     </PreferenceCategory>
     <PreferenceCategory android:title="其他">
         <Preference

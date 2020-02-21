@@ -8,7 +8,7 @@ import com.example.mygdut.net.impl.NoticeImpl
 import javax.inject.Inject
 
 class NoticeRepo @Inject constructor(context: Context, login : LoginImpl) : BaseRepo(context) {
-    private val noticeImpl = NoticeImpl(login, provideLoginMessage())
+    private val noticeImpl = NoticeImpl(login, provideLoginMessage(), context)
 
     suspend fun getNotice() : NetResult<List<Notice>> {
         return when (val result = noticeImpl.getNotice()) {

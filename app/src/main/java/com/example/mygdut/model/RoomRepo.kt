@@ -15,7 +15,7 @@ class RoomRepo @Inject constructor(
     login: LoginImpl,
     private val classRoomDao: ClassRoomDao
 ) : BaseRepo(context) {
-    private val roomImpl = RoomImpl(login, provideLoginMessage())
+    private val roomImpl = RoomImpl(login, provideLoginMessage(), context)
     private val transformer = BuildingTransformer(context)
     private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
     private val editor = settingSf.edit()

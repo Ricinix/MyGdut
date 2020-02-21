@@ -17,7 +17,7 @@ import java.io.IOException
 class VerifyCodeCrack(context: Context, engineType: Engine) {
     private val mModule: Module =
         when (engineType) {
-            EngineOne -> Module.load(assetFilePath(context, "model-script-local.pt"))
+            EngineOne -> Module.load(assetFilePath(context, "model2-script-local.pt"))
         }
 
 

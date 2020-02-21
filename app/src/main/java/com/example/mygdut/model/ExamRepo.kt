@@ -21,7 +21,7 @@ class ExamRepo @Inject constructor(
 
     init {
         val loginMsg = provideLoginMessage()
-        examImpl = ExamImpl(login, loginMsg)
+        examImpl = ExamImpl(login, loginMsg, context)
         val account = loginMsg.getRawAccount()
         transformer = TermTransformer(context, account)
     }

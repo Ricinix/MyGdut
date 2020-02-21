@@ -1,17 +1,43 @@
 package com.example.mygdut.net.impl
 
+import android.content.Context
 import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.net.RetrofitNet
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
 
-abstract class DataImpl(private val login: LoginImpl, private val loginMessage: LoginMessage) {
+abstract class DataImpl<T>(
+    private val login: LoginImpl,
+    private val loginMessage: LoginMessage,
+    private val callService: Class<T>,
+    context: Context
+) {
     private val calendar by lazy { Calendar.getInstance() }
+    private val sp = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
+    private var isIntraNetUsingNow = getUseIntraNet()
+
+    private fun getUseIntraNet(): Boolean = sp.getBoolean("intra_net_choose", false)
+
+    private fun checkNet() {
+        val useIntraNet = getUseIntraNet()
+        if (useIntraNet == isIntraNetUsingNow) return
+        isIntraNetUsingNow = useIntraNet
+        call = if (isIntraNetUsingNow)
+            RetrofitNet.IntraNet.instance.create(callService)
+        else
+            RetrofitNet.ExtraNet.instance.create(callService)
+    }
+
+    protected var call: T = if (isIntraNetUsingNow)
+        RetrofitNet.IntraNet.instance.create(callService)
+    else
+        RetrofitNet.ExtraNet.instance.create(callService)
 
     /**
      * 验证学期代码是否合法
@@ -33,6 +59,7 @@ abstract class DataImpl(private val login: LoginImpl, private val loginMessage: 
     protected suspend fun <T : Any> getData(
         f: suspend () -> T
     ): NetResult<T> {
+        checkNet()
         // 防止死循环，所以就两次
         for (i in 0..1) {
             try {

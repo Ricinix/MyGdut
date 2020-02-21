@@ -11,7 +11,7 @@ import java.util.*
  */
 class TermTransformer(context: Context, account: String) {
 
-    private val admissionYear: Int
+    private val admissionYear: Int //201700
     private val termOffset = context.resources.getIntArray(R.array.term_code_offset)
     private val termNameList = context.resources.getStringArray(R.array.term_name)
 
@@ -40,6 +40,28 @@ class TermTransformer(context: Context, account: String) {
             termNameList[termOffset.indexOf(max(code - admissionYear, 0))]
         } catch (e: NumberFormatException) {
             termCode
+        }
+    }
+
+    /**
+     * 通过学期代码获取此学期的上一个学期的学期名字
+     * 如果这是第一个学期，则就返回此学期名字
+     */
+    fun getLastTermName(termCode: String) : String{
+        val code = termCode.toInt()
+        return when {
+            // 如果当前是第二学期，则返回第一学期
+            code % 100 == 20 -> {
+                termCode2TermName((code - 10).toString())
+            }
+            // 如果不是第一学年，又是第一学期，则返回上一学年第二学期
+            code / 100 - admissionYear / 100 > 0 -> {
+                termCode2TermName((code - 90).toString())
+            }
+            // 如果是第一学年第一学期,则不变
+            else -> {
+                termCode2TermName(termCode)
+            }
         }
     }
 

@@ -1,8 +1,8 @@
 package com.example.mygdut.net.impl
 
+import android.content.Context
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.login.LoginMessage
-import com.example.mygdut.net.Extranet
 import com.example.mygdut.net.api.TeacharAssessApi
 import com.example.mygdut.net.data.AssessAnswer
 import com.example.mygdut.net.data.AssessQuestion
@@ -10,9 +10,10 @@ import com.example.mygdut.net.data.Teacher
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class AssessImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, loginMessage) {
-    private val assessCall = Extranet.instance.create(TeacharAssessApi::class.java)
+class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
+    DataImpl<TeacharAssessApi>(login, loginMessage, TeacharAssessApi::class.java, context) {
     private val gson = Gson()
+
     private var wt = listOf<AssessQuestion>()
     private var wtxm = listOf<AssessAnswer>()
 
@@ -35,11 +36,11 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login,
     /**
      * 先预留着，以后可以给用户手动一键教评
      */
-    suspend fun getAllTeacherNeedAssess(xnxqdm: String) : NetResult<List<Teacher>> = getData {
-        val raw = assessCall.getAlreadyAssess().string()
+    suspend fun getAllTeacherNeedAssess(xnxqdm: String): NetResult<List<Teacher>> = getData {
+        val raw = call.getAlreadyAssess().string()
         val pdmStr = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
         val pdms = generatePdm(pdmStr)
-        val teacherInfo = assessCall.getTeacherList(xnxqdm)
+        val teacherInfo = call.getTeacherList(xnxqdm)
         teacherInfo.rows.filter { it.pdm !in pdms }
     }
 
@@ -47,7 +48,7 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login,
      * 拿到课程相关老师的信息
      */
     private suspend fun getTeacherInfo(xnxqdm: String, kcmc: String): NetResult<Teacher> = getData {
-        val teacherInfo = assessCall.getTeacherList(xnxqdm)
+        val teacherInfo = call.getTeacherList(xnxqdm)
         teacherInfo.rows.find { it.xnxqdm == xnxqdm && it.kcmc == kcmc }
             ?: Teacher.getEmptyInstance()
     }
@@ -57,7 +58,7 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login,
      */
     private suspend fun getQuestionAndAnswer(queryMap: Map<String, String>): NetResult<Pair<List<AssessQuestion>, List<AssessAnswer>>> =
         getData {
-            val raw = assessCall.getTeacherData(queryMap).string()
+            val raw = call.getTeacherData(queryMap).string()
             val question = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
             val answer = Regex("(?<=wtxm = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
             generateQuestion(question) to generateAnswer(answer)
@@ -87,7 +88,7 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login,
                 }
             }
         }
-        assessCall.submit(
+        call.submit(
             teacher.toSubmitQueryMap(),
             wtdmList.joinToString { it },
             xmdmList.joinToString { it },
@@ -116,7 +117,7 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login,
     /**
      * pdm的反序列化
      */
-    private fun generatePdm(s : String) : List<String>{
+    private fun generatePdm(s: String): List<String> {
         val listType = object : TypeToken<List<String>>() {}.type
         return gson.fromJson<List<String>>(s, listType)
     }

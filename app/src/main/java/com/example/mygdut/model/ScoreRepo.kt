@@ -24,8 +24,8 @@ class ScoreRepo @Inject constructor(
 
     init {
         val loginMsg = provideLoginMessage()
-        scoreImpl = ScoreImpl(login, loginMsg)
-        assessImpl = AssessImpl(login, loginMsg)
+        scoreImpl = ScoreImpl(login, loginMsg, context)
+        assessImpl = AssessImpl(login, loginMsg, context)
         val account = loginMsg.getRawAccount()
         termTransformer = TermTransformer(context, account)
     }
@@ -72,6 +72,14 @@ class ScoreRepo @Inject constructor(
     private suspend fun getLatestScore(autoAssess: Boolean): NetResult<Pair<List<Score>, String>> {
         return when (val result = scoreImpl.getNowTermScores()) {
             is NetResult.Success -> {
+                if (result.data.first.total == 0){
+                    val tn = termTransformer.getLastTermName(result.data.second)
+                    return when(val r2 =  getScoreByTermName(tn, true, autoAssess)){
+                        is NetResult.Error->r2
+                        is NetResult.Success->NetResult.Success(r2.data to tn)
+                    }
+                }
+
                 if (autoAssess) {
                     var autoAssessNum = 0
                     for (row in result.data.first.rows){

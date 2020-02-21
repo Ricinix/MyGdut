@@ -1,28 +1,28 @@
 package com.example.mygdut.net.impl
 
+import android.content.Context
 import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
-import com.example.mygdut.net.Extranet
-import com.example.mygdut.net.api.ScoreAip
+import com.example.mygdut.net.api.ScoreApi
 import com.example.mygdut.net.data.ScoreFromNet
 
-class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, loginMessage) {
-    private val scoreCall = Extranet.instance.create(ScoreAip::class.java)
+class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) : 
+    DataImpl<ScoreApi>(login, loginMessage, ScoreApi::class.java, context) {
 
     /**
      * 获取所有成绩
      */
     suspend fun getAllScores(): NetResult<ScoreFromNet> = getData {
-        scoreCall.getAllScore()
+        call.getAllScore()
     }
 
     /**
      * 获取指定学期的成绩
      */
     suspend fun getScoresByTerm(termCode: String): NetResult<ScoreFromNet> = getData {
-        scoreCall.getScore(verifyTermCode(termCode))
+        call.getScore(verifyTermCode(termCode))
     }
 
     /**
@@ -33,14 +33,14 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage) : DataImpl(login, 
         val termResult = getNowTermCodeForScores()
         Log.d(TAG, "termCode: $termResult")
         val term = if (termResult is NetResult.Success) termResult.data else ""
-        scoreCall.getScore(verifyTermCode(term)) to term
+        call.getScore(verifyTermCode(term)) to term
     }
 
     /**
      * 获取最新的学期代码
      */
     private suspend fun getNowTermCodeForScores(): NetResult<String> = getData {
-        val raw = scoreCall.getTermCodeForScores().string()
+        val raw = call.getTermCodeForScores().string()
         // 匹配选择的学期代码
         val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
         result?:throw NotMatchException()

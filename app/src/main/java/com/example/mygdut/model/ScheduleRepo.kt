@@ -22,7 +22,7 @@ class ScheduleRepo @Inject constructor(
 
     init {
         val loginMsg = provideLoginMessage()
-        scheduleImpl = ScheduleImpl(login, loginMsg)
+        scheduleImpl = ScheduleImpl(login, loginMsg, context)
         val account = loginMsg.getRawAccount()
         transformer = TermTransformer(context, account)
     }
