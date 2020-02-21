@@ -51,12 +51,12 @@ class TermTransformer(context: Context, account: String) {
         val code = termCode.toInt()
         return when {
             // 如果当前是第二学期，则返回第一学期
-            code % 100 == 20 -> {
-                termCode2TermName((code - 10).toString())
+            code % 100 == 2 -> {
+                termCode2TermName((code - 1).toString())
             }
             // 如果不是第一学年，又是第一学期，则返回上一学年第二学期
             code / 100 - admissionYear / 100 > 0 -> {
-                termCode2TermName((code - 90).toString())
+                termCode2TermName((code - 99).toString())
             }
             // 如果是第一学年第一学期,则不变
             else -> {

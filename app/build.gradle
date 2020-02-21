@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    def name = "v1.2-armeabi-beta"
+    def name = "v1.2"
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
@@ -16,9 +16,9 @@ android {
         versionCode 5
         versionName name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        ndk {
-            abiFilters "armeabi","armeabi-v7a"
-        }
+//        ndk {
+//            abiFilters "armeabi","armeabi-v7a"
+//        }
     }
 
     //自动生成指定名称的release发布版的 apk文件
@@ -35,7 +35,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
