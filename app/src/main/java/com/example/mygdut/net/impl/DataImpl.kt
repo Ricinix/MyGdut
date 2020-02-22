@@ -12,6 +12,10 @@ import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
 
+/**
+ * [callService] : 相对应的Retrofit请求接口
+ * [T]:类名（即[callService]去掉后面的::class.java）
+ */
 abstract class DataImpl<T>(
     private val login: LoginImpl,
     private val loginMessage: LoginMessage,
@@ -86,7 +90,7 @@ abstract class DataImpl<T>(
             } catch (e: JsonSyntaxException) {
                 Log.d(TAG, e.toString())
                 return NetResult.Error("获取数据失败，可能是接口改变")
-            } catch (e: HttpException) {
+                } catch (e: HttpException) {
                 Log.d(TAG, e.toString())
                 return NetResult.Error("HTTP 错误")
             }

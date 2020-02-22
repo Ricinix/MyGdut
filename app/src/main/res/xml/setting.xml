@@ -7,6 +7,10 @@
             android:title="自动教评" />
         <SwitchPreference
             android:defaultValue="false"
+            android:key="get_school_day_every_time"
+            android:title="每次刷新都爬取开学日" />
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="intra_net_choose"
             android:title="使用内网" />
 

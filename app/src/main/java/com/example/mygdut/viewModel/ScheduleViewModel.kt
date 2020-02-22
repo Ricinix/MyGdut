@@ -97,7 +97,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     /**
      * 统一处理获取到的数据
      */
-    private fun dataSetting(
+    private suspend fun dataSetting(
         dataList: List<Schedule>,
         term: String,
         totalFromNet : Boolean,

@@ -19,4 +19,6 @@ sealed class NetResult<out T : Any> {
     }
 }
 
-class NotMatchException(val msg : String = "未匹配") : IOException()
+class NotMatchException(val msg : String = "未匹配") : IOException(msg)
+
+class WrongDataFormatException(val msg : String = "数据格式错误") : IOException(msg)
