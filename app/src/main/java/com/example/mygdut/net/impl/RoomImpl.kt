@@ -15,9 +15,8 @@ class RoomImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
     suspend fun getRoomData(
         campusCode: String,
         date: String,
-        buildingCode: String,
-        page: Int = 1
-    ): NetResult<RoomFromNet> = getData {
-        call.getRoom(campusCode, date, buildingCode, page)
+        buildingCode: String
+    ): NetResult<RoomFromNet> = getDataWithRows {
+        call.getRoom(campusCode, date, buildingCode, page = it)
     }
 }

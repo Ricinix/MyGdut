@@ -4,7 +4,7 @@ import com.example.mygdut.db.data.Score
 import com.example.mygdut.domain.TermTransformer
 
 data class ScoreFromNet(
-    override val rows: List<ScoreRow>, // 课程成绩列表
+    override var rows: List<ScoreRow>, // 课程成绩列表
     override val total: Int // 列表的元素个数
 ) : DataFromNetWithRows<ScoreRow>
 

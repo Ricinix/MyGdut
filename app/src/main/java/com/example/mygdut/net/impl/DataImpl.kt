@@ -6,6 +6,7 @@ import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.RetrofitNet
+import com.example.mygdut.net.data.DataFromNetWithRows
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
 import retrofit2.HttpException
@@ -58,6 +59,52 @@ abstract class DataImpl<T>(
     }
 
     /**
+     * 获取带Rows的Pair，Rows要在前面
+     */
+    protected suspend fun <E, T : Pair<DataFromNetWithRows<E>, *>> getDataWithPairRows(f : suspend (Int) ->T) : NetResult<T>{
+        var page = 1
+        var data : T? = null
+        while (page > 0){
+            when(val r = getData { f(page) }){
+                is NetResult.Error->return r
+                is NetResult.Success->{
+                    if (data == null) data = r.data
+                    else data.first.rows = r.data.first.rows + data.first.rows
+                    if (data.first.rows.size >= data.first.total) page = 0
+                    else page++
+                }
+            }
+        }
+        return if (data != null)
+            NetResult.Success(data)
+        else
+            NetResult.Error("未得到数据")
+    }
+
+    /**
+     * 解决带Rows的数据
+     */
+    protected suspend fun <E, T : DataFromNetWithRows<E>> getDataWithRows(f: suspend (Int) -> T): NetResult<T> {
+        var page = 1
+        var data : T? = null
+        while (page > 0){
+            when(val r = getData { f(page) }){
+                is NetResult.Error->return r
+                is NetResult.Success->{
+                    if (data == null) data = r.data
+                    else data.rows = r.data.rows + data.rows
+                    if (data.rows.size >= data.total) page = 0
+                    else page++
+                }
+            }
+        }
+        return if (data != null)
+            NetResult.Success(data)
+        else
+            NetResult.Error("未得到数据")
+    }
+
+    /**
      * 网络请求模板
      */
     protected suspend fun <T : Any> getData(
@@ -90,7 +137,7 @@ abstract class DataImpl<T>(
             } catch (e: JsonSyntaxException) {
                 Log.d(TAG, e.toString())
                 return NetResult.Error("获取数据失败，可能是接口改变")
-                } catch (e: HttpException) {
+            } catch (e: HttpException) {
                 Log.d(TAG, e.toString())
                 return NetResult.Error("HTTP 错误")
             }

@@ -14,26 +14,26 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) 
     /**
      * 获取所有成绩
      */
-    suspend fun getAllScores(): NetResult<ScoreFromNet> = getData {
-        call.getAllScore()
+    suspend fun getAllScores(): NetResult<ScoreFromNet> = getDataWithRows {
+        call.getScore("", page = it)
     }
 
     /**
      * 获取指定学期的成绩
      */
-    suspend fun getScoresByTerm(termCode: String): NetResult<ScoreFromNet> = getData {
-        call.getScore(verifyTermCode(termCode))
+    suspend fun getScoresByTerm(termCode: String): NetResult<ScoreFromNet> = getDataWithRows {
+        call.getScore(verifyTermCode(termCode), page = it)
     }
 
     /**
      * 获取最新的成绩
      * @return ScoreFromNet和学期代码
      */
-    suspend fun getNowTermScores(): NetResult<Pair<ScoreFromNet, String>> = getData {
+    suspend fun getNowTermScores(): NetResult<Pair<ScoreFromNet, String>> = getDataWithPairRows {
         val termResult = getNowTermCodeForScores()
         Log.d(TAG, "termCode: $termResult")
         val term = if (termResult is NetResult.Success) termResult.data else ""
-        call.getScore(verifyTermCode(term)) to term
+        call.getScore(verifyTermCode(term), page = it) to term
     }
 
     /**

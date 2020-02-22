@@ -6,7 +6,7 @@ import com.example.mygdut.domain.ExamDate
 import com.example.mygdut.domain.TermTransformer
 
 data class ExamFromNet(
-    override val rows: List<ExamRow>,
+    override var rows: List<ExamRow>,
     override val total: Int
 ) : DataFromNetWithRows<ExamRow>{
     fun toExamList(transformer: TermTransformer) : List<Exam> = rows.map { it.toExam(transformer) }.filter { it.dateTime.isValid }

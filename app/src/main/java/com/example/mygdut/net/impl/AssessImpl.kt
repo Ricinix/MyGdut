@@ -36,21 +36,28 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
     /**
      * 先预留着，以后可以给用户手动一键教评
      */
-    suspend fun getAllTeacherNeedAssess(xnxqdm: String): NetResult<List<Teacher>> = getData {
+    suspend fun getAllTeacherNeedAssess(xnxqdm: String): NetResult<List<Teacher>>{
         val raw = call.getAlreadyAssess().string()
         val pdmStr = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
         val pdms = generatePdm(pdmStr)
-        val teacherInfo = call.getTeacherList(xnxqdm)
-        teacherInfo.rows.filter { it.pdm !in pdms }
+        return when(val teacherInfo = getDataWithRows { call.getTeacherList(xnxqdm, page = it) }){
+            is NetResult.Success-> NetResult.Success(teacherInfo.data.rows.filter { it.pdm !in pdms })
+            is NetResult.Error -> teacherInfo
+        }
+
     }
 
     /**
      * 拿到课程相关老师的信息
      */
-    private suspend fun getTeacherInfo(xnxqdm: String, kcmc: String): NetResult<Teacher> = getData {
-        val teacherInfo = call.getTeacherList(xnxqdm)
-        teacherInfo.rows.find { it.xnxqdm == xnxqdm && it.kcmc == kcmc }
-            ?: Teacher.getEmptyInstance()
+    private suspend fun getTeacherInfo(xnxqdm: String, kcmc: String): NetResult<Teacher> {
+        return when (val teacherInfoResult =
+            getDataWithRows { call.getTeacherList(xnxqdm, page = it) }) {
+            is NetResult.Success -> NetResult.Success(teacherInfoResult.data.rows.find { it.xnxqdm == xnxqdm && it.kcmc == kcmc }
+                ?: Teacher.getEmptyInstance())
+            is NetResult.Error -> teacherInfoResult
+        }
+
     }
 
     /**

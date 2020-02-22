@@ -10,13 +10,13 @@ import com.example.mygdut.net.data.ExamFromNet
 class ExamImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
     DataImpl<ExamApi>(login, loginMessage, ExamApi::class.java, context) {
 
-    suspend fun getExamByTermCode(termCode: String): NetResult<ExamFromNet> = getData {
-        call.getExamByTermCode(termCode)
+    suspend fun getExamByTermCode(termCode: String): NetResult<ExamFromNet> = getDataWithRows {
+        call.getExamByTermCode(termCode, page = it)
     }
 
-    suspend fun getLatestExam(): NetResult<Pair<ExamFromNet, String>> = getData {
+    suspend fun getLatestExam(): NetResult<Pair<ExamFromNet, String>> = getDataWithPairRows {
         when (val codeResult = getLatestTermCode()) {
-            is NetResult.Success -> call.getExamByTermCode(codeResult.data) to codeResult.data
+            is NetResult.Success -> call.getExamByTermCode(codeResult.data, page = it) to codeResult.data
             is NetResult.Error -> call.getExamByTermCode() to ""
         }
     }

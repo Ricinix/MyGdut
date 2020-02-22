@@ -3,7 +3,7 @@ package com.example.mygdut.net.data
 import com.example.mygdut.db.data.ClassRoom
 import com.example.mygdut.domain.RoomPlace
 
-data class RoomFromNet(override val rows: List<RoomRows>, override val total: Int) :
+data class RoomFromNet(override var rows: List<RoomRows>, override val total: Int) :
     DataFromNetWithRows<RoomRows>
 
 
