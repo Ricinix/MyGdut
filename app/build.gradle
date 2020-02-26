@@ -6,14 +6,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    def name = "v1.2"
+    def name = "v1.2.1"
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.mygdut"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 6
+        versionCode 7
         versionName name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        ndk {

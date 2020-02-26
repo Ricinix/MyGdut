@@ -5,6 +5,8 @@ import com.example.mygdut.data.NetResult
 import com.example.mygdut.db.dao.ClassRoomDao
 import com.example.mygdut.db.data.ClassRoom
 import com.example.mygdut.domain.BuildingTransformer
+import com.example.mygdut.domain.ConstantField.CLASS_ROOM_CAMPUS_NAME
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.net.impl.LoginImpl
 import com.example.mygdut.net.impl.RoomImpl
 import javax.inject.Inject
@@ -16,8 +18,8 @@ class RoomRepo @Inject constructor(
 ) : BaseRepo(context) {
     private val roomImpl = RoomImpl(login, provideLoginMessage(), context)
     private val transformer = BuildingTransformer(context)
-    private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
-    private val editor = settingSf.edit()
+    private val settingSp = context.getSharedPreferences(SP_SETTING, Context.MODE_PRIVATE)
+    private val editor = settingSp.edit()
 
     suspend fun getBackupData(
         campusName: String,
@@ -31,7 +33,7 @@ class RoomRepo @Inject constructor(
         )
     }
 
-    fun getCampusNameChosen(): String = settingSf.getString(SF_KEY, "") ?: ""
+    fun getCampusNameChosen(): String = settingSp.getString(CLASS_ROOM_CAMPUS_NAME, "") ?: ""
 
 
     suspend fun getClassRooms(
@@ -71,13 +73,12 @@ class RoomRepo @Inject constructor(
         data.forEach { it.buildingCode = transformer.name2code(campusName, buildingName).second }
         classRoomDao.deleteBeforeDate(date)
         classRoomDao.saveAll(data)
-        editor.putString(SF_KEY, campusName)
+        editor.putString(CLASS_ROOM_CAMPUS_NAME, campusName)
         editor.commit()
     }
 
     companion object {
         private const val TAG = "RoomRepo"
-        private const val SF_KEY = "class_room_campus_name"
     }
 
 }

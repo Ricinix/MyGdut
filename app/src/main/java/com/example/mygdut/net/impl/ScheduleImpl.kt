@@ -32,7 +32,9 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage, context: Contex
     }
 
     private suspend fun getClassSchedule(termCode: String): List<ScheduleFromNet> {
-        val raw = call.getClassSchedule(verifyTermCode(termCode)).string()
+        val body = call.getClassSchedule(verifyTermCode(termCode))
+        val raw = body.string()
+        body.close()
         val gsonStr = Regex("(?<=var kbxx = )\\[.*]").find(raw)?.value ?: throw NotMatchException()
         return gson.fromJson<List<ScheduleFromNet>>(
             gsonStr,
@@ -44,7 +46,9 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage, context: Contex
      * 获取现在是哪个学期
      */
     private suspend fun getNowTermCodeForSchedule(): NetResult<String> = getData {
-        val raw = call.getTermcodeForSchedule().string()
+        val body = call.getTermcodeForSchedule()
+        val raw = body.string()
+        body.close()
         val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
         result ?: throw NotMatchException()
     }

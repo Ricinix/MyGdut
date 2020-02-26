@@ -9,7 +9,7 @@ class RoomPlaceConverter {
     fun objectToString(obj: RoomPlace): String = obj.place
 
     @TypeConverter
-    fun StringToObject(string: String): RoomPlace {
+    fun stringToObject(string: String): RoomPlace {
         return RoomPlace(string)
     }
 }

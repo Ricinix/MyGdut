@@ -2,7 +2,6 @@ package com.example.mygdut.data.login
 
 object LoginCookie {
     var cookies = ""
-    var reffer = ""
 
     private var previousCookies = ""
     /**

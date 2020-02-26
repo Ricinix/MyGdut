@@ -11,9 +11,7 @@ import java.net.SocketTimeoutException
 class SchoolDayImpl {
     private val call = RetrofitNet.AutoMationOfficialWeb.instance.create(SchoolDayApi::class.java)
 
-    companion object {
-        private const val TAG = "SchoolDayImpl"
-    }
+
     suspend fun getSchoolDayIntByTermCode(termCode: String): NetResult<Int> {
         Log.d(TAG, "getting by termCode: $termCode")
         return try {
@@ -49,10 +47,9 @@ class SchoolDayImpl {
      */
     private suspend fun getNotice(noticePath: String): Pair<String, Int> {
         val pathList = noticePath.split("/")
-        val raw = call.getInfoPage(
-            pathList[0],
-            pathList[1]
-        ).string()
+        val body = call.getInfoPage(pathList[0], pathList[1])
+        val raw = body.string()
+        body.close()
         // 匹配关键数据
         val term = Regex("\\d{4}[^\\d]*?年.假").find(raw)?.value ?: ""
         val schoolDay = Regex("(?<=学生开始上课时间：).*?日").find(raw)?.value ?: ""
@@ -61,9 +58,9 @@ class SchoolDayImpl {
         val year = Regex("\\d{4}").find(term)?.value?.toInt() ?: 0
         val month = Regex("\\d+(?=.*?月)").find(schoolDay)?.value?.toInt() ?: 0
         val day = Regex("\\d+(?=[^月]*?日)").find(schoolDay)?.value?.toInt() ?: 0
-        Log.d("SchoolDayImpl", "path date : $year $month $day \n $term $schoolDay ")
+        Log.d(TAG, "path date : $year $month $day \n $term $schoolDay ")
 
-        if (month == 0 || day == 0){
+        if (month == 0 || day == 0) {
             throw WrongDataFormatException("数据格式错误")
         }
         if ('暑' in term) {
@@ -87,7 +84,9 @@ class SchoolDayImpl {
      * 获取主页，返回放假通知地址还有下一页地址
      */
     private suspend fun getNoticeHomePage(): Pair<Sequence<MatchResult>, String> {
-        val raw = call.getNoticeHomePage().string()
+        val body = call.getNoticeHomePage()
+        val raw = body.string()
+        body.close()
         // 匹配下一页
         val nextPage = Regex("(?<=href=\"xytz/).*?(?=\".*?下页)").find(raw)?.value ?: ""
         return patchNoticeUrl(raw) to nextPage
@@ -98,5 +97,9 @@ class SchoolDayImpl {
      */
     private fun patchNoticeUrl(raw: String): Sequence<MatchResult> {
         return Regex("(?<=\\.\\./info/).*?(?=\".*?开学时间)").findAll(raw)
+    }
+
+    companion object {
+        private const val TAG = "SchoolDayImpl"
     }
 }

@@ -1,5 +1,6 @@
 package com.example.mygdut.data.login
 
+import com.example.mygdut.domain.ConstantField.AES_TRANSFORMATION
 import com.example.mygdut.domain.KeyEncrypt
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -27,7 +28,7 @@ class LoginMessage(
     fun getEncryptedPassword(verifyCode: String): String {
         val key =
             SecretKeySpec((verifyCode + verifyCode + verifyCode + verifyCode).toByteArray(), "AES")
-        val lockTool = Cipher.getInstance("AES/ECB/PKCS7Padding").apply {
+        val lockTool = Cipher.getInstance(AES_TRANSFORMATION).apply {
             init(Cipher.ENCRYPT_MODE, key)
         }
         val encrypted = lockTool.doFinal(password.toByteArray())

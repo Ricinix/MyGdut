@@ -1,10 +1,10 @@
 package com.example.mygdut.view.fragment
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.mygdut.R
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.view.widget.AppInfoDialog
 
 class SettingFragment : PreferenceFragmentCompat() {
@@ -14,7 +14,7 @@ class SettingFragment : PreferenceFragmentCompat() {
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        preferenceManager.sharedPreferencesName = "setting"
+        preferenceManager.sharedPreferencesName = SP_SETTING
         setPreferencesFromResource(R.xml.setting, rootKey)
     }
 
@@ -37,13 +37,14 @@ class SettingFragment : PreferenceFragmentCompat() {
         }
         findPreference<Preference>("check_update_btn")?.setOnPreferenceClickListener {
             // 先偷个懒...
-            Toast.makeText(context, "目前是最新版本", Toast.LENGTH_SHORT).show()
+            mListener?.onCheckUpdate(false)
             true
         }
     }
 
     interface SettingChangeListener {
         fun onLogout()
+        fun onCheckUpdate(autoCheck : Boolean)
     }
 
 }

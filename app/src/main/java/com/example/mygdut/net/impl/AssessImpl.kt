@@ -37,7 +37,9 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
      * 先预留着，以后可以给用户手动一键教评
      */
     suspend fun getAllTeacherNeedAssess(xnxqdm: String): NetResult<List<Teacher>>{
-        val raw = call.getAlreadyAssess().string()
+        val body = call.getAlreadyAssess()
+        val raw = body.string()
+        body.close()
         val pdmStr = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
         val pdms = generatePdm(pdmStr)
         return when(val teacherInfo = getDataWithRows { call.getTeacherList(xnxqdm, page = it) }){
@@ -65,7 +67,9 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
      */
     private suspend fun getQuestionAndAnswer(queryMap: Map<String, String>): NetResult<Pair<List<AssessQuestion>, List<AssessAnswer>>> =
         getData {
-            val raw = call.getTeacherData(queryMap).string()
+            val body = call.getTeacherData(queryMap)
+            val raw = body.string()
+            body.close()
             val question = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
             val answer = Regex("(?<=wtxm = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
             generateQuestion(question) to generateAnswer(answer)

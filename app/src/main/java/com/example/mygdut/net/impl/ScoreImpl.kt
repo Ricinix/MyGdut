@@ -40,7 +40,9 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) 
      * 获取最新的学期代码
      */
     private suspend fun getNowTermCodeForScores(): NetResult<String> = getData {
-        val raw = call.getTermCodeForScores().string()
+        val body = call.getTermCodeForScores()
+        val raw = body.string()
+        body.close()
         // 匹配选择的学期代码
         val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
         result?:throw NotMatchException()

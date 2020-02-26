@@ -142,7 +142,7 @@ class ScheduleFragment : Fragment() {
     private fun setupSideBar() {
         schedule_sidebar.setListener(object : OnChooseLetterChangedListener{
             override fun onChooseLetter(s: String) {
-                recycler_schedule.smoothScrollToPosition(s.toInt()-1)
+                recycler_schedule.scrollToPosition(s.toInt()-1)
             }
             override fun onNoChooseLetter() {
 

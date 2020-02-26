@@ -4,33 +4,38 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.mygdut.data.login.LoginCookie
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.domain.ConstantField.AES_KEY
+import com.example.mygdut.domain.ConstantField.COOKIES
+import com.example.mygdut.domain.ConstantField.LOGIN_ACCOUNT
+import com.example.mygdut.domain.ConstantField.LOGIN_PASSWORD
+import com.example.mygdut.domain.ConstantField.SP_LOGIN_MSG
 import com.example.mygdut.domain.KeyEncrypt
 
 /**
  * 封装了Cookies以及登录信息LoginMessage的存取
  */
 abstract class BaseRepo(context: Context) {
-    private val sf: SharedPreferences =
-        context.getSharedPreferences("login_msg", Context.MODE_PRIVATE)
-    private val edit: SharedPreferences.Editor = sf.edit()
-    private val aesKey = sf.getString("aes_key", "") ?: ""
+    private val sp: SharedPreferences =
+        context.getSharedPreferences(SP_LOGIN_MSG, Context.MODE_PRIVATE)
+    private val edit: SharedPreferences.Editor = sp.edit()
+    private val aesKey = sp.getString(AES_KEY, "") ?: ""
 
     init {
         if (LoginCookie.cookies.isEmpty())
-            LoginCookie.cookies = sf.getString("cookies", "")?:""
+            LoginCookie.cookies = sp.getString(COOKIES, "")?:""
     }
 
     protected fun saveCookies() {
         if (LoginCookie.needToSave()) {
-            edit.putString("cookies", LoginCookie.cookies)
+            edit.putString(COOKIES, LoginCookie.cookies)
             edit.commit()
         }
     }
 
     protected fun provideLoginMessage(): LoginMessage {
         val keyEncrypt = KeyEncrypt(aesKey)
-        val accountRaw = sf.getString("account", "") ?: ""
-        val passwordRaw = sf.getString("password", "") ?: ""
+        val accountRaw = sp.getString(LOGIN_ACCOUNT, "") ?: ""
+        val passwordRaw = sp.getString(LOGIN_PASSWORD, "") ?: ""
         return if (accountRaw.isNotEmpty() && passwordRaw.isNotEmpty()) {
             val account = keyEncrypt.decrypt(accountRaw)
             val password = keyEncrypt.decrypt(passwordRaw)
@@ -43,9 +48,9 @@ abstract class BaseRepo(context: Context) {
         val keyEncrypt = KeyEncrypt(aesKey)
         val account = keyEncrypt.encrypt(loginMessage.getRawAccount())
         val password = keyEncrypt.encrypt(loginMessage.getRawPassword())
-        edit.putString("account", account)
-        edit.putString("password", password)
-        edit.putString("aes_key", keyEncrypt.getStoredAesKey())
+        edit.putString(LOGIN_ACCOUNT, account)
+        edit.putString(LOGIN_PASSWORD, password)
+        edit.putString(AES_KEY, keyEncrypt.getStoredAesKey())
         edit.commit()
     }
 

@@ -4,6 +4,9 @@ import android.content.Context
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.db.dao.ScoreDao
 import com.example.mygdut.db.data.Score
+import com.example.mygdut.domain.ConstantField.AUTO_ASSESS
+import com.example.mygdut.domain.ConstantField.SCORE_TERM_NAME
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.domain.TermTransformer
 import com.example.mygdut.net.data.ScoreFromNet
 import com.example.mygdut.net.impl.AssessImpl
@@ -19,8 +22,8 @@ class ScoreRepo @Inject constructor(
     private val scoreImpl: ScoreImpl
     private val assessImpl: AssessImpl
     private val termTransformer: TermTransformer
-    private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
-    private val editor = settingSf.edit()
+    private val settingSp = context.getSharedPreferences(SP_SETTING, Context.MODE_PRIVATE)
+    private val editor = settingSp.edit()
 
     init {
         val loginMsg = provideLoginMessage()
@@ -31,7 +34,7 @@ class ScoreRepo @Inject constructor(
     }
 
     suspend fun getBackupScore(): Pair<List<Score>, String> {
-        val termName = settingSf.getString(SF_SCORE_KEY, "") ?: ""
+        val termName = settingSp.getString(SCORE_TERM_NAME, "") ?: ""
         return if (termName.isEmpty()){
             scoreDao.getAllScore() to "大学全部"
         }else{
@@ -62,7 +65,7 @@ class ScoreRepo @Inject constructor(
      * 获取最新绩点
      */
     suspend fun getLatestScore(): NetResult<Pair<List<Score>, String>> {
-        val autoAssess = settingSf.getBoolean(SF_ASSESS_KEY, true)
+        val autoAssess = settingSp.getBoolean(AUTO_ASSESS, true)
         return getLatestScore(autoAssess)
     }
 
@@ -112,7 +115,7 @@ class ScoreRepo @Inject constructor(
         termName: String,
         includeElective: Boolean
     ): NetResult<List<Score>> {
-        val autoAssess = settingSf.getBoolean(SF_ASSESS_KEY, true)
+        val autoAssess = settingSp.getBoolean(AUTO_ASSESS, true)
         return getScoreByTermName(termName, includeElective, autoAssess)
     }
 
@@ -179,12 +182,8 @@ class ScoreRepo @Inject constructor(
      */
     private suspend fun save2DataBase(data: List<Score>, termName: String) {
         scoreDao.saveAllScore(data)
-        editor.putString(SF_SCORE_KEY, termName)
+        editor.putString(SCORE_TERM_NAME, termName)
         editor.commit()
-    }
-    companion object{
-        private const val SF_SCORE_KEY = "score_term_name"
-        private const val SF_ASSESS_KEY = "auto_assess"
     }
 
 }

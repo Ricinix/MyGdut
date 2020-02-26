@@ -4,6 +4,8 @@ import android.content.Context
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.db.dao.ExamDao
 import com.example.mygdut.db.data.Exam
+import com.example.mygdut.domain.ConstantField.EXAM_TERM_NAME
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.domain.TermTransformer
 import com.example.mygdut.net.impl.ExamImpl
 import com.example.mygdut.net.impl.LoginImpl
@@ -15,8 +17,8 @@ class ExamRepo @Inject constructor(
     private val examDao: ExamDao
 ) : BaseRepo(context) {
     private val examImpl: ExamImpl
-    private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
-    private val editor = settingSf.edit()
+    private val settingSp = context.getSharedPreferences(SP_SETTING, Context.MODE_PRIVATE)
+    private val editor = settingSp.edit()
     private val transformer: TermTransformer
 
     init {
@@ -27,7 +29,7 @@ class ExamRepo @Inject constructor(
     }
 
     suspend fun getInitBackupExam(): Pair<List<Exam>, String> {
-        val termName = settingSf.getString(SF_EXAM_KEY, "") ?: ""
+        val termName = settingSp.getString(EXAM_TERM_NAME, "") ?: ""
         return if (termName.isEmpty())
             examDao.getAllExam() to "大学全部"
         else
@@ -35,7 +37,7 @@ class ExamRepo @Inject constructor(
     }
 
     suspend fun getBackupExamByTermName(termName: String): List<Exam> {
-        editor.putString(SF_EXAM_KEY, termName)
+        editor.putString(EXAM_TERM_NAME, termName)
         editor.commit()
         return examDao.getExamByTermName(termName)
     }
@@ -65,13 +67,9 @@ class ExamRepo @Inject constructor(
     }
 
     private suspend fun save2DateBase(data: List<Exam>, termName: String) {
-        editor.putString(SF_EXAM_KEY, termName)
+        editor.putString(EXAM_TERM_NAME, termName)
         editor.commit()
         examDao.deleteExamByTermName(termName)
         examDao.saveAllExam(data)
-    }
-
-    companion object {
-        private const val SF_EXAM_KEY = "exam_term_name"
     }
 }

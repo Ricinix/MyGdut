@@ -15,6 +15,18 @@
             android:title="使用内网" />
 
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="应用设置">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="auto_check_update"
+            android:title="自动检测更新" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="check_beta"
+            android:title="检测beta版更新" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="其他">
         <Preference
             android:key="check_update_btn"

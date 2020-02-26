@@ -13,6 +13,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
 sealed class RetrofitNet(url : String) {
+    object GithubProject : RetrofitNet("https://github.com/Ricinix/MyGdut/")
     object AutoMationOfficialWeb : RetrofitNet("http://automation.gdut.edu.cn/")
     object ExtraNet : RetrofitNet("https://jxfw.gdut.edu.cn/")
     object IntraNet : RetrofitNet("http://222.200.98.147/")

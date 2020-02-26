@@ -5,6 +5,9 @@ import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.db.dao.ScheduleDao
 import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.domain.ConstantField.GET_SCHOOL_DAY_EVERY_TIME
+import com.example.mygdut.domain.ConstantField.SCHEDULE_TERM_NAME
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.domain.TermTransformer
 import com.example.mygdut.net.impl.LoginImpl
@@ -20,8 +23,8 @@ class ScheduleRepo @Inject constructor(
 ) : BaseRepo(context) {
     private val scheduleImpl: ScheduleImpl
     private val schoolDayImpl = SchoolDayImpl()
-    private val settingSf = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
-    private val editor = settingSf.edit()
+    private val settingSp = context.getSharedPreferences(SP_SETTING, Context.MODE_PRIVATE)
+    private val editor = settingSp.edit()
     private val transformer: TermTransformer
 
     init {
@@ -54,19 +57,19 @@ class ScheduleRepo @Inject constructor(
     }
 
     suspend fun getSchoolDay(termName: String): SchoolCalendar{
-        val backup = SchoolCalendar(termName, settingSf.getInt(termName, 0))
-        if (backup.isValid() && !settingSf.getBoolean(GET_SCHOOL_DAY_EVERY_TIME_KEY, false)) return backup
+        val backup = SchoolCalendar(termName, settingSp.getInt(termName, 0))
+        if (backup.isValid() && !settingSp.getBoolean(GET_SCHOOL_DAY_EVERY_TIME, false)) return backup
         return getSchoolDayFromNet(termName, transformer.termName2TermCode(termName))
     }
 
 
-    fun getChosenName(): String = settingSf.getString(SF_SCHEDULE_KEY, "") ?: ""
+    fun getChosenName(): String = settingSp.getString(SCHEDULE_TERM_NAME, "") ?: ""
 
     /**
      * 获取上次选择的本地课程表
      */
     suspend fun getBackupSchedule(): Pair<List<Schedule>, String> {
-        val chooseTerm = settingSf.getString(SF_SCHEDULE_KEY, "") ?: ""
+        val chooseTerm = settingSp.getString(SCHEDULE_TERM_NAME, "") ?: ""
         val schedules = scheduleDao.getScheduleByTermName(chooseTerm)
         return schedules to chooseTerm
     }
@@ -75,7 +78,7 @@ class ScheduleRepo @Inject constructor(
      * 通过学期代码获取本地课程表
      */
     suspend fun getBackupScheduleByTermName(termName: String): List<Schedule> {
-        editor.putString(SF_SCHEDULE_KEY, termName)
+        editor.putString(SCHEDULE_TERM_NAME, termName)
         editor.commit()
         return scheduleDao.getScheduleByTermName(termName)
     }
@@ -84,7 +87,7 @@ class ScheduleRepo @Inject constructor(
      * 通过学期名字获取联网课程表
      */
     suspend fun getScheduleByTermName(termName: String): NetResult<List<Schedule>> {
-        editor.putString(SF_SCHEDULE_KEY, termName)
+        editor.putString(SCHEDULE_TERM_NAME, termName)
         editor.commit()
         val code = transformer.termName2TermCode(termName)
         return when (val result = scheduleImpl.getClassScheduleByTermCode(code)) {
@@ -104,7 +107,7 @@ class ScheduleRepo @Inject constructor(
      */
     suspend fun getCurrentSchedule(): NetResult<Pair<List<Schedule>, String>> {
         // 联网获取上次访问的学期（若没有则获取最新的）
-        val chooseTerm = settingSf.getString(SF_SCHEDULE_KEY, "") ?: ""
+        val chooseTerm = settingSp.getString(SCHEDULE_TERM_NAME, "") ?: ""
         if (chooseTerm.isNotEmpty()) {
             val code = transformer.termName2TermCode(chooseTerm)
             return when (val result = scheduleImpl.getClassScheduleByTermCode(code)) {
@@ -139,7 +142,7 @@ class ScheduleRepo @Inject constructor(
      */
     private suspend fun save2DataBase(list: List<Schedule>, termName: String? = null) {
         termName?.run {
-            editor.putString(SF_SCHEDULE_KEY, this)
+            editor.putString(SCHEDULE_TERM_NAME, this)
             editor.commit()
             scheduleDao.deleteScheduleByTermName(this, Schedule.TYPE_FROM_NET)
         }
@@ -154,7 +157,7 @@ class ScheduleRepo @Inject constructor(
         if (date is NetResult.Success && date.data != 0) {
             Log.d(TAG, "get schoolDay from net: ${date.data}")
             val checkDate = checkSchoolDay(date.data)
-            editor.putInt(termName, checkDate.apply { Log.d("ScheduleRepo", "saving school day: $this"); })
+            editor.putInt(termName, checkDate.apply { Log.d(TAG, "saving school day: $this"); })
             editor.commit()
             return SchoolCalendar(termName, checkDate)
         }else{
@@ -184,8 +187,6 @@ class ScheduleRepo @Inject constructor(
     }
 
     companion object {
-        private const val GET_SCHOOL_DAY_EVERY_TIME_KEY = "get_school_day_every_time"
-        private const val SF_SCHEDULE_KEY = "schedule_term_name"
         private const val TAG = "ScheduleRepo"
     }
 }

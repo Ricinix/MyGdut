@@ -5,6 +5,8 @@ import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.domain.ConstantField.INTRA_NET_CHOOSE
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.net.RetrofitNet
 import com.example.mygdut.net.data.DataFromNetWithRows
 import com.google.gson.JsonSyntaxException
@@ -24,10 +26,10 @@ abstract class DataImpl<T>(
     context: Context
 ) {
     private val calendar by lazy { Calendar.getInstance() }
-    private val sp = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
+    private val sp = context.getSharedPreferences(SP_SETTING, Context.MODE_PRIVATE)
     private var isIntraNetUsingNow = getUseIntraNet()
 
-    private fun getUseIntraNet(): Boolean = sp.getBoolean("intra_net_choose", false)
+    private fun getUseIntraNet(): Boolean = sp.getBoolean(INTRA_NET_CHOOSE, false)
 
     private fun checkNet() {
         val useIntraNet = getUseIntraNet()

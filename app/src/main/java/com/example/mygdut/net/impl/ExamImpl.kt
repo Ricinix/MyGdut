@@ -22,7 +22,9 @@ class ExamImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
     }
 
     private suspend fun getLatestTermCode(): NetResult<String> = getData {
-        val raw = call.getExamPage().string()
+        val body = call.getExamPage()
+        val raw = body.string()
+        body.close()
         val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
         result ?: throw NotMatchException()
     }

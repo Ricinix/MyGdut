@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.domain.ConstantField.INTRA_NET_CHOOSE
+import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.domain.VerifyCodeCrack
 import com.example.mygdut.net.RetrofitNet
 import com.example.mygdut.net.api.LoginApi
@@ -16,7 +18,7 @@ class LoginImpl(
     context: Context,
     crackEngine: VerifyCodeCrack.Engine = VerifyCodeCrack.Engine.EngineOne
 ) {
-    private val sp = context.getSharedPreferences("setting", Context.MODE_PRIVATE)
+    private val sp = context.getSharedPreferences(SP_SETTING, Context.MODE_PRIVATE)
     private var isIntraNetUsingNow = getUseIntraNet()
     private val date = Date()
     private val verifyCodeCrack by lazy {
@@ -31,7 +33,7 @@ class LoginImpl(
         else
             RetrofitNet.ExtraNet.instance.create(LoginApi::class.java)
 
-    private fun getUseIntraNet() = sp.getBoolean("intra_net_choose", false)
+    private fun getUseIntraNet() = sp.getBoolean(INTRA_NET_CHOOSE, false)
 
     suspend fun login(loginMessage: LoginMessage): NetResult<String> {
         checkNet()
