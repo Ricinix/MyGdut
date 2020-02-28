@@ -15,15 +15,17 @@ import kotlinx.coroutines.withContext
 
 class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     private var callBack: ScheduleViewModelCallBack? = null
-    private val mAdapter = ScheduleRecyclerAdapter(object : ScheduleRecyclerAdapter.ScheduleRecyclerCallBack{
-        override fun getTermName(): String = termName.value?:""
-        override fun saveSchedule(schedule: Schedule) {
-            viewModelScope.launch { scheduleRepo.saveSchedule(schedule) }
-        }
-        override fun deleteSchedule(schedule: Schedule) {
-            viewModelScope.launch { scheduleRepo.deleteSchedule(schedule) }
-        }
-    })
+    private val mAdapter =
+        ScheduleRecyclerAdapter(object : ScheduleRecyclerAdapter.ScheduleRecyclerCallBack {
+            override fun getTermName(): String = termName.value ?: ""
+            override fun saveSchedule(schedule: Schedule) {
+                viewModelScope.launch { scheduleRepo.saveSchedule(schedule) }
+            }
+
+            override fun deleteSchedule(schedule: Schedule) {
+                viewModelScope.launch { scheduleRepo.deleteSchedule(schedule) }
+            }
+        })
 
     // 用于显示当前学期
     val termName = MutableLiveData<String>()
@@ -36,7 +38,9 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
      * 计算现在是第几周来滑动
      */
     private fun setWeekPosition(date: SchoolCalendar) {
-        nowWeekPosition.value = date.calculateWeekPosition(mAdapter.maxWeek)
+        val week = date.calculateWeekPosition(mAdapter.maxWeek)
+        if (week >= 0)
+            nowWeekPosition.value = week
     }
 
     /**
@@ -100,12 +104,12 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     private suspend fun dataSetting(
         dataList: List<Schedule>,
         term: String,
-        totalFromNet : Boolean,
+        totalFromNet: Boolean,
         finish: Boolean = true
     ) {
         // 给课程表设置开学日和数据
         mAdapter.schoolDay = scheduleRepo.getSchoolDay(term)
-        if (mAdapter.schoolDay == null){
+        if (finish && mAdapter.schoolDay == null) {
             callBack?.schoolDayEmpty()
         }
         mAdapter.setData(dataList, totalFromNet)
@@ -133,6 +137,10 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
      */
     fun setCallBack(cb: ScheduleViewModelCallBack) {
         callBack = cb
+    }
+
+    companion object {
+        private const val TAG = "ScheduleViewModel"
     }
 
 }

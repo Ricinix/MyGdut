@@ -1,7 +1,7 @@
 package com.example.mygdut.di.module
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.R
 import com.example.mygdut.db.LocalDataBase
 import com.example.mygdut.db.dao.ExamDao
@@ -18,7 +18,7 @@ class ExamModule(private val fragment: ExamFragment) {
     @Provides
     @FragmentScope
     fun provideExamViewModel(factory: ExamViewModelFactory): ExamViewModel =
-        ViewModelProviders.of(fragment, factory)[ExamViewModel::class.java]
+        ViewModelProvider(fragment, factory)[ExamViewModel::class.java]
 
     @Provides
     @FragmentScope

@@ -1,7 +1,7 @@
 package com.example.mygdut.di.module
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.db.LocalDataBase
 import com.example.mygdut.db.dao.ScheduleDao
 import com.example.mygdut.di.scope.FragmentScope
@@ -17,7 +17,7 @@ class ScheduleModule(private val fragment: ScheduleFragment) {
     @Provides
     @FragmentScope
     fun provideScheduleViewModel(factory: ScheduleViewModelFactory): ScheduleViewModel =
-        ViewModelProviders.of(fragment, factory)[ScheduleViewModel::class.java]
+        ViewModelProvider(fragment, factory)[ScheduleViewModel::class.java]
 
     @Provides
     @FragmentScope

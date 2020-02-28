@@ -1,7 +1,7 @@
 package com.example.mygdut.di.module
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.db.LocalDataBase
 import com.example.mygdut.db.dao.ClassRoomDao
 import com.example.mygdut.di.scope.FragmentScope
@@ -17,7 +17,7 @@ class RoomModule(private val fragment: RoomFragment) {
     @Provides
     @FragmentScope
     fun provideRoomViewModel(factory: RoomViewModelFactory): RoomViewModel {
-        return ViewModelProviders.of(fragment, factory)[RoomViewModel::class.java]
+        return ViewModelProvider(fragment, factory)[RoomViewModel::class.java]
     }
 
     @Provides

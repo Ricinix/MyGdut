@@ -3,6 +3,7 @@ package com.example.mygdut.view.fragment
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -151,13 +152,14 @@ class ScheduleFragment : Fragment() {
     }
 
     private fun setObserver() {
-        mViewModel.termName.observe(this, Observer {
+        mViewModel.termName.observe(viewLifecycleOwner, Observer {
             schedule_select_termName.text = it
         })
-        mViewModel.nowWeekPosition.observe(this, Observer {
-            recycler_schedule.scrollToPosition(it)
+        mViewModel.nowWeekPosition.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "Scroll to week: $it")
+            recycler_schedule.smoothScrollToPosition(it)
         })
-        mViewModel.maxWeek.observe(this, Observer {
+        mViewModel.maxWeek.observe(viewLifecycleOwner, Observer {
             schedule_sidebar.setLength(it)
         })
     }
@@ -177,5 +179,9 @@ class ScheduleFragment : Fragment() {
             .scheduleModule(ScheduleModule(this))
             .build()
             .inject(this)
+    }
+
+    companion object {
+        private const val TAG = "ScheduleFragment"
     }
 }

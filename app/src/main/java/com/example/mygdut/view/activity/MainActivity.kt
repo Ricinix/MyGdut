@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.R
 import com.example.mygdut.domain.ConstantField.AUTO_CHECK_UPDATE
 import com.example.mygdut.domain.ConstantField.CHECK_BETA
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
 
         checkLogin()
         setupNavigationView()
-        mViewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+        mViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         autoCheckUpdate()
     }
 
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
      */
     private fun showDialogForDownload(versionName: String, title : String) {
         AlertDialog.Builder(this)
-            .setTitle("发现新Beta版本")
+            .setTitle(title)
             .setMessage("当前版本: ${getNowVersionName()}\n最新版本: $versionName")
             .setPositiveButton("前往下载") { _, _ ->
                 downloadApk(versionName)

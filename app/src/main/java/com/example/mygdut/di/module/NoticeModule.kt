@@ -1,7 +1,7 @@
 package com.example.mygdut.di.module
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.di.scope.FragmentScope
 import com.example.mygdut.view.fragment.NoticeFragment
 import com.example.mygdut.viewModel.NoticeViewModel
@@ -15,7 +15,7 @@ class NoticeModule(private val fragment: NoticeFragment) {
     @Provides
     @FragmentScope
     fun provideNoticeViewModel(factory : NoticeViewModelFactory): NoticeViewModel =
-        ViewModelProviders.of(fragment, factory)[NoticeViewModel::class.java]
+        ViewModelProvider(fragment, factory)[NoticeViewModel::class.java]
 
     @Provides
     @FragmentScope

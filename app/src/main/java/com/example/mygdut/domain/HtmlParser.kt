@@ -11,7 +11,7 @@ class HtmlParser(private val reader: Reader) {
     fun getHeaders(header: String): List<String> {
         val headers = mutableListOf<String>()
         val buf = CharArray(4096)
-        var charNum = 0
+        var charNum : Int
         var inHeader = false
         val sb = StringBuilder()
         while (reader.read(buf).also { charNum = it } != -1) {

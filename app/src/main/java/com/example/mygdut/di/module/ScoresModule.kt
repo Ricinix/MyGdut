@@ -1,7 +1,7 @@
 package com.example.mygdut.di.module
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.db.LocalDataBase
 import com.example.mygdut.db.dao.ScoreDao
 import com.example.mygdut.di.scope.FragmentScope
@@ -17,7 +17,7 @@ class ScoresModule(private val fragment: ScoreFragment) {
     @Provides
     @FragmentScope
     fun provideScoreViewModel(factory: ScoreViewModelFactory): ScoreViewModel =
-        ViewModelProviders.of(fragment, factory)[ScoreViewModel::class.java]
+        ViewModelProvider(fragment, factory)[ScoreViewModel::class.java]
 
     @Provides
     @FragmentScope

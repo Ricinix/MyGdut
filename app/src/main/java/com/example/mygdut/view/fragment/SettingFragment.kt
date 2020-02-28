@@ -1,6 +1,7 @@
 package com.example.mygdut.view.fragment
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.mygdut.R
@@ -36,7 +37,7 @@ class SettingFragment : PreferenceFragmentCompat() {
             true
         }
         findPreference<Preference>("check_update_btn")?.setOnPreferenceClickListener {
-            // 先偷个懒...
+            Toast.makeText(this@SettingFragment.context, "正在检测更新...", Toast.LENGTH_SHORT).show()
             mListener?.onCheckUpdate(false)
             true
         }
