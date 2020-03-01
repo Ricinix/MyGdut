@@ -3,7 +3,10 @@ package com.example.mygdut.db.data
 import com.example.mygdut.data.TermName
 import com.example.mygdut.db.entity.Score
 
-data class ScoreData(val scores : List<Score>, val termName: TermName){
+class ScoreData(scores : List<Score>, val termName: TermName){
+
+    val scores = scores.sortedByDescending { it.credit }
+
     /**
      * 计算带权绩点
      */

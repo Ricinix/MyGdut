@@ -97,7 +97,6 @@ class ScheduleRepo @Inject constructor(
             is NetResult.Success -> {
                 val data = result.data.map { it.toSchedule(termName) }
                     .filter { it.isValid() }
-                getSchoolDayFromNet(termName, code)
                 save2DataBase(data, termName)
                 NetResult.Success(ScheduleData(data, termName))
             }
@@ -117,7 +116,6 @@ class ScheduleRepo @Inject constructor(
                 is NetResult.Success -> {
                     val data = result.data.map { it.toSchedule(chooseTerm) }
                         .filter { it.isValid() }
-                    getSchoolDayFromNet(chooseTerm, code)
                     save2DataBase(data, chooseTerm)
                     NetResult.Success(ScheduleData(data, chooseTerm))
                 }
@@ -131,7 +129,6 @@ class ScheduleRepo @Inject constructor(
                 // 为了程序不crash，把不合规范的数据筛选掉
                 val data = result.data.first.map { it.toSchedule(termName) }
                     .filter { it.isValid() }
-                getSchoolDayFromNet(termName, result.data.second)
                 save2DataBase(data, termName)
                 NetResult.Success(ScheduleData(data, termName))
 

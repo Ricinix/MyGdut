@@ -269,7 +269,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         private const val MAX_NUM = 12
 
         // 下面是各种宽高设置
-        private const val HEADER_HEIGHT = 30f
+        private const val HEADER_HEIGHT = 32f
         private const val HEADER_WIDTH = 30f
         private const val MARGIN = 2
 

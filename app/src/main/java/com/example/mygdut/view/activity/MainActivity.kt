@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     private fun showDialogForLatest() {
         AlertDialog.Builder(this)
             .setTitle("已是最新版")
-            .setMessage("版本号: ${getNowVersion()}")
+            .setMessage("版本号: ${getNowVersion().version}")
             .setPositiveButton("了解") { _, _ -> }
             .create()
             .show()
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     private fun showDialogForDownload(versionName: ApkVersion, title : String) {
         AlertDialog.Builder(this)
             .setTitle(title)
-            .setMessage("当前版本: ${getNowVersion()}\n最新版本: $versionName")
+            .setMessage("当前版本: ${getNowVersion().version}\n最新版本: ${versionName.version}")
             .setPositiveButton("前往下载") { _, _ ->
                 downloadApk(versionName)
             }

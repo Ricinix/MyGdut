@@ -10,14 +10,14 @@ import com.example.mygdut.db.converters.IntListConverter
 )
 @TypeConverters(IntListConverter::class)
 data class Schedule(
-    val className: String,
-    val weekDay: Int,
-    val classOrderInDay: List<Int>,
-    val classRoom: String,
-    val weeks: List<Int>,
+    val className: String, // 课程名称
+    val weekDay: Int, //星期几
+    val classOrderInDay: List<Int>, // 当天第几节
+    val classRoom: String, // 课室号
+    val weeks: List<Int>, // 哪几周
 
-    val teacher: String,
-    val classmate: String,
+    val teacher: String, // 老师
+    val classmate: String, // 上课班级
     val termName: String, // 方便本地存储
     val type : Int // 用来判断是用户自行添加的课程还是教务系统的课程
 ){

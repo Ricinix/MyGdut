@@ -12,20 +12,20 @@ import com.example.mygdut.domain.ExamDate
 )
 @TypeConverters(IntListConverter::class, ExamDateConverter::class)
 data class Exam(
-    val orderInDay: List<Int>,
-    val teacher: String,
-    val className: String,
-    val arrangeType: String,
-    val place: String,
-    val examType: String,
-    val dateTime: ExamDate,
-    val mode: String,
-    val termName: String,
-    val paperNum: String,
-    val week: Int,
-    val weekDay: Int,
-    val seat: String,
-    val period: String
+    val orderInDay: List<Int>, // 占用节次,如：06,07
+    val teacher: String, // 老师名称
+    val className: String, // 课程名称
+    val arrangeType: String, // 安排类型，如：停课考试/随堂考
+    val place: String, // 考试场地
+    val examType: String, // 考试类别
+    val dateTime: ExamDate, // 考试日期+时间
+    val mode: String, // 开闭卷
+    val termName: String, // 学期名称
+    val paperNum: String, // 试卷编号
+    val week: Int, // // 考试周次
+    val weekDay: Int, // 星期几，如5
+    val seat: String, // 座位号
+    val period: String // 学时
 ) {
     fun getState(): Int = dateTime.getState()
 
