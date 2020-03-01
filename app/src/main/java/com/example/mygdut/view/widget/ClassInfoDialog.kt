@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.db.entity.Schedule
 import kotlinx.android.synthetic.main.dialog_class_info.*
 
 class ClassInfoDialog(context: Context, private val schedule: Schedule, private val deleteSchedule : (Schedule)->Unit) : BaseDialog(context) {

@@ -1,7 +1,7 @@
 package com.example.mygdut.net.data
 
-import com.example.mygdut.db.data.Exam
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.db.entity.Exam
+import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.ExamDate
 import com.example.mygdut.domain.TermTransformer
 

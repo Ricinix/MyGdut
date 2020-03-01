@@ -3,7 +3,7 @@ package com.example.mygdut.view.widget
 import android.content.Context
 import android.os.Bundle
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Exam
+import com.example.mygdut.db.entity.Exam
 import kotlinx.android.synthetic.main.dialog_exam_info.*
 import kotlinx.android.synthetic.main.info_exam.*
 

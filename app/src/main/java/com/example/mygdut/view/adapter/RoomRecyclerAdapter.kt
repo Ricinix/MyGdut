@@ -13,7 +13,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.setMargins
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
-import com.example.mygdut.db.data.ClassRoom
+import com.example.mygdut.db.entity.ClassRoom
 import com.example.mygdut.view.resource.BuildingResourceHolder
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup

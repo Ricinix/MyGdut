@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.mygdut.db.data.Exam
+import com.example.mygdut.db.entity.Exam
 
 @Dao
 interface ExamDao {

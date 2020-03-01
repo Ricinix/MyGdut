@@ -1,6 +1,6 @@
 package com.example.mygdut.net.data
 
-import com.example.mygdut.db.data.Score
+import com.example.mygdut.db.entity.Score
 import com.example.mygdut.domain.TermTransformer
 
 data class ScoreFromNet(

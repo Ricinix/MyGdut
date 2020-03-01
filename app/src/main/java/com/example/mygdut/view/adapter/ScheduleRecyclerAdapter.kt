@@ -5,7 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.data.TermName
+import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.view.widget.ClassInfoDialog
 import com.example.mygdut.view.widget.ClassNewDialog
@@ -114,7 +115,7 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
     }
 
     interface ScheduleRecyclerCallBack {
-        fun getTermName(): String
+        fun getTermName(): TermName
         fun saveSchedule(schedule: Schedule)
         fun deleteSchedule(schedule: Schedule)
     }

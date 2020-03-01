@@ -2,6 +2,8 @@ package com.example.mygdut.domain
 
 import android.content.Context
 import com.example.mygdut.R
+import com.example.mygdut.data.TermCode
+import com.example.mygdut.data.TermName
 import java.lang.Integer.max
 import java.util.*
 
@@ -47,20 +49,20 @@ class TermTransformer(context: Context, account: String) {
      * 通过学期代码获取此学期的上一个学期的学期名字
      * 如果这是第一个学期，则就返回此学期名字
      */
-    fun getLastTermName(termCode: String) : String{
-        val code = termCode.toInt()
+    fun getLastTermName(termCode: TermCode) : TermName{
+        val code = termCode.code.toInt()
         return when {
             // 如果当前是第二学期，则返回第一学期
             code % 100 == 2 -> {
-                termCode2TermName((code - 1).toString())
+                TermName(termCode2TermName((code - 1).toString()))
             }
             // 如果不是第一学年，又是第一学期，则返回上一学年第二学期
             code / 100 - admissionYear / 100 > 0 -> {
-                termCode2TermName((code - 99).toString())
+                TermName(termCode2TermName((code - 99).toString()))
             }
             // 如果是第一学年第一学期,则不变
             else -> {
-                termCode2TermName(termCode)
+                TermName(termCode2TermName(termCode.code))
             }
         }
     }

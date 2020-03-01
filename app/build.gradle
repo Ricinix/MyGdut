@@ -10,6 +10,7 @@ android {
     def name = "v1.2.1"
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+//    ndkVersion "21.0.6113669"
     defaultConfig {
         applicationId "com.example.mygdut"
         minSdkVersion 24
@@ -17,6 +18,11 @@ android {
         versionCode 7
         versionName name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//        externalNativeBuild{
+//            cmake{
+//                cppFlags
+//            }
+//        }
 //        ndk {
 //            abiFilters "armeabi","armeabi-v7a"
 //        }
@@ -48,6 +54,17 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+//    externalNativeBuild{
+//        cmake{
+//            path "CMakeLists.txt"
+//            version "3.10.2"
+//        }
+//    }
+//    sourceSets {
+//        main{
+//            jni.srcDirs = ['src/main/jni/']
+//        }
+//    }
 }
 
 dependencies {

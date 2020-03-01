@@ -7,7 +7,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Notice
+import com.example.mygdut.db.entity.Notice
 
 class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHolder>() {
     private var mList = mutableListOf<Notice>()

@@ -11,10 +11,12 @@ import android.widget.Spinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Score
+import com.example.mygdut.data.TermName
+import com.example.mygdut.db.data.ScoreData
+import com.example.mygdut.db.entity.Score
 import com.example.mygdut.view.widget.TermSelectDialog
 
-class ScoreRecyclerAdapter(private val getData: (termName: String, includeElective: Boolean) -> Unit = { _, _ -> }) :
+class ScoreRecyclerAdapter(private val getData: (termName: TermName, includeElective: Boolean) -> Unit = { _, _ -> }) :
     RecyclerView.Adapter<ScoreRecyclerAdapter.ViewHolder>() {
     // 设置这个标志位防止spinner初始化时触发监听
     private var firstInit = true
@@ -26,15 +28,15 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
 //            notifyDataSetChanged()
             getData(currentTermName, value)
         }
-    var currentTermName = "大学全部"
+    var currentTermName = TermName.newInitInstance()
         set(value) {
-            field = if (value.isNotEmpty()) value else "大学全部"
+            field = if (value.isValid()) value else TermName.newInitInstance()
         }
     private var mContext: Context? = null
     private var modeArray : Array<String>? = null
     private var inValidNum = 0
 
-    private fun refreshTermName(name : String){
+    private fun refreshTermName(name : TermName){
         currentTermName = name
         notifyDataSetChanged()
         getData(currentTermName, includeElective)
@@ -43,7 +45,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
     /**
      * 获取数据
      */
-    fun setData(list: List<Score>, avgGpa: Double?) {
+    private fun setData(list: List<Score>, avgGpa : Double?) {
         mList = list
         mAvgGpa = avgGpa
         inValidNum = mList.count { it.gpa == null }
@@ -53,9 +55,9 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
     /**
      * 获取最新成绩时需要设置学期
      */
-    fun setData(list: List<Score>, avgGpa: Double?, termName: String){
-        currentTermName = termName
-        setData(list, avgGpa)
+    fun setData(scoreData: ScoreData){
+        currentTermName = scoreData.termName
+        setData(scoreData.scores, scoreData.getAvgGpa())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -88,8 +90,8 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
         when (holder) {
             is ViewHolder.HeaderViewHolder -> {
                 holder.gpa.text = mAvgGpa?.run { String.format("%.3f", mAvgGpa) } ?: "暂无成绩"
-                holder.title.text = currentTermName
-                holder.termShow.text = currentTermName
+                holder.title.text = currentTermName.name
+                holder.termShow.text = currentTermName.name
                 holder.scoreNum.text = "共${mList.size}门课程"
                 holder.wrongMsg.text = if (inValidNum == 0) "" else "其中有${inValidNum}门成绩因未教评而无法查看，故暂不计入绩点"
                 holder.termSelect.setOnClickListener {
@@ -110,7 +112,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: String, includeElecti
                             return
                         }
                         includeElective = mode != "不含选修"
-                        Log.d("ScoreAdapter", "mode select: ");
+                        Log.d("ScoreAdapter", "mode select: ")
                     }
                 }
             }

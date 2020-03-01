@@ -1,6 +1,6 @@
 package com.example.mygdut.net.data
 
-import com.example.mygdut.db.data.ClassRoom
+import com.example.mygdut.db.entity.ClassRoom
 import com.example.mygdut.domain.RoomPlace
 
 data class RoomFromNet(override var rows: List<RoomRows>, override val total: Int) :
@@ -30,7 +30,7 @@ data class RoomRows(
     val xqmc: String,
     val zc: String
 ) {
-    fun toClassRoom(): ClassRoom {
+    fun toClassRoom(buildingCode : String): ClassRoom {
         return if (jcdm.length and 1 == 0) {
             val l = mutableSetOf<Int>()
             for (i in 0 until l.size / 2) {
@@ -39,7 +39,7 @@ data class RoomRows(
                 } catch (e: NumberFormatException) {
                 }
             }
-            ClassRoom(pkrq, xqmc, RoomPlace(jxcdmc), l)
-        } else ClassRoom(pkrq, xqmc, RoomPlace(jxcdmc), mutableSetOf())
+            ClassRoom(pkrq, xqmc, RoomPlace(jxcdmc), l, buildingCode)
+        } else ClassRoom(pkrq, xqmc, RoomPlace(jxcdmc), mutableSetOf(), buildingCode)
     }
 }

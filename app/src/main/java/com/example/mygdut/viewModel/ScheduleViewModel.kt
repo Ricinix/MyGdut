@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mygdut.data.NetResult
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.data.TermName
+import com.example.mygdut.db.data.ScheduleData
+import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.model.ScheduleRepo
 import com.example.mygdut.view.adapter.ScheduleRecyclerAdapter
@@ -17,18 +19,17 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     private var callBack: ScheduleViewModelCallBack? = null
     private val mAdapter =
         ScheduleRecyclerAdapter(object : ScheduleRecyclerAdapter.ScheduleRecyclerCallBack {
-            override fun getTermName(): String = termName.value ?: ""
+            override fun getTermName(): TermName = termName.value ?: TermName.newEmptyInstance()
             override fun saveSchedule(schedule: Schedule) {
                 viewModelScope.launch { scheduleRepo.saveSchedule(schedule) }
             }
-
             override fun deleteSchedule(schedule: Schedule) {
                 viewModelScope.launch { scheduleRepo.deleteSchedule(schedule) }
             }
         })
 
     // 用于显示当前学期
-    val termName = MutableLiveData<String>()
+    val termName = MutableLiveData<TermName>()
     // 用于滑动到当前周次
     val nowWeekPosition = MutableLiveData<Int>()
     // 用于sidebar的生成
@@ -58,14 +59,14 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     /**
      * 学期名字来获取数据，场景是用户自己选择了某个学期
      */
-    fun getData(termName: String) {
+    fun getData(termName: TermName) {
         viewModelScope.launch {
             val backup = scheduleRepo.getBackupScheduleByTermName(termName)
-            dataSetting(backup, termName, totalFromNet = false, finish = false)
+            dataSetting(backup, totalFromNet = false, finish = false)
             when (val result =
                 withContext(Dispatchers.IO) { scheduleRepo.getScheduleByTermName(termName) }) {
                 is NetResult.Success -> {
-                    dataSetting(result.data, termName, true)
+                    dataSetting(result.data, true)
                 }
                 is NetResult.Error -> {
                     callBack?.onFinish()
@@ -84,10 +85,10 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     fun getInitData() {
         viewModelScope.launch {
             val backup = scheduleRepo.getBackupSchedule()
-            dataSetting(backup.first, backup.second, totalFromNet = false, finish = false)
+            dataSetting(backup, totalFromNet = false, finish = false)
             when (val result = withContext(Dispatchers.IO) { scheduleRepo.getCurrentSchedule() }) {
                 is NetResult.Success -> {
-                    dataSetting(result.data.first, result.data.second, true)
+                    dataSetting(result.data, true)
                 }
                 is NetResult.Error -> {
                     callBack?.onFinish()
@@ -102,19 +103,18 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
      * 统一处理获取到的数据
      */
     private suspend fun dataSetting(
-        dataList: List<Schedule>,
-        term: String,
+        scheduleData: ScheduleData,
         totalFromNet: Boolean,
         finish: Boolean = true
     ) {
         // 给课程表设置开学日和数据
-        mAdapter.schoolDay = scheduleRepo.getSchoolDay(term)
+        mAdapter.schoolDay = scheduleRepo.getSchoolDay(scheduleData.termName)
         if (finish && mAdapter.schoolDay == null) {
             callBack?.schoolDayEmpty()
         }
-        mAdapter.setData(dataList, totalFromNet)
+        mAdapter.setData(scheduleData.schedules, totalFromNet)
         // 设置选择器的学期显示
-        termName.value = term
+        termName.value = scheduleData.termName
         // 全都设置好了再滑动recyclerView
         mAdapter.schoolDay?.let { setWeekPosition(it) }
         // 设置并重绘sidebar
@@ -125,7 +125,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     /**
      * 从下一层获取用户自己上一次选择的学期，用于初始化
      */
-    fun getChosenTerm(): String = scheduleRepo.getChosenName()
+    fun getChosenTerm(): TermName = scheduleRepo.getChosenName()
 
     /**
      * 提供给fragment设置recyclerView
@@ -137,6 +137,11 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
      */
     fun setCallBack(cb: ScheduleViewModelCallBack) {
         callBack = cb
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        callBack = null
     }
 
     companion object {

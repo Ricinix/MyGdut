@@ -3,15 +3,16 @@ package com.example.mygdut.view.widget
 import android.content.Context
 import android.os.Bundle
 import com.example.mygdut.R
+import com.example.mygdut.data.TermName
 import kotlinx.android.synthetic.main.dialog_term_select.*
 import kotlin.math.max
 
 
 class TermSelectDialog(
     context: Context,
-    private val termNameChosen: String,
+    private val termNameChosen: TermName,
     private val mode : String,
-    private val onSelect: (termName: String) -> Unit = {}
+    private val onSelect: (termName: TermName) -> Unit = {}
 ) : BaseDialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +27,7 @@ class TermSelectDialog(
 
     private fun setupBtnListener(arr: Array<String>) {
         dialog_btn_confirm.setOnClickListener {
-            onSelect(arr[num_picker.value])
+            onSelect(TermName(arr[num_picker.value]) )
             dismiss()
         }
         dialog_btn_cancel.setOnClickListener {
@@ -45,7 +46,7 @@ class TermSelectDialog(
         num_picker.displayedValues = termNameArray
         num_picker.minValue = 0
         num_picker.maxValue = termNameArray.size - 1
-        val initIndex = termNameArray.indexOf(termNameChosen)
+        val initIndex = termNameArray.indexOf(termNameChosen.name)
         num_picker.value = max(initIndex, 0)
         return termNameArray
     }

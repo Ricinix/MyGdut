@@ -2,36 +2,46 @@ package com.example.mygdut.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mygdut.data.ApkVersion
 import com.example.mygdut.net.impl.UpdateImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel : ViewModel() {
     private val updateImpl = UpdateImpl()
-    private var mListener : MainViewModelListener? = null
+    private var mListener: MainViewModelListener? = null
 
-    fun checkVersion(nowVersion : String, checkBeta : Boolean, autoCheck : Boolean){
+    fun checkVersion(nowVersion: ApkVersion, checkBeta: Boolean, autoCheck: Boolean) {
         viewModelScope.launch {
-            val compareNowVersion = if("beta" in nowVersion) nowVersion else "$nowVersion-c"
-            val stable = updateImpl.getLatestStableVersion()
-            val compareStableVersion = "$stable-c"
-            if (!checkBeta){
-                if (compareStableVersion > compareNowVersion) mListener?.onNewStable(stable)
-                else if(!autoCheck) mListener?.onLatest()
-            }else{
-                val beta = updateImpl.getLatestBetaVersion()
-                if (beta > compareStableVersion && beta > compareNowVersion) mListener?.onNewBeta(beta)
-                else if (compareStableVersion > beta && stable > compareNowVersion) mListener?.onNewStable(stable)
+            val stable = withContext(Dispatchers.IO) { updateImpl.getLatestStableVersion() }
+            if (!checkBeta) {
+                if (stable.isNewerThan(nowVersion)) mListener?.onNewStable(stable)
                 else if (!autoCheck) mListener?.onLatest()
+            } else {
+                val beta = withContext(Dispatchers.IO) { updateImpl.getLatestBetaVersion() }
+                if (beta.isNewerThan(stable) && beta.isNewerThan(nowVersion)) {
+                    mListener?.onNewBeta(beta)
+                } else if (stable.isNewerThan(beta) && stable.isNewerThan(nowVersion)) {
+                    mListener?.onNewStable(stable)
+                } else if (!autoCheck) mListener?.onLatest()
             }
         }
     }
 
 
-    fun setListener(li : MainViewModelListener){mListener = li}
+    fun setListener(li: MainViewModelListener) {
+        mListener = li
+    }
 
-    interface MainViewModelListener{
+    override fun onCleared() {
+        super.onCleared()
+        mListener = null
+    }
+
+    interface MainViewModelListener {
         fun onLatest()
-        fun onNewStable(versionName : String)
-        fun onNewBeta(versionName : String)
+        fun onNewStable(version: ApkVersion)
+        fun onNewBeta(version: ApkVersion)
     }
 }

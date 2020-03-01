@@ -6,52 +6,66 @@
     android:layout_height="match_parent"
     tools:context=".view.fragment.ScheduleFragment">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/schedule_tool_bar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="#ffffff"
+        android:elevation="8dp"
+        android:minHeight="0dp"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/schedule_btn_termName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:focusable="true">
 
-    <LinearLayout
-        android:id="@+id/schedule_btn_termName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:selectableItemBackground"
-        android:clickable="true"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/schedule_select_termName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="16sp" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/schedule_select_termName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textSize="16sp" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_unfold_more_black_24dp" />
+            </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_unfold_more_black_24dp" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/schedule_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/schedule_setting"
+                android:src="@drawable/ic_settings_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/schedule_setting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/schedule_setting"
-        android:src="@drawable/ic_settings_black_24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/schedule_refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="28dp"
-        android:contentDescription="@string/schedule_refresh"
-        android:src="@drawable/ic_refresh_black_24dp"
-        app:layout_constraintEnd_toStartOf="@id/schedule_setting"
-        app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/schedule_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="28dp"
+                android:contentDescription="@string/schedule_refresh"
+                android:src="@drawable/ic_refresh_black_24dp"
+                app:layout_constraintEnd_toStartOf="@id/schedule_setting"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_schedule"
@@ -60,7 +74,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/schedule_setting" />
+        app:layout_constraintTop_toBottomOf="@id/schedule_tool_bar" />
 
     <com.example.mygdut.view.widget.SideBar
         android:id="@+id/schedule_sidebar"

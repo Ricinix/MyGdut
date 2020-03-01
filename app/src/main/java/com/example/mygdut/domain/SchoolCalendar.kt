@@ -1,12 +1,13 @@
 package com.example.mygdut.domain
 
+import com.example.mygdut.data.TermName
 import java.util.*
 import kotlin.math.min
 
 /**
  * 对日期相关功能的封装，构造参数为开学日期(Int形式)
  */
-class SchoolCalendar(val termName : String,val schoolDay : Int) {
+class SchoolCalendar(val termName : TermName,val schoolDay : Int) {
     /**
      * 判断是否合法
      */

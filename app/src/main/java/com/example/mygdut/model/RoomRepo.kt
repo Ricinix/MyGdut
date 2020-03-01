@@ -1,9 +1,11 @@
 package com.example.mygdut.model
 
 import android.content.Context
+import com.example.mygdut.data.Date
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.TeachingBuildingName
 import com.example.mygdut.db.dao.ClassRoomDao
-import com.example.mygdut.db.data.ClassRoom
+import com.example.mygdut.db.entity.ClassRoom
 import com.example.mygdut.domain.BuildingTransformer
 import com.example.mygdut.domain.ConstantField.CLASS_ROOM_CAMPUS_NAME
 import com.example.mygdut.domain.ConstantField.SP_SETTING
@@ -22,14 +24,13 @@ class RoomRepo @Inject constructor(
     private val editor = settingSp.edit()
 
     suspend fun getBackupData(
-        campusName: String,
-        buildingName: String,
-        date: String
+        teachingBuildingName: TeachingBuildingName,
+        date: Date
     ): List<ClassRoom> {
         return classRoomDao.getData(
-            date,
-            campusName,
-            transformer.name2code(campusName, buildingName).second
+            date.date,
+            teachingBuildingName.campusName,
+            transformer.name2code(teachingBuildingName).buildingCode
         )
     }
 
@@ -37,17 +38,16 @@ class RoomRepo @Inject constructor(
 
 
     suspend fun getClassRooms(
-        campusName: String,
-        buildingName: String,
-        date: String
+        teachingBuildingName : TeachingBuildingName,
+        date: Date
     ): NetResult<List<ClassRoom>> {
-        val codes = transformer.name2code(campusName, buildingName)
+        val codes = transformer.name2code(teachingBuildingName)
         val dataList = mutableListOf<ClassRoom>()
         // 确保所有的数据都拿到
-        when (val result = roomImpl.getRoomData(codes.first, date, codes.second)) {
+        when (val result = roomImpl.getRoomData(codes, date)) {
             is NetResult.Success -> {
                 for (d in result.data.rows) {
-                    val room = d.toClassRoom()
+                    val room = d.toClassRoom(codes.buildingCode)
                     var isAdd = false
                     for (data in dataList) {
                         if (data.isTheSameWith(room)) {
@@ -60,20 +60,18 @@ class RoomRepo @Inject constructor(
             }
             is NetResult.Error -> return result
         }
-        save2DataBase(dataList, campusName, buildingName, date)
+        save2DataBase(dataList, teachingBuildingName, date)
         return NetResult.Success(dataList)
     }
 
     private suspend fun save2DataBase(
         data: List<ClassRoom>,
-        campusName: String,
-        buildingName: String,
-        date: String
+        teachingBuildingName: TeachingBuildingName,
+        date : Date
     ) {
-        data.forEach { it.buildingCode = transformer.name2code(campusName, buildingName).second }
-        classRoomDao.deleteBeforeDate(date)
+        classRoomDao.deleteBeforeDate(date.date)
         classRoomDao.saveAll(data)
-        editor.putString(CLASS_ROOM_CAMPUS_NAME, campusName)
+        editor.putString(CLASS_ROOM_CAMPUS_NAME, teachingBuildingName.campusName)
         editor.commit()
     }
 

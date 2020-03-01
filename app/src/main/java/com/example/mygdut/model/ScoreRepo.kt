@@ -2,8 +2,11 @@ package com.example.mygdut.model
 
 import android.content.Context
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.TermCode
+import com.example.mygdut.data.TermName
 import com.example.mygdut.db.dao.ScoreDao
-import com.example.mygdut.db.data.Score
+import com.example.mygdut.db.data.ScoreData
+import com.example.mygdut.db.entity.Score
 import com.example.mygdut.domain.ConstantField.AUTO_ASSESS
 import com.example.mygdut.domain.ConstantField.SCORE_TERM_NAME
 import com.example.mygdut.domain.ConstantField.SP_SETTING
@@ -33,38 +36,38 @@ class ScoreRepo @Inject constructor(
         termTransformer = TermTransformer(context, account)
     }
 
-    suspend fun getBackupScore(): Pair<List<Score>, String> {
-        val termName = settingSp.getString(SCORE_TERM_NAME, "") ?: ""
-        return if (termName.isEmpty()){
-            scoreDao.getAllScore() to "大学全部"
-        }else{
-            getBackupScoreByTermName(termName, true) to termName
+    suspend fun getBackupScore(): ScoreData {
+        val termName = TermName(settingSp.getString(SCORE_TERM_NAME, "") ?: "")
+        return if (!termName.isValid()) {
+            ScoreData(scoreDao.getAllScore(), TermName.newInitInstance())
+        } else {
+            getBackupScoreByTermName(termName, true)
         }
     }
 
-    suspend fun getBackupScoreByTermName(termName: String, includeElective: Boolean): List<Score> {
+    suspend fun getBackupScoreByTermName(
+        termName: TermName,
+        includeElective: Boolean
+    ): ScoreData {
         // 为了解决两个学期的问题，还是需要转换成学期代码来判断
-        val code = termTransformer.termName2TermCode(termName)
+        val code = termName.toTermCode(termTransformer)
         val rawData = when {
-            code.isEmpty() -> {
-                scoreDao.getAllScore()
-            }
-            code.last() == '3' -> {
-                val termOne = termTransformer.termCode2TermName("${code.substring(0, code.lastIndex)}1")
-                val termTwo = termTransformer.termCode2TermName("${code.substring(0, code.lastIndex)}2")
-                scoreDao.getScoreByTermName(termOne) + scoreDao.getScoreByTermName(termTwo)
+            code.containTwoTerm -> {
+                val termOne = code.getFirstTermCode().toTermName(termTransformer)
+                val termTwo = code.getSecondTermCode().toTermName(termTransformer)
+                scoreDao.getScoreByTermName(termOne.name) + scoreDao.getScoreByTermName(termTwo.name)
             }
             else -> {
-                scoreDao.getScoreByTermName(termName)
+                scoreDao.getScoreByTermName(termName.name)
             }
         }
-        return rawData.filter { includeElective || it.studyMode != "选修" }
+        return ScoreData(rawData.filter { includeElective || it.studyMode != "选修" }, termName)
     }
 
     /**
      * 获取最新绩点
      */
-    suspend fun getLatestScore(): NetResult<Pair<List<Score>, String>> {
+    suspend fun getLatestScore(): NetResult<ScoreData> {
         val autoAssess = settingSp.getBoolean(AUTO_ASSESS, true)
         return getLatestScore(autoAssess)
     }
@@ -72,20 +75,20 @@ class ScoreRepo @Inject constructor(
     /**
      * 获取最新绩点（带自动教评）
      */
-    private suspend fun getLatestScore(autoAssess: Boolean): NetResult<Pair<List<Score>, String>> {
+    private suspend fun getLatestScore(autoAssess: Boolean): NetResult<ScoreData> {
         return when (val result = scoreImpl.getNowTermScores()) {
             is NetResult.Success -> {
-                if (result.data.first.total == 0){
+                if (result.data.first.total == 0) {
                     val tn = termTransformer.getLastTermName(result.data.second)
-                    return when(val r2 =  getScoreByTermName(tn, true, autoAssess)){
-                        is NetResult.Error->r2
-                        is NetResult.Success->NetResult.Success(r2.data to tn)
+                    return when (val r2 = getScoreByTermName(tn, true, autoAssess)) {
+                        is NetResult.Error -> r2
+                        is NetResult.Success -> NetResult.Success(ScoreData(r2.data.scores, tn))
                     }
                 }
 
                 if (autoAssess) {
                     var autoAssessNum = 0
-                    for (row in result.data.first.rows){
+                    for (row in result.data.first.rows) {
                         if (row.needToAssess()) {
                             val assessResult = assessImpl.assess(row.xnxqdm, row.kcmc)
                             if (assessResult is NetResult.Success && assessResult.data == "1")
@@ -97,10 +100,10 @@ class ScoreRepo @Inject constructor(
                         return getLatestScore(false)
                 }
 
-                val termName = termTransformer.termCode2TermName(result.data.second)
+                val termName = result.data.second.toTermName(termTransformer)
                 val scores = result.data.first.rows.map { it.toScore(termTransformer) }
                 save2DataBase(scores, termName)
-                NetResult.Success(scores to termName)
+                NetResult.Success(ScoreData(scores, termName))
             }
             is NetResult.Error -> {
                 result
@@ -112,9 +115,9 @@ class ScoreRepo @Inject constructor(
      * 根据学期名字获取绩点（viewModel层及以上的地方都只知道termName）
      */
     suspend fun getScoreByTermName(
-        termName: String,
+        termName: TermName,
         includeElective: Boolean
-    ): NetResult<List<Score>> {
+    ): NetResult<ScoreData> {
         val autoAssess = settingSp.getBoolean(AUTO_ASSESS, true)
         return getScoreByTermName(termName, includeElective, autoAssess)
     }
@@ -123,11 +126,11 @@ class ScoreRepo @Inject constructor(
      * 根据学期名字获取绩点（带自动教评）
      */
     private suspend fun getScoreByTermName(
-        termName: String,
+        termName: TermName,
         includeElective: Boolean,
         autoAssess: Boolean
-    ): NetResult<List<Score>> {
-        val termCode = termTransformer.termName2TermCode(termName)
+    ): NetResult<ScoreData> {
+        val termCode = termName.toTermCode(termTransformer)
         return when (val scoreResult = getScoreByTermCode(termCode)) {
             is NetResult.Success -> {
                 if (autoAssess) {
@@ -147,7 +150,7 @@ class ScoreRepo @Inject constructor(
                 val data = scoreResult.data.rows.map { it.toScore(termTransformer) }
                     .filter { includeElective || it.studyMode != "选修" }
                 save2DataBase(data, termName)
-                NetResult.Success(data)
+                NetResult.Success(ScoreData(data, termName))
             }
             is NetResult.Error -> {
                 scoreResult
@@ -158,11 +161,11 @@ class ScoreRepo @Inject constructor(
     /**
      * 在面向外部的方法中将termName转换为TermCode再请求数据
      */
-    private suspend fun getScoreByTermCode(termCode: String): NetResult<ScoreFromNet> {
+    private suspend fun getScoreByTermCode(termCode: TermCode): NetResult<ScoreFromNet> {
         // 先判断是否是要整个学年的成绩，如果是则要请求两次，并合并
-        return if (termCode.isNotEmpty() && termCode.last() == '3') {
-            val termOne = scoreImpl.getScoresByTerm("${termCode.substring(0, termCode.lastIndex)}1")
-            val termTwo = scoreImpl.getScoresByTerm("${termCode.substring(0, termCode.lastIndex)}2")
+        return if (termCode.containTwoTerm) {
+            val termOne = scoreImpl.getScoresByTerm(termCode.getFirstTermCode())
+            val termTwo = scoreImpl.getScoresByTerm(termCode.getSecondTermCode())
             if (termOne is NetResult.Success && termTwo is NetResult.Success) {
                 val mergeScore = ScoreFromNet(
                     termOne.data.rows + termTwo.data.rows,
@@ -171,8 +174,6 @@ class ScoreRepo @Inject constructor(
                 NetResult.Success(mergeScore)
             } else if (termOne is NetResult.Error) termOne
             else termTwo
-        } else if (termCode.isEmpty()) {
-            scoreImpl.getAllScores()
         } else
             scoreImpl.getScoresByTerm(termCode)
     }
@@ -180,9 +181,9 @@ class ScoreRepo @Inject constructor(
     /**
      * 本地存储
      */
-    private suspend fun save2DataBase(data: List<Score>, termName: String) {
+    private suspend fun save2DataBase(data: List<Score>, termName: TermName) {
         scoreDao.saveAllScore(data)
-        editor.putString(SCORE_TERM_NAME, termName)
+        editor.putString(SCORE_TERM_NAME, termName.name)
         editor.commit()
     }
 

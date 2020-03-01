@@ -1,6 +1,7 @@
 package com.example.mygdut.net.data
 
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.data.TermName
+import com.example.mygdut.db.entity.Schedule
 
 data class ScheduleFromNet(
     val jcdm2: String, // 当天第几节
@@ -13,7 +14,7 @@ data class ScheduleFromNet(
     val xq: String, //星期几
     val zcs: String // 哪几周
 ) {
-    fun toSchedule(termName : String) : Schedule{
+    fun toSchedule(termName : TermName) : Schedule{
         return try {
             Schedule(
                 kcmc,
@@ -23,7 +24,7 @@ data class ScheduleFromNet(
                 zcs.split(",").map { it.toInt() }.sorted(),
                 teaxms,
                 jxbmc,
-                termName,
+                termName.name,
                 Schedule.TYPE_FROM_NET
             )
         }catch (e : NumberFormatException){
@@ -35,7 +36,7 @@ data class ScheduleFromNet(
                 listOf(),
                 teaxms,
                 jxbmc,
-                termName,
+                termName.name,
                 Schedule.TYPE_FROM_NET
             )
         }

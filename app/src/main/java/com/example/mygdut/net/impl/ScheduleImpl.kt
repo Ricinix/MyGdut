@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.NotMatchException
+import com.example.mygdut.data.TermCode
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.api.ScheduleApi
 import com.example.mygdut.net.data.ScheduleFromNet
@@ -13,29 +14,30 @@ import com.google.gson.reflect.TypeToken
 class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
     DataImpl<ScheduleApi>(login, loginMessage, ScheduleApi::class.java, context) {
     private val gson = Gson()
+    private val schedulePatten = Regex("(?<=var kbxx = )\\[.*]")
 
     /**
      * 获取课程表
      */
-    suspend fun getClassScheduleByTermCode(termCode: String): NetResult<List<ScheduleFromNet>> =
+    suspend fun getClassScheduleByTermCode(termCode: TermCode): NetResult<List<ScheduleFromNet>> =
         getData {
             getClassSchedule(termCode)
         }
 
-    suspend fun getNowTermSchedule(): NetResult<Pair<List<ScheduleFromNet>, String>> = getData {
+    suspend fun getNowTermSchedule(): NetResult<Pair<List<ScheduleFromNet>, TermCode>> = getData {
         val termCodeResult = getNowTermCodeForSchedule()
         Log.d(TAG, "termCode: $termCodeResult")
         if (termCodeResult is NetResult.Success)
             getClassSchedule(termCodeResult.data) to termCodeResult.data
         else
-            getClassSchedule(verifyTermCode("")) to ""
+            getClassSchedule(TermCode("")) to TermCode.newInitInstance()
     }
 
-    private suspend fun getClassSchedule(termCode: String): List<ScheduleFromNet> {
-        val body = call.getClassSchedule(verifyTermCode(termCode))
+    private suspend fun getClassSchedule(termCode: TermCode): List<ScheduleFromNet> {
+        val body = call.getClassSchedule(termCode.code)
         val raw = body.string()
         body.close()
-        val gsonStr = Regex("(?<=var kbxx = )\\[.*]").find(raw)?.value ?: throw NotMatchException()
+        val gsonStr = schedulePatten.find(raw)?.value ?: throw NotMatchException()
         return gson.fromJson<List<ScheduleFromNet>>(
             gsonStr,
             object : TypeToken<List<ScheduleFromNet>>() {}.type
@@ -45,12 +47,12 @@ class ScheduleImpl(login: LoginImpl, loginMessage: LoginMessage, context: Contex
     /**
      * 获取现在是哪个学期
      */
-    private suspend fun getNowTermCodeForSchedule(): NetResult<String> = getData {
+    private suspend fun getNowTermCodeForSchedule(): NetResult<TermCode> = getData {
         val body = call.getTermcodeForSchedule()
         val raw = body.string()
         body.close()
-        val result = Regex("(?<=<option value=')\\d{6}(?=' selected>)").find(raw)?.value
-        result ?: throw NotMatchException()
+        val result = TermCode.termCodePatten.find(raw)?.value
+        TermCode(result ?: throw NotMatchException())
     }
 
     companion object {

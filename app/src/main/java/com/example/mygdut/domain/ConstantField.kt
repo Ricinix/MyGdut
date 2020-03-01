@@ -25,4 +25,9 @@ object ConstantField {
 
     // 加密部分
     const val AES_TRANSFORMATION = "AES/ECB/PKCS7Padding"
+
+    // UI设置
+    const val SP_UI = "ui"
+
+    const val PAGE_CHOOSE = "page_choose"
 }

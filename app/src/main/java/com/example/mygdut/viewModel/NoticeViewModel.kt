@@ -12,21 +12,21 @@ import kotlinx.coroutines.withContext
 
 class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
     private val mAdapter = NoticeRecyclerAdapter().apply {
-        setListener(object  : NoticeRecyclerAdapter.AdapterListener{
+        setListener(object : NoticeRecyclerAdapter.AdapterListener {
             override fun onNoticeRead(noticeId: String) {
                 readNotice(noticeId)
             }
         })
     }
-    private var callBack : ViewModelCallBack? = null
+    private var callBack: ViewModelCallBack? = null
 
     /**
      * 向model层通知删除该通知
      */
-    private fun readNotice(noticeId : String){
+    private fun readNotice(noticeId: String) {
         viewModelScope.launch {
-            when(val result = withContext(Dispatchers.IO){ noticeRepo.readNotice(noticeId) }){
-                is NetResult.Error->{
+            when (val result = withContext(Dispatchers.IO) { noticeRepo.readNotice(noticeId) }) {
+                is NetResult.Error -> {
                     callBack?.onFail(result.errorMessage)
                 }
             }
@@ -36,25 +36,30 @@ class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
     /**
      * 获取所有通知(fragment中调用)
      */
-    fun getNotice(){
+    fun getNotice() {
         viewModelScope.launch {
-            when(val result = withContext(Dispatchers.IO){ noticeRepo.getNotice() }){
-                is NetResult.Success->{
+            when (val result = withContext(Dispatchers.IO) { noticeRepo.getNotice() }) {
+                is NetResult.Success -> {
                     mAdapter.setData(result.data)
                     callBack?.onFinish()
                 }
-                is NetResult.Error->{
+                is NetResult.Error -> {
                     callBack?.onFail(result.errorMessage)
                     callBack?.onFinish()
                 }
             }
         }
     }
+
     fun provideRecyclerAdapter() = mAdapter
 
-    fun setCallBack(li : ViewModelCallBack){
-        callBack = li
+    fun setCallBack(cb: ViewModelCallBack) {
+        callBack = cb
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        callBack = null
+    }
 
 }

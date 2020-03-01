@@ -2,6 +2,7 @@ package com.example.mygdut.net.impl
 
 import android.content.Context
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.TermCode
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.api.TeacharAssessApi
 import com.example.mygdut.net.data.AssessAnswer
@@ -12,6 +13,10 @@ import com.google.gson.reflect.TypeToken
 
 class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
     DataImpl<TeacharAssessApi>(login, loginMessage, TeacharAssessApi::class.java, context) {
+    private val teacherPatten = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))")
+    private val questionPatten = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))")
+    private val questionItemPatten = Regex("(?<=wtxm = JSON\\.parse\\(').*?(?='\\))")
+
     private val gson = Gson()
 
     private var wt = listOf<AssessQuestion>()
@@ -36,13 +41,13 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
     /**
      * 先预留着，以后可以给用户手动一键教评
      */
-    suspend fun getAllTeacherNeedAssess(xnxqdm: String): NetResult<List<Teacher>>{
+    suspend fun getAllTeacherNeedAssess(termCode: TermCode): NetResult<List<Teacher>>{
         val body = call.getAlreadyAssess()
         val raw = body.string()
         body.close()
-        val pdmStr = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
+        val pdmStr = teacherPatten.find(raw)?.value ?: ""
         val pdms = generatePdm(pdmStr)
-        return when(val teacherInfo = getDataWithRows { call.getTeacherList(xnxqdm, page = it) }){
+        return when(val teacherInfo = getDataWithRows { call.getTeacherList(termCode.code, page = it) }){
             is NetResult.Success-> NetResult.Success(teacherInfo.data.rows.filter { it.pdm !in pdms })
             is NetResult.Error -> teacherInfo
         }
@@ -70,8 +75,8 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
             val body = call.getTeacherData(queryMap)
             val raw = body.string()
             body.close()
-            val question = Regex("(?<=wt = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
-            val answer = Regex("(?<=wtxm = JSON\\.parse\\(').*?(?='\\))").find(raw)?.value ?: ""
+            val question = questionPatten.find(raw)?.value ?: ""
+            val answer = questionItemPatten.find(raw)?.value ?: ""
             generateQuestion(question) to generateAnswer(answer)
         }
 

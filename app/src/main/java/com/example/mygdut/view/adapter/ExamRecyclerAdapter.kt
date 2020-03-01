@@ -7,17 +7,19 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Exam
+import com.example.mygdut.data.TermName
+import com.example.mygdut.db.data.ExamData
+import com.example.mygdut.db.entity.Exam
 import com.example.mygdut.domain.ExamDate
 import com.example.mygdut.view.widget.ExamInfoDialog
 import com.example.mygdut.view.widget.TermSelectDialog
 
-class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getData: (String) -> Unit) :
+class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getData: (TermName) -> Unit) :
     RecyclerView.Adapter<ExamRecyclerAdapter.ViewHolder>() {
 
     private val finishList = mutableListOf<Exam>()
     val examList = mutableListOf<Exam>()
-    var termName = "大学全部"
+    var termName = TermName.newInitInstance()
         private set
 
     fun refreshTime(){
@@ -30,7 +32,7 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
         notifyDataSetChanged()
     }
 
-    fun setData(dataList: List<Exam>, termName: String? = null) {
+    fun setData(dataList : List<Exam>){
         finishList.clear()
         examList.clear()
         dataList.forEach {
@@ -39,11 +41,15 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
             else
                 examList.add(it)
         }
-        termName?.run { this@ExamRecyclerAdapter.termName = this }
+    }
+
+    fun setData(examData: ExamData) {
+        setData(examData.exams)
+        termName = examData.termName
         notifyDataSetChanged()
     }
 
-    private fun refreshTermName(termName : String){
+    private fun refreshTermName(termName : TermName){
         this.termName = termName
         notifyDataSetChanged()
         getData(termName)
@@ -52,7 +58,7 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.HeaderViewHolder -> {
-                holder.termNameTextView.text = termName
+                holder.termNameTextView.text = termName.name
                 holder.selectView.setOnClickListener {
                     TermSelectDialog(it.context, termName, TermSelectDialog.MODE_SIMPLIFY){name->
                         refreshTermName(name)

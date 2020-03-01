@@ -6,7 +6,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.data.TermName
+import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.view.adapter.OrderSelectRecyclerAdapter
 import com.example.mygdut.view.adapter.WeekSelectRecyclerAdapter
 import kotlinx.android.synthetic.main.dialog_new_class.*
@@ -17,7 +18,7 @@ import kotlinx.android.synthetic.main.dialog_new_class.*
 class ClassNewDialog(
     context: Context,
     private val weekDay: Int,
-    private val termName: String,
+    private val termName: TermName,
     chosenWeek: Int,
     disableClasses: List<Schedule>,
     private val addNewSchedule: (Schedule) -> Unit
@@ -100,7 +101,7 @@ class ClassNewDialog(
                         weekAdapter.weekSelect,
                         dialog_input_class_teacher.text.toString(),
                         dialog_input_class_mate.text.toString(),
-                        termName,
+                        termName.name,
                         Schedule.TYPE_FROM_LOCAL
                     )
                     addNewSchedule(schedule)

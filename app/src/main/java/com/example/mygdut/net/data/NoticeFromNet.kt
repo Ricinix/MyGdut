@@ -1,6 +1,6 @@
 package com.example.mygdut.net.data
 
-import com.example.mygdut.db.data.Notice
+import com.example.mygdut.db.entity.Notice
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 

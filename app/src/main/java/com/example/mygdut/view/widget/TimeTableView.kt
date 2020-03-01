@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.mygdut.R
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.SchoolCalendar
 
 

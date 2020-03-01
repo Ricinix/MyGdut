@@ -2,7 +2,7 @@ package com.example.mygdut.model
 
 import android.content.Context
 import com.example.mygdut.data.NetResult
-import com.example.mygdut.db.data.Notice
+import com.example.mygdut.db.entity.Notice
 import com.example.mygdut.net.impl.LoginImpl
 import com.example.mygdut.net.impl.NoticeImpl
 import javax.inject.Inject

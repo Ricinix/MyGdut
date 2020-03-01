@@ -3,7 +3,7 @@ package com.example.mygdut.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mygdut.data.NetResult
-import com.example.mygdut.db.data.Score
+import com.example.mygdut.data.TermName
 import com.example.mygdut.model.ScoreRepo
 import com.example.mygdut.view.adapter.ScoreRecyclerAdapter
 import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
@@ -24,14 +24,10 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
     fun getLatestData() {
         viewModelScope.launch {
             val backup = scoreRepo.getBackupScore()
-            mAdapter.setData(backup.first, calculateAvgGpa(backup.first), backup.second)
+            mAdapter.setData(backup)
             when (val scoreResult = withContext(Dispatchers.IO) { scoreRepo.getLatestScore() }) {
                 is NetResult.Success -> {
-                    mAdapter.setData(
-                        scoreResult.data.first,
-                        calculateAvgGpa(scoreResult.data.first),
-                        scoreResult.data.second
-                    )
+                    mAdapter.setData(scoreResult.data)
                     callBack?.onFinish()
                 }
                 is NetResult.Error -> {
@@ -46,18 +42,18 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
     /**
      * 常规的通过学期名字和是否包含选修来获取数据
      */
-    private fun getData(termName: String, includeElective: Boolean) {
+    private fun getData(termName: TermName, includeElective: Boolean) {
         callBack?.onRefresh()
         viewModelScope.launch {
             val backup = scoreRepo.getBackupScoreByTermName(termName, includeElective)
-            mAdapter.setData(backup, calculateAvgGpa(backup))
+            mAdapter.setData(backup)
 
             val scoreResult = withContext(Dispatchers.IO) {
                 scoreRepo.getScoreByTermName(termName, includeElective)
             }
             when (scoreResult) {
                 is NetResult.Success -> {
-                    mAdapter.setData(scoreResult.data, calculateAvgGpa(scoreResult.data))
+                    mAdapter.setData(scoreResult.data)
                     callBack?.onFinish()
                 }
                 is NetResult.Error -> {
@@ -67,21 +63,6 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
             }
 
         }
-    }
-
-    /**
-     * 计算带权绩点
-     */
-    private fun calculateAvgGpa(scoreList: List<Score>): Double? {
-        var gpaSum = 0.0
-        var creditSum = 0.0
-        for (score in scoreList) {
-            score.getGpaForCalculate()?.run {
-                gpaSum += score.getCreditForCalculate() * this
-                creditSum += score.getCreditForCalculate()
-            }
-        }
-        return if (creditSum != 0.0) gpaSum / creditSum else null
     }
 
     /**
@@ -95,6 +76,11 @@ class ScoreViewModel(private val scoreRepo: ScoreRepo) : ViewModel() {
      * 务必设置来响应某些ui
      */
     fun setListener(cb: ViewModelCallBack) { callBack = cb }
+
+    override fun onCleared() {
+        super.onCleared()
+        callBack = null
+    }
 
     /**
      * 提供以设置recyclerView

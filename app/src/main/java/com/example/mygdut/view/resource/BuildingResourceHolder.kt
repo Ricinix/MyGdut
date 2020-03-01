@@ -2,6 +2,8 @@ package com.example.mygdut.view.resource
 
 import android.content.Context
 import com.example.mygdut.R
+import com.example.mygdut.data.Date
+import com.example.mygdut.data.TeachingBuildingName
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,12 +29,16 @@ class BuildingResourceHolder(context: Context) {
             if (value != field) needFlag = true
             field = value
         }
-    var nowDate = ""
+    private var nowDate = ""
         private set(value) {
             if (value != field) needFlag = true
             field = value
         }
     val chosenOrders = mutableListOf<Int>()
+
+    fun getNameForRequest() = TeachingBuildingName(nowBuilding,nowCampus)
+
+    fun getDateForRequest() = Date(nowDate)
 
     fun isShown() = nowBuilding.isNotEmpty() && chosenOrders.isNotEmpty()
 

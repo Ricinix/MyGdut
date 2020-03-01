@@ -1,7 +1,7 @@
 package com.example.mygdut.db.dao
 
 import androidx.room.*
-import com.example.mygdut.db.data.Schedule
+import com.example.mygdut.db.entity.Schedule
 
 @Dao
 interface ScheduleDao {

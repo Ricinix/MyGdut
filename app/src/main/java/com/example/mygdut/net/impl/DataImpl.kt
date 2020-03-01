@@ -47,20 +47,6 @@ abstract class DataImpl<T>(
         RetrofitNet.ExtraNet.instance.create(callService)
 
     /**
-     * 验证学期代码是否合法
-     */
-    protected fun verifyTermCode(termCode: String): String {
-        if (termCode.length == 6)
-            return termCode
-        val month: Int = calendar.get(Calendar.MONTH) + 1
-        val year: Int = calendar.get(Calendar.YEAR)
-        return if (month < 9)
-            "${year - 1}02"
-        else
-            "${year}01"
-    }
-
-    /**
      * 获取带Rows的Pair，Rows要在前面
      */
     protected suspend fun <E, T : Pair<DataFromNetWithRows<E>, *>> getDataWithPairRows(f : suspend (Int) ->T) : NetResult<T>{

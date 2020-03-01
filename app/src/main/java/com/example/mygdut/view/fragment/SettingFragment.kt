@@ -48,4 +48,9 @@ class SettingFragment : PreferenceFragmentCompat() {
         fun onCheckUpdate(autoCheck : Boolean)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mListener = null
+    }
+
 }

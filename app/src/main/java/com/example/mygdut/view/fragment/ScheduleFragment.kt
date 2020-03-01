@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.mygdut.R
+import com.example.mygdut.data.TermName
 import com.example.mygdut.di.component.DaggerScheduleComponent
 import com.example.mygdut.di.module.ScheduleModule
 import com.example.mygdut.view.BaseApplication
@@ -33,8 +34,10 @@ class ScheduleFragment : Fragment() {
     @Inject
     lateinit var mViewModel: ScheduleViewModel
 
-    private var anim = RotateAnimation(0f,360f,
-        Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f).apply {
+    private var anim = RotateAnimation(
+        0f, 360f,
+        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
+    ).apply {
         fillAfter = true
         repeatMode = RotateAnimation.RESTART
         duration = 800
@@ -48,22 +51,25 @@ class ScheduleFragment : Fragment() {
         mViewModel.setCallBack(object : ScheduleViewModelCallBack {
             private var isShown = false
             override fun schoolDayEmpty() {
-                if (!isShown){
+                if (!isShown) {
                     AlertDialog.Builder(this@ScheduleFragment.context)
                         .setTitle("提醒")
                         .setMessage("该学期还没有设置开学日\n\n请点击右上角的齿轮以设置开学日来开启完整功能")
                         .setOnDismissListener { isShown = false }
-                        .setPositiveButton("了解"){ _, _-> }.show()
+                        .setPositiveButton("了解") { _, _ -> }.show()
                     isShown = true
                 }
 
             }
+
             override fun onFail(msg: String) {
                 Toast.makeText(this@ScheduleFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
+
             override fun onFinish() {
                 anim.cancel()
             }
+
             override fun onRefresh() {
                 schedule_refresh.startAnimation(anim)
             }
@@ -81,34 +87,37 @@ class ScheduleFragment : Fragment() {
         schedule_refresh.startAnimation(anim)
     }
 
-    private fun setSchoolDay(){
+    private fun setSchoolDay() {
         val picker = DatePicker(context)
         val title = AppCompatTextView(context).apply {
             textSize = 20f
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             gravity = Gravity.CENTER
             text = SpannableStringBuilder("请选择本学期上学第一天的日期")
-            setPadding(5,10,5,10)
+            setPadding(5, 10, 5, 10)
         }
         AlertDialog.Builder(this.context)
             .setCustomTitle(title)
             .setView(picker)
             .setCancelable(true)
-            .setPositiveButton("确定"){_,_->
-                mViewModel.setSchoolDay(picker.year * 10000 + (picker.month+1)*100+picker.dayOfMonth)
+            .setPositiveButton("确定") { _, _ ->
+                mViewModel.setSchoolDay(picker.year * 10000 + (picker.month + 1) * 100 + picker.dayOfMonth)
             }
-            .setNegativeButton("取消"){_,_->
+            .setNegativeButton("取消") { _, _ ->
 
             }.create().show()
     }
 
-    private fun setClickListener(){
+    private fun setClickListener() {
         schedule_setting.setOnClickListener {
             setSchoolDay()
         }
         schedule_refresh.setOnClickListener {
             it.startAnimation(anim)
-            mViewModel.getData(schedule_select_termName.text.toString())
+            mViewModel.getData(TermName(schedule_select_termName.text.toString()))
         }
     }
 
@@ -116,15 +125,15 @@ class ScheduleFragment : Fragment() {
      * 设置选择器
      */
     private fun setupSelector() {
-        val name = mViewModel.getChosenTerm()
-        schedule_select_termName.text = name
+        val termName = mViewModel.getChosenTerm()
+        schedule_select_termName.text = termName.name
         schedule_btn_termName.setOnClickListener {
             TermSelectDialog(
                 it.context,
-                schedule_select_termName.text.toString(),
+                termName,
                 TermSelectDialog.MODE_SIMPLIFY
             ) { name ->
-                schedule_select_termName.text = name
+                schedule_select_termName.text = name.name
                 schedule_refresh.startAnimation(anim)
                 mViewModel.getData(name)
             }.show()
@@ -141,10 +150,11 @@ class ScheduleFragment : Fragment() {
     }
 
     private fun setupSideBar() {
-        schedule_sidebar.setListener(object : OnChooseLetterChangedListener{
+        schedule_sidebar.setListener(object : OnChooseLetterChangedListener {
             override fun onChooseLetter(s: String) {
-                recycler_schedule.scrollToPosition(s.toInt()-1)
+                recycler_schedule.scrollToPosition(s.toInt() - 1)
             }
+
             override fun onNoChooseLetter() {
 
             }
@@ -153,10 +163,12 @@ class ScheduleFragment : Fragment() {
 
     private fun setObserver() {
         mViewModel.termName.observe(viewLifecycleOwner, Observer {
-            schedule_select_termName.text = it
+            schedule_select_termName.text = it.name
         })
         mViewModel.nowWeekPosition.observe(viewLifecycleOwner, Observer {
             Log.d(TAG, "Scroll to week: $it")
+            // 先用[scrollToPosition()]直接跳到指定周次，然后再用[smoothScrollToPosition]来使页面stable
+            recycler_schedule.scrollToPosition(it)
             recycler_schedule.smoothScrollToPosition(it)
         })
         mViewModel.maxWeek.observe(viewLifecycleOwner, Observer {

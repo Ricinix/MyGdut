@@ -2,8 +2,10 @@ package com.example.mygdut.model
 
 import android.content.Context
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.data.TermName
 import com.example.mygdut.db.dao.ExamDao
-import com.example.mygdut.db.data.Exam
+import com.example.mygdut.db.data.ExamData
+import com.example.mygdut.db.entity.Exam
 import com.example.mygdut.domain.ConstantField.EXAM_TERM_NAME
 import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.domain.TermTransformer
@@ -28,22 +30,19 @@ class ExamRepo @Inject constructor(
         transformer = TermTransformer(context, account)
     }
 
-    suspend fun getInitBackupExam(): Pair<List<Exam>, String> {
+    suspend fun getInitBackupExam(): ExamData {
         val termName = settingSp.getString(EXAM_TERM_NAME, "") ?: ""
-        return if (termName.isEmpty())
-            examDao.getAllExam() to "大学全部"
-        else
-            examDao.getExamByTermName(termName) to termName
+        return ExamData(examDao.getExamByTermName(termName), TermName(termName))
     }
 
-    suspend fun getBackupExamByTermName(termName: String): List<Exam> {
-        editor.putString(EXAM_TERM_NAME, termName)
+    suspend fun getBackupExamByTermName(termName: TermName): List<Exam> {
+        editor.putString(EXAM_TERM_NAME, termName.name)
         editor.commit()
-        return examDao.getExamByTermName(termName)
+        return examDao.getExamByTermName(termName.name)
     }
 
-    suspend fun getExamByTermName(termName: String): NetResult<List<Exam>> {
-        val code = transformer.termName2TermCode(termName)
+    suspend fun getExamByTermName(termName: TermName): NetResult<List<Exam>> {
+        val code = termName.toTermCode(transformer)
         return when (val result = examImpl.getExamByTermCode(code)) {
             is NetResult.Success -> {
                 val data = result.data.toExamList(transformer)
@@ -54,22 +53,22 @@ class ExamRepo @Inject constructor(
         }
     }
 
-    suspend fun getLatestExam(): NetResult<Pair<List<Exam>, String>> {
+    suspend fun getLatestExam(): NetResult<ExamData> {
         return when (val result = examImpl.getLatestExam()) {
             is NetResult.Success -> {
-                val termName = transformer.termCode2TermName(result.data.second)
+                val termName = result.data.second.toTermName(transformer)
                 val data = result.data.first.toExamList(transformer)
                 save2DateBase(data, termName)
-                NetResult.Success(data to termName)
+                NetResult.Success(ExamData(data, termName))
             }
             is NetResult.Error -> result
         }
     }
 
-    private suspend fun save2DateBase(data: List<Exam>, termName: String) {
-        editor.putString(EXAM_TERM_NAME, termName)
+    private suspend fun save2DateBase(data: List<Exam>, termName: TermName) {
+        editor.putString(EXAM_TERM_NAME, termName.name)
         editor.commit()
-        examDao.deleteExamByTermName(termName)
+        examDao.deleteExamByTermName(termName.name)
         examDao.saveAllExam(data)
     }
 }
