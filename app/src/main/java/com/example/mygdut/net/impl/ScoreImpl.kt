@@ -23,6 +23,7 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) 
      * 获取指定学期的成绩
      */
     suspend fun getScoresByTerm(termCode: TermCode): NetResult<ScoreFromNet> = getDataWithRows {
+        Log.d(TAG, "getting score, code: $termCode")
         call.getScore(termCode.code, page = it)
     }
 

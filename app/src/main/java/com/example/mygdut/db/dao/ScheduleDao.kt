@@ -2,9 +2,19 @@ package com.example.mygdut.db.dao
 
 import androidx.room.*
 import com.example.mygdut.db.entity.Schedule
+import com.example.mygdut.db.entity.ScheduleBlackName
 
 @Dao
 interface ScheduleDao {
+
+    @Delete
+    suspend fun removeFromScheduleBlackList(blackName : ScheduleBlackName)
+
+    @Insert
+    suspend fun saveScheduleBlackName(scheduleBlackName: ScheduleBlackName)
+
+    @Query("SELECT * FROM schedule_black_name WHERE termName=:termName")
+    suspend fun getScheduleBlackListByTermName(termName: String) : List<ScheduleBlackName>
 
     @Query("SELECT * FROM schedule_table")
     suspend fun getAllSchedule(): List<Schedule>

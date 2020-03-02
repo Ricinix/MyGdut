@@ -9,12 +9,14 @@
     <color name="blockOrange">#3F51B5</color>
     <color name="blockBlue">#2196F3</color>
     <color name="blockGreen">#8BC34A</color>
+    <color name="blockRed">#E91E63</color>
 
     <color name="blockDarkPink">#007080</color>
     <color name="blockDarkViolet">#731E83</color>
     <color name="blockDarkOrange">#262F6B</color>
     <color name="blockDarkBlue">#1765A0</color>
     <color name="blockDarkGreen">#668A34</color>
+    <color name="blockDarkRed">#AD1457</color>
 
     <color name="white">#ffffff</color>
 </resources>

@@ -23,6 +23,8 @@ data class Schedule(
 ){
     fun isValid() : Boolean = weeks.isNotEmpty() && classOrderInDay.isNotEmpty() && weekDay >= 1 && weekDay <= 7
 
+    fun toScheduleBlackName() = ScheduleBlackName(className, termName)
+
     companion object{
         const val TYPE_FROM_NET = 0
         const val TYPE_FROM_LOCAL = 1

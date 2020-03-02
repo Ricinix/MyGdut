@@ -22,6 +22,7 @@ import com.example.mygdut.data.TermName
 import com.example.mygdut.di.component.DaggerScheduleComponent
 import com.example.mygdut.di.module.ScheduleModule
 import com.example.mygdut.view.BaseApplication
+import com.example.mygdut.view.widget.BlackListDialog
 import com.example.mygdut.view.widget.OnChooseLetterChangedListener
 import com.example.mygdut.view.widget.TermSelectDialog
 import com.example.mygdut.viewModel.ScheduleViewModel
@@ -115,6 +116,11 @@ class ScheduleFragment : Fragment() {
         schedule_setting.setOnClickListener {
             setSchoolDay()
         }
+        schedule_black_list.setOnClickListener {
+            BlackListDialog(context?:requireContext(), mViewModel.scheduleBlackList){
+                mViewModel.removeFromBlackList(it)
+            }.show()
+        }
         schedule_refresh.setOnClickListener {
             it.startAnimation(anim)
             mViewModel.getData(TermName(schedule_select_termName.text.toString()))
@@ -126,6 +132,7 @@ class ScheduleFragment : Fragment() {
      */
     private fun setupSelector() {
         val termName = mViewModel.getChosenTerm()
+        Log.d(TAG, "init termName: $termName")
         schedule_select_termName.text = termName.name
         schedule_btn_termName.setOnClickListener {
             TermSelectDialog(

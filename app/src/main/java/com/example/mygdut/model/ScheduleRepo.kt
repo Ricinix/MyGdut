@@ -8,6 +8,7 @@ import com.example.mygdut.data.TermName
 import com.example.mygdut.db.dao.ScheduleDao
 import com.example.mygdut.db.data.ScheduleData
 import com.example.mygdut.db.entity.Schedule
+import com.example.mygdut.db.entity.ScheduleBlackName
 import com.example.mygdut.domain.ConstantField.GET_SCHOOL_DAY_EVERY_TIME
 import com.example.mygdut.domain.ConstantField.SCHEDULE_TERM_NAME
 import com.example.mygdut.domain.ConstantField.SP_SETTING
@@ -38,6 +39,32 @@ class ScheduleRepo @Inject constructor(
     }
 
     /**
+     * 黑名单-1
+     */
+    suspend fun removeScheduleName(data : ScheduleBlackName){
+        scheduleDao.removeFromScheduleBlackList(data)
+    }
+
+    /**
+     * 黑名单+1
+     */
+    suspend fun saveScheduleName(scheduleBlackName: ScheduleBlackName){
+        scheduleDao.saveScheduleBlackName(scheduleBlackName)
+    }
+
+    /**
+     * 获取课程黑名单
+     */
+    suspend fun getScheduleBlackList(termName: TermName? = null) : List<ScheduleBlackName> {
+        return scheduleDao.getScheduleBlackListByTermName(
+            termName?.name ?: settingSp.getString(
+                SCHEDULE_TERM_NAME,
+                ""
+            ) ?: ""
+        )
+    }
+
+    /**
      * 删除课程
      */
     suspend fun deleteSchedule(schedule: Schedule) {
@@ -59,9 +86,13 @@ class ScheduleRepo @Inject constructor(
         editor.apply()
     }
 
-    suspend fun getSchoolDay(termName: TermName): SchoolCalendar{
+    suspend fun getSchoolDay(termName: TermName): SchoolCalendar {
         val backup = SchoolCalendar(termName, settingSp.getInt(termName.name, 0))
-        if (backup.isValid() && !settingSp.getBoolean(GET_SCHOOL_DAY_EVERY_TIME, false)) return backup
+        if (backup.isValid() && !settingSp.getBoolean(
+                GET_SCHOOL_DAY_EVERY_TIME,
+                false
+            )
+        ) return backup
         return getSchoolDayFromNet(termName, termName.toTermCode(transformer))
     }
 
@@ -110,7 +141,7 @@ class ScheduleRepo @Inject constructor(
     suspend fun getCurrentSchedule(): NetResult<ScheduleData> {
         // 联网获取上次访问的学期（若没有则获取最新的）
         val chooseTerm = TermName(settingSp.getString(SCHEDULE_TERM_NAME, "") ?: "")
-        if (!chooseTerm.isValid()) {
+        if (chooseTerm.isValid()) {
             val code = chooseTerm.toTermCode(transformer)
             return when (val result = scheduleImpl.getClassScheduleByTermCode(code)) {
                 is NetResult.Success -> {
@@ -152,15 +183,20 @@ class ScheduleRepo @Inject constructor(
     /**
      * 联网获取开学日并存储
      */
-    private suspend fun getSchoolDayFromNet(termName: TermName, termCode: TermCode) : SchoolCalendar {
+    private suspend fun getSchoolDayFromNet(
+        termName: TermName,
+        termCode: TermCode
+    ): SchoolCalendar {
         val date = schoolDayImpl.getSchoolDayIntByTermCode(termCode)
         if (date is NetResult.Success && date.data != 0) {
             Log.d(TAG, "get schoolDay from net: ${date.data}")
             val checkDate = checkSchoolDay(date.data)
-            editor.putInt(termName.name, checkDate.apply { Log.d(TAG, "saving school day: $this"); })
+            editor.putInt(
+                termName.name,
+                checkDate.apply { Log.d(TAG, "saving school day: $this"); })
             editor.commit()
             return SchoolCalendar(termName, checkDate)
-        }else{
+        } else {
             Log.d(TAG, "error: $date")
         }
         return SchoolCalendar(termName, 0)
@@ -181,9 +217,11 @@ class ScheduleRepo @Inject constructor(
             if (calendar.get(Calendar.DAY_OF_WEEK) == 1) 7 else calendar.get(Calendar.DAY_OF_WEEK) - 1
         Log.d(TAG, "school day weekday: $weekDay")
         return if (weekDay != 1) {
-            calendar.add(Calendar.DATE, 1-weekDay)
-            calendar.get(Calendar.YEAR) * 10000 + (calendar.get(Calendar.MONTH)+1) * 100 + calendar.get(Calendar.DAY_OF_MONTH)
-        }else date
+            calendar.add(Calendar.DATE, 1 - weekDay)
+            calendar.get(Calendar.YEAR) * 10000 + (calendar.get(Calendar.MONTH) + 1) * 100 + calendar.get(
+                Calendar.DAY_OF_MONTH
+            )
+        } else date
     }
 
     companion object {

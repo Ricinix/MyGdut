@@ -128,6 +128,9 @@ abstract class DataImpl<T>(
             } catch (e: HttpException) {
                 Log.d(TAG, e.toString())
                 return NetResult.Error("HTTP 错误")
+            }catch (e : Exception){
+                Log.d(TAG, e.toString())
+                return NetResult.Error(e.message?:"奇怪的错误")
             }
         }
         return NetResult.Error("未获取数据")

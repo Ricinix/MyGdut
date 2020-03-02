@@ -9,7 +9,7 @@ class TermCode(code: String) {
             return verifyTermCode(field)
         }
 
-    val containTwoTerm = code.last() == '3'
+    val containTwoTerm = if (code.isEmpty()) false else code.last() == '3'
 
     fun getFirstTermCode(): TermCode {
         return if (containTwoTerm) TermCode("${code.substring(0, code.lastIndex)}1")
@@ -28,7 +28,7 @@ class TermCode(code: String) {
      * 验证学期代码是否合法
      */
     private fun verifyTermCode(termCode: String): String {
-        if (termCode.length == 6)
+        if (termCode.length == 6 || termCode.isEmpty())
             return termCode
         val calendar = Calendar.getInstance()
         val month: Int = calendar.get(Calendar.MONTH) + 1

@@ -68,9 +68,13 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
 
                     override fun onClassClick(schedule: Schedule, view: View) {
                         ClassInfoDialog(view.context, schedule){
-                            cb.deleteSchedule(it)
-                            mList.remove(it)
-                            notifyDataSetChanged()
+                            if (schedule.type == Schedule.TYPE_FROM_LOCAL){
+                                cb.deleteSchedule(it)
+                                mList.remove(it)
+                                notifyDataSetChanged()
+                            }else if (schedule.type == Schedule.TYPE_FROM_NET){
+                                cb.moveToBlackList(it)
+                            }
                         }.show()
                     }
                 })
@@ -118,6 +122,7 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
         fun getTermName(): TermName
         fun saveSchedule(schedule: Schedule)
         fun deleteSchedule(schedule: Schedule)
+        fun moveToBlackList(schedule: Schedule)
     }
 
     companion object {

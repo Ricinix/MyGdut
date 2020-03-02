@@ -1,6 +1,7 @@
 package com.example.mygdut.model
 
 import android.content.Context
+import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.TermCode
 import com.example.mygdut.data.TermName
@@ -130,6 +131,7 @@ class ScoreRepo @Inject constructor(
         includeElective: Boolean,
         autoAssess: Boolean
     ): NetResult<ScoreData> {
+        Log.d("Score", "getting Score, termName: $termName")
         val termCode = termName.toTermCode(termTransformer)
         return when (val scoreResult = getScoreByTermCode(termCode)) {
             is NetResult.Success -> {

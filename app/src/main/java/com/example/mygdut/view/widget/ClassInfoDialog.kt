@@ -2,7 +2,6 @@ package com.example.mygdut.view.widget
 
 import android.content.Context
 import android.os.Bundle
-import android.view.View
 import com.example.mygdut.R
 import com.example.mygdut.db.entity.Schedule
 import kotlinx.android.synthetic.main.dialog_class_info.*
@@ -15,7 +14,9 @@ class ClassInfoDialog(context: Context, private val schedule: Schedule, private 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_class_info)
         if (schedule.type == Schedule.TYPE_FROM_LOCAL)
-            dialog_class_btn_delete.visibility = View.VISIBLE
+            dialog_class_btn_delete.text = "删除"
+        else if (schedule.type == Schedule.TYPE_FROM_NET)
+            dialog_class_btn_delete.text = "不上这门课"
 
         setSize(SCALA)
         setText()

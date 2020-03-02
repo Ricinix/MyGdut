@@ -12,6 +12,7 @@ interface ScoreApi {
     @POST("/xskccjxx!getDataList.action")
     suspend fun getScore(
         @Field("xnxqdm") xnxqdm: String, // 学期代码(如201901)
+        @Field("jhlxdm") planType : String = "",
         @Field("page") page: Int = 1,
         @Field("rows") rows: Int = 50,
         @Field("sort") sort: String = "xnxqdm",

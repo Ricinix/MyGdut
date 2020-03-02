@@ -14,7 +14,6 @@
         android:background="#ffffff"
         android:elevation="8dp"
         android:minHeight="0dp"
-        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,6 +24,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:background="?android:selectableItemBackground"
                 android:clickable="true"
                 android:orientation="horizontal"
@@ -50,19 +51,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:padding="8dp"
                 android:contentDescription="@string/schedule_setting"
                 android:src="@drawable/ic_settings_black_24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:id="@+id/schedule_black_list"
+                android:padding="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="28dp"
+                android:contentDescription="@string/schedule_black_list"
+                android:src="@drawable/ic_bookmark_border_black_24dp"
+                app:layout_constraintEnd_toStartOf="@id/schedule_setting"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
                 android:id="@+id/schedule_refresh"
                 android:layout_width="wrap_content"
+                android:padding="8dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="28dp"
                 android:contentDescription="@string/schedule_refresh"
                 android:src="@drawable/ic_refresh_black_24dp"
-                app:layout_constraintEnd_toStartOf="@id/schedule_setting"
+                app:layout_constraintEnd_toStartOf="@id/schedule_black_list"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.Toolbar>
