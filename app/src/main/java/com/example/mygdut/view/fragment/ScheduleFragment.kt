@@ -137,7 +137,7 @@ class ScheduleFragment : Fragment() {
         schedule_btn_termName.setOnClickListener {
             TermSelectDialog(
                 it.context,
-                termName,
+                mViewModel.termName.value?:TermName(schedule_select_termName.text.toString()),
                 TermSelectDialog.MODE_SIMPLIFY
             ) { name ->
                 schedule_select_termName.text = name.name

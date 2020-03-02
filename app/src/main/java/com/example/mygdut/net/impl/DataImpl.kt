@@ -105,11 +105,13 @@ abstract class DataImpl<T>(
                 val data = f()
                 return NetResult.Success(data)
             } catch (e: MalformedJsonException) {
+                if (i == 1) return NetResult.Error("获取到的json文本格式有误")
                 Log.d(TAG, e.toString())
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return loginResult
             } catch (e: NotMatchException) {
+                if (i == 1) return NetResult.Error("未匹配到数据")
                 Log.d(TAG, e.toString())
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
