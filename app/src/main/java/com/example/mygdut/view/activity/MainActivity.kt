@@ -1,12 +1,17 @@
 package com.example.mygdut.view.activity
 
+import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +20,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.R
 import com.example.mygdut.data.ApkVersion
 import com.example.mygdut.domain.ConstantField
+import com.example.mygdut.service.ExamReminderService
+import com.example.mygdut.service.NoticeReminderService
+import com.example.mygdut.service.NotificationService
+import com.example.mygdut.service.ScheduleReminderService
 import com.example.mygdut.view.fragment.HomeFragment
 import com.example.mygdut.view.fragment.ScheduleFragment
 import com.example.mygdut.view.fragment.ScoreFragment
@@ -25,7 +34,6 @@ import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener {
-
 
     //    private val noticeFragment = NoticeFragment()
     private val homeFragment = HomeFragment()
@@ -45,6 +53,82 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
         setupNavigationView()
         mViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         autoCheckUpdate()
+        checkReminder()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            NotificationService.NOTICE_NOTIFICATION_FLAG -> {
+                switchToFragment(homeFragment)
+                homeFragment.scrollToNoticePage()
+            }
+            NotificationService.EXAM_NOTIFICATION_FLAG -> {
+                switchToFragment(homeFragment)
+                homeFragment.scrollToExamPage()
+            }
+            NotificationService.SCHEDULE_NOTIFICATION_FLAG -> {
+                switchToFragment(scheduleFragment)
+            }
+        }
+    }
+
+    private fun checkReminder() {
+        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        if (sp.getBoolean(ConstantField.SCHEDULE_REMIND, false))
+            onStartScheduleReminder()
+        if (sp.getBoolean(ConstantField.NOTICE_REMIND, false))
+            onStartNoticeReminder()
+        if (sp.getBoolean(ConstantField.EXAM_REMIND, false))
+            onStartExamReminder()
+    }
+
+    override fun onStartNoticeReminder() {
+        ignoreBatteryOptimization()
+        NoticeReminderService.startThisService(this)
+    }
+
+    override fun onStopNoticeReminder() {
+        NoticeReminderService.stopThisService(this)
+    }
+
+    override fun onStartExamReminder() {
+        ignoreBatteryOptimization()
+        ExamReminderService.startThisService(this)
+    }
+
+    override fun onStopExamReminder() {
+        ExamReminderService.stopThisService(this)
+    }
+
+    override fun onStopScheduleReminder() {
+        ScheduleReminderService.stopThisService(this)
+    }
+
+    override fun onStartScheduleReminder() {
+        ignoreBatteryOptimization()
+        ScheduleReminderService.startThisService(this)
+    }
+
+    @SuppressLint("BatteryLife")
+    private fun ignoreBatteryOptimization() {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val hasIgnored = powerManager.isIgnoringBatteryOptimizations(packageName)
+        //  判断当前APP是否有加入电池优化的白名单，如果没有，弹出加入电池优化的白名单的设置对话框。
+        if (!hasIgnored) {
+            // 据说vivo要另外判断
+            val intent = if (Build.MANUFACTURER == "vivo") {
+                Intent(Intent.ACTION_MAIN)
+                val cn =
+                    ComponentName.unflattenFromString("com.android.settings/.Settings\$HighPowerApplicationsActivity")
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addCategory(Intent.CATEGORY_LAUNCHER)
+                    .setComponent(cn)
+            } else Intent(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).also {
+                it.data = Uri.parse("package:$packageName")
+            }
+            startActivity(intent)
+        }
     }
 
     /**
@@ -74,9 +158,11 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
             override fun onLatest() {
                 showDialogForLatest()
             }
+
             override fun onNewStable(version: ApkVersion) {
                 showDialogForDownload(version, "发现新稳定版本")
             }
+
             override fun onNewBeta(version: ApkVersion) {
                 showDialogForDownload(version, "发现新Beta版本")
             }
@@ -98,7 +184,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     /**
      * 弹出对话框提示下载新版本
      */
-    private fun showDialogForDownload(versionName: ApkVersion, title : String) {
+    private fun showDialogForDownload(versionName: ApkVersion, title: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage("当前版本: ${getNowVersion().version}\n最新版本: ${versionName.version}")
@@ -193,22 +279,25 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
         nowFragment = fragment
     }
 
-    private fun getDefaultPage() : Int{
-        return when(getSharedPreferences(ConstantField.SP_UI, Context.MODE_PRIVATE).getInt(ConstantField.PAGE_CHOOSE, 1)){
-            2-> R.id.navigation_schedule
-            3->R.id.navigation_score
-            4->R.id.navigation_settings
-            else->R.id.navigation_home
+    private fun getDefaultPage(): Int {
+        return when (getSharedPreferences(ConstantField.SP_UI, Context.MODE_PRIVATE).getInt(
+            ConstantField.PAGE_CHOOSE,
+            1
+        )) {
+            2 -> R.id.navigation_schedule
+            3 -> R.id.navigation_score
+            4 -> R.id.navigation_settings
+            else -> R.id.navigation_home
         }
     }
 
-    private fun savePageChoose(pageId : Int){
+    private fun savePageChoose(pageId: Int) {
         val editor = getSharedPreferences(ConstantField.SP_UI, Context.MODE_PRIVATE).edit()
-        when(pageId){
-            R.id.navigation_home->editor.putInt(ConstantField.PAGE_CHOOSE, 1)
-            R.id.navigation_schedule->editor.putInt(ConstantField.PAGE_CHOOSE, 2)
-            R.id.navigation_score->editor.putInt(ConstantField.PAGE_CHOOSE, 3)
-            R.id.navigation_settings->editor.putInt(ConstantField.PAGE_CHOOSE, 4)
+        when (pageId) {
+            R.id.navigation_home -> editor.putInt(ConstantField.PAGE_CHOOSE, 1)
+            R.id.navigation_schedule -> editor.putInt(ConstantField.PAGE_CHOOSE, 2)
+            R.id.navigation_score -> editor.putInt(ConstantField.PAGE_CHOOSE, 3)
+            R.id.navigation_settings -> editor.putInt(ConstantField.PAGE_CHOOSE, 4)
         }
         editor.apply()
     }

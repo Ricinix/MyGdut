@@ -64,7 +64,7 @@ class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHol
                 holderItem.titleView.text = mList[index].title
                 holderItem.contentView.text = mList[index].msg
                 holderItem.closeBtn.setOnClickListener {
-                    mListener?.onNoticeRead(mList[index].noticeId)
+                    mListener?.onNoticeRead(mList[index])
                     removeNotice(index)
                 }
             }
@@ -106,7 +106,7 @@ class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHol
     }
 
     interface AdapterListener {
-        fun onNoticeRead(noticeId: String)
+        fun onNoticeRead(notice: Notice)
     }
 
     companion object {

@@ -13,6 +13,19 @@
             android:defaultValue="false"
             android:key="intra_net_choose"
             android:title="使用内网" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="schedule_remind"
+            android:title="课程提醒" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="exam_remind"
+            android:title="考试提醒" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="notice_remind"
+            android:title="通告提醒"
+            android:summary="每半小时刷新一次，可能会导致耗电过多"/>
 
     </PreferenceCategory>
 

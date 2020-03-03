@@ -6,7 +6,8 @@ import java.util.*
 class ExamDate(val date: String, val time: String) {
     private var year = 0
     private var month = 0
-    private var day = 0
+    var day = 0
+    private set
     private var startHour = 0
     private var startMinute = 0
     private var endHour = 0
@@ -17,6 +18,21 @@ class ExamDate(val date: String, val time: String) {
     init {
         setDateValue()
         setTimeValue()
+    }
+
+    fun getHourAndMinute() : String = "$startHour:$startMinute"
+
+    /**
+     * @return 携带开考时间的[Calendar]
+     */
+    fun getCalendarOfExam() : Calendar{
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, year)
+        cal.set(Calendar.MONTH, month-1)
+        cal.set(Calendar.DAY_OF_MONTH, day)
+        cal.set(Calendar.HOUR_OF_DAY, startHour)
+        cal.set(Calendar.MINUTE, startMinute)
+        return cal
     }
 
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
 import com.example.mygdut.R
 import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.view.widget.AppInfoDialog
@@ -22,6 +23,7 @@ class SettingFragment : PreferenceFragmentCompat() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupClickListener()
+        setupSwitchListener()
     }
 
     /**
@@ -43,9 +45,42 @@ class SettingFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun setupSwitchListener(){
+        findPreference<SwitchPreference>("schedule_remind")?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == true){
+                mListener?.onStartScheduleReminder()
+            }else{
+                mListener?.onStopScheduleReminder()
+            }
+            true
+        }
+        findPreference<SwitchPreference>("notice_remind")?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == true){
+                mListener?.onStartNoticeReminder()
+            }else{
+                mListener?.onStopNoticeReminder()
+            }
+            true
+        }
+        findPreference<SwitchPreference>("exam_remind")?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue == true){
+                mListener?.onStartExamReminder()
+            }else{
+                mListener?.onStopExamReminder()
+            }
+            true
+        }
+    }
+
     interface SettingChangeListener {
         fun onLogout()
         fun onCheckUpdate(autoCheck : Boolean)
+        fun onStartScheduleReminder()
+        fun onStopScheduleReminder()
+        fun onStartNoticeReminder()
+        fun onStopNoticeReminder()
+        fun onStartExamReminder()
+        fun onStopExamReminder()
     }
 
     override fun onDestroy() {

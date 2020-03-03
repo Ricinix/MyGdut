@@ -27,6 +27,12 @@ data class Exam(
     val seat: String, // 座位号
     val period: String // 学时
 ) {
+
+    fun toMessage(isToday : Boolean) : String{
+        val time = if (isToday) "" else "明天"
+        return "考试课程: $className, 时间: ${time}${dateTime.getHourAndMinute()}, 地点: $place"
+    }
+
     fun getState(): Int = dateTime.getState()
 
     fun getTimeInfo(weekNames: Array<String>? = null): String {

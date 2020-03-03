@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-//    def name = "v1.2.2-armeabi"
+//    def name = "v1.2.3-armeabi"
     def name = "v1.2.3"
     compileSdkVersion 29
     buildToolsVersion "29.0.3"

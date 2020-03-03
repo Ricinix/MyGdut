@@ -41,12 +41,12 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
             else
                 examList.add(it)
         }
+        notifyDataSetChanged()
     }
 
     fun setData(examData: ExamData) {
         setData(examData.exams)
         termName = examData.termName
-        notifyDataSetChanged()
     }
 
     private fun refreshTermName(termName : TermName){

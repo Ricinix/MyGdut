@@ -22,6 +22,9 @@ object ConstantField {
     const val GET_SCHOOL_DAY_EVERY_TIME = "get_school_day_every_time"
     const val CHECK_BETA = "check_beta"
     const val AUTO_CHECK_UPDATE = "auto_check_update"
+    const val SCHEDULE_REMIND = "schedule_remind"
+    const val NOTICE_REMIND = "notice_remind"
+    const val EXAM_REMIND = "exam_remind"
 
     // 加密部分
     const val AES_TRANSFORMATION = "AES/ECB/PKCS7Padding"
@@ -30,4 +33,15 @@ object ConstantField {
     const val SP_UI = "ui"
 
     const val PAGE_CHOOSE = "page_choose"
+
+    // service
+    const val NOTIFICATION_TYPE = "notification_type"
+    const val SCHEDULE_EXTRA = "schedule_extra"
+    const val NOTICE_EXTRA = "notice_extra"
+    const val EXAM_EXTRA = "exam_extra"
+
+    // notification
+    const val SCHEDULE_CHANNEL_ID = "msg_channel_id"
+    const val SCHEDULE_CHANNEL_NAME = "消息通知"
+    const val SCHEDULE_CHANNEL_DESCRIPTION = "通知接下来的课程、考试、通告（包含成绩通知）"
 }

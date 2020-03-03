@@ -32,5 +32,11 @@ class HomeFragment : Fragment() {
         layout_tab_home.setupWithViewPager(view_pager_home)
     }
 
+    fun scrollToNoticePage(){
+        view_pager_home.setCurrentItem(0, false)
+    }
+    fun scrollToExamPage(){
+        view_pager_home.setCurrentItem(1, false)
+    }
 
 }

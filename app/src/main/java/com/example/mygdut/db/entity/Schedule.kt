@@ -1,8 +1,10 @@
 package com.example.mygdut.db.entity
 
+import android.util.Log
 import androidx.room.Entity
 import androidx.room.TypeConverters
 import com.example.mygdut.db.converters.IntListConverter
+import java.util.*
 
 @Entity(
     tableName = "schedule_table",
@@ -24,6 +26,25 @@ data class Schedule(
     fun isValid() : Boolean = weeks.isNotEmpty() && classOrderInDay.isNotEmpty() && weekDay >= 1 && weekDay <= 7
 
     fun toScheduleBlackName() = ScheduleBlackName(className, termName)
+
+    /**
+     * 仅可向当天课程调用此方法查询， 如果距离开始时间已不足70分钟，则会判断为pass
+     */
+    fun hasPass(arr : Array<String>) : Boolean{
+        val calendar = Calendar.getInstance()
+        val timeList = arr[classOrderInDay.first() - 1].split(':')
+        calendar.set(Calendar.HOUR_OF_DAY, timeList.first().toInt())
+        calendar.set(Calendar.MINUTE, timeList.last().toInt())
+        val today = Calendar.getInstance()
+        Log.d("Reminder", "$className class time: ${calendar.timeInMillis - 70 * 60 * 1000}")
+        Log.d("Reminder", "当前时间: ${today.timeInMillis}")
+        return calendar.timeInMillis - 70 * 60 * 1000 <= today.timeInMillis
+    }
+
+
+    fun toMessage(time : String) : String{
+        return "课程名: $className, 地点: $classRoom, 时间: $time"
+    }
 
     companion object{
         const val TYPE_FROM_NET = 0

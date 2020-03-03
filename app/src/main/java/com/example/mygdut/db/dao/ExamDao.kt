@@ -18,6 +18,6 @@ interface ExamDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveAllExam(exams : List<Exam>)
 
-    @Query("SELECT * FROM exam_table ORDER BY week, weekDay, orderInDay")
+    @Query("SELECT * FROM exam_table ORDER BY dateTime DESC")
     suspend fun getAllExam() : List<Exam>
 }

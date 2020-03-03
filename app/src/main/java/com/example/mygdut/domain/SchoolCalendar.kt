@@ -5,13 +5,22 @@ import java.util.*
 import kotlin.math.min
 
 /**
- * 对日期相关功能的封装，构造参数为开学日期(Int形式)
+ * 对日期相关功能的封装，构造参数为开学日期(Int形式，如20191225)
  */
 class SchoolCalendar(val termName : TermName,val schoolDay : Int) {
     /**
      * 判断是否合法
      */
     fun isValid() : Boolean = schoolDay != 0
+
+    fun isInFuture() : Boolean{
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val today = year * 10000 + month * 100 + day
+        return schoolDay > today
+    }
 
     /**
      * 可计算现在是第几周

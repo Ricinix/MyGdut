@@ -3,6 +3,7 @@ package com.example.mygdut.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mygdut.data.NetResult
+import com.example.mygdut.db.entity.Notice
 import com.example.mygdut.model.NoticeRepo
 import com.example.mygdut.view.adapter.NoticeRecyclerAdapter
 import com.example.mygdut.viewModel.`interface`.ViewModelCallBack
@@ -13,8 +14,8 @@ import kotlinx.coroutines.withContext
 class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
     private val mAdapter = NoticeRecyclerAdapter().apply {
         setListener(object : NoticeRecyclerAdapter.AdapterListener {
-            override fun onNoticeRead(noticeId: String) {
-                readNotice(noticeId)
+            override fun onNoticeRead(notice: Notice) {
+                readNotice(notice)
             }
         })
     }
@@ -23,9 +24,9 @@ class NoticeViewModel(private val noticeRepo: NoticeRepo) : ViewModel() {
     /**
      * 向model层通知删除该通知
      */
-    private fun readNotice(noticeId: String) {
+    private fun readNotice(notice: Notice) {
         viewModelScope.launch {
-            when (val result = withContext(Dispatchers.IO) { noticeRepo.readNotice(noticeId) }) {
+            when (val result = withContext(Dispatchers.IO) { noticeRepo.readNotice(notice) }) {
                 is NetResult.Error -> {
                     callBack?.onFail(result.errorMessage)
                 }
