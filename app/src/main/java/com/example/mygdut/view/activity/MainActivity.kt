@@ -58,15 +58,15 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         when (intent?.getIntExtra(ConstantField.PAGE_CODE_EXTRA, -1)) {
-            NotificationService.NOTICE_NOTIFICATION_FLAG -> {
+            NotificationService.NOTICE_FLAG -> {
                 switchToFragment(homeFragment)
                 homeFragment.scrollToNoticePage()
             }
-            NotificationService.EXAM_NOTIFICATION_FLAG -> {
+            NotificationService.EXAM_FLAG -> {
                 switchToFragment(homeFragment)
                 homeFragment.scrollToExamPage()
             }
-            NotificationService.SCHEDULE_NOTIFICATION_FLAG -> {
+            NotificationService.SCHEDULE_FLAG -> {
                 switchToFragment(scheduleFragment)
             }
         }

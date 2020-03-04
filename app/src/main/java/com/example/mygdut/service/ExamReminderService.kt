@@ -38,9 +38,9 @@ class ExamReminderService : Service() {
         val plan = mPresenter.getNearestPlan() ?: return false
         val intent = Intent(this, NotificationService::class.java)
         intent.putExtra(ConstantField.EXAM_EXTRA, plan.msg)
-        intent.putExtra(ConstantField.NOTIFICATION_TYPE, NotificationService.EXAM_NOTIFICATION_FLAG)
+        intent.putExtra(ConstantField.NOTIFICATION_TYPE, NotificationService.EXAM_FLAG)
         val pi = PendingIntent.getService(
-            this, 0, intent,
+            this, NotificationService.EXAM_FLAG, intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, plan.time, pi)

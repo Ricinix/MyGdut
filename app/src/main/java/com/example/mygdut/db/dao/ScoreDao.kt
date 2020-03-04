@@ -9,13 +9,13 @@ import com.example.mygdut.db.entity.Score
 @Dao
 interface ScoreDao {
 
-    @Query("SELECT * FROM score_table")
+    @Query("SELECT * FROM score_table ORDER BY credit DESC")
     suspend fun getAllScore() : List<Score>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveAllScore(scoreList : List<Score>)
 
-    @Query("SELECT * FROM score_table WHERE termName = :termName")
+    @Query("SELECT * FROM score_table WHERE termName = :termName ORDER BY credit DESC")
     suspend fun getScoreByTermName(termName : String) : List<Score>
 
     @Query("DELETE FROM score_table")

@@ -20,22 +20,22 @@ class NotificationService : Service() {
         Log.d(TAG, "start Receiver")
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
         val type = intent?.getIntExtra(ConstantField.NOTIFICATION_TYPE, -1)
-        if (type == SCHEDULE_NOTIFICATION_FLAG && sp.getBoolean(ConstantField.SCHEDULE_REMIND, false)) {
+        if (type == SCHEDULE_FLAG && sp.getBoolean(ConstantField.SCHEDULE_REMIND, false)) {
             popNotification(
                 "您有一门课程提醒", intent.getStringExtra(ConstantField.SCHEDULE_EXTRA) ?: "",
-                flags, SCHEDULE_NOTIFICATION_FLAG
+                startId, SCHEDULE_FLAG
             )
             ScheduleReminderService.startThisService(this)
-        } else if (type == NOTICE_NOTIFICATION_FLAG && sp.getBoolean(ConstantField.NOTICE_REMIND, false)) {
+        } else if (type == NOTICE_FLAG && sp.getBoolean(ConstantField.NOTICE_REMIND, false)) {
             popNotification(
                 "您有一则新通知", intent.getStringExtra(ConstantField.NOTICE_EXTRA) ?: "",
-                flags, NOTICE_NOTIFICATION_FLAG
+                startId, NOTICE_FLAG
             )
             NoticeReminderService.startThisService(this)
-        } else if (type == EXAM_NOTIFICATION_FLAG && sp.getBoolean(ConstantField.EXAM_REMIND, false)) {
+        } else if (type == EXAM_FLAG && sp.getBoolean(ConstantField.EXAM_REMIND, false)) {
             popNotification(
                 "您有一门考试即将到来", intent.getStringExtra(ConstantField.EXAM_EXTRA) ?: "",
-                flags, EXAM_NOTIFICATION_FLAG
+                startId, EXAM_FLAG
             )
             ExamReminderService.startThisService(this)
         } else {
@@ -49,12 +49,7 @@ class NotificationService : Service() {
         checkChannel()
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra(ConstantField.PAGE_CODE_EXTRA, requestCode)
-        val pi = PendingIntent.getActivity(
-            this,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        val pi = PendingIntent.getActivity(this, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val notification = NotificationCompat.Builder(this, ConstantField.SCHEDULE_CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
@@ -84,8 +79,8 @@ class NotificationService : Service() {
 
     companion object {
         private const val TAG = "ScheduleNotificationService"
-        const val SCHEDULE_NOTIFICATION_FLAG = 0
-        const val NOTICE_NOTIFICATION_FLAG = 1
-        const val EXAM_NOTIFICATION_FLAG = 2
+        const val SCHEDULE_FLAG = 0
+        const val NOTICE_FLAG = 1
+        const val EXAM_FLAG = 2
     }
 }

@@ -15,8 +15,8 @@ interface ScoreApi {
         @Field("jhlxdm") planType : String = "",
         @Field("page") page: Int = 1,
         @Field("rows") rows: Int = 50,
-        @Field("sort") sort: String = "xnxqdm",
-        @Field("order") order: String = "asc"
+        @Field("sort") sort: String = "xf",
+        @Field("order") order: String = "desc"
     ): ScoreFromNet
 
     @GET("/xskccjxx!xskccjList.action")

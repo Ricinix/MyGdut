@@ -42,10 +42,10 @@ class NoticeReminderService : Service() {
         intent.putExtra(ConstantField.NOTICE_EXTRA, plan.msg)
         intent.putExtra(
             ConstantField.NOTIFICATION_TYPE,
-            NotificationService.NOTICE_NOTIFICATION_FLAG
+            NotificationService.NOTICE_FLAG
         )
         val pi = PendingIntent.getService(
-            this, 0, intent,
+            this, NotificationService.NOTICE_FLAG, intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, plan.time, pi)
