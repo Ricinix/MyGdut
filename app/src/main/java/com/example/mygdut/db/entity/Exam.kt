@@ -28,8 +28,8 @@ data class Exam(
     val period: String // 学时
 ) {
 
-    fun toMessage(isToday : Boolean) : String{
-        val time = if (isToday) "" else "明天"
+    fun toMessage(dayBefore : Int) : String{
+        val time = if (dayBefore == 0) "" else if (dayBefore == 1) "明天" else "7天后"
         return "考试课程: $className, 时间: ${time}${dateTime.getHourAndMinute()}, 地点: $place"
     }
 

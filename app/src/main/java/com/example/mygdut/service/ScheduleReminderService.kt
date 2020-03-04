@@ -26,10 +26,9 @@ class ScheduleReminderService : Service() {
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
         if (sp.getBoolean(ConstantField.SCHEDULE_REMIND, false)) {
             scope.launch {
-                if (!startAlarm()) stopSelf()
+                if (!startAlarm()) Log.d(TAG, "无新课程")
+                stopSelf()
             }
-        } else {
-            stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -56,7 +55,7 @@ class ScheduleReminderService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "无新课程或者关闭通知, service stop")
+        Log.d(TAG, "service stop")
         scope.cancel()
     }
 

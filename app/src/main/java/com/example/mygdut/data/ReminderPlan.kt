@@ -16,14 +16,15 @@ data class ReminderPlan(val time: Long, val msg: String) {
             val nowCal = Calendar.getInstance()
             // 不是考试当天
             if (exam.dateTime.day != nowCal.get(Calendar.DAY_OF_MONTH)) {
-                val examCal = exam.dateTime.getCalendarOfExam()
-                val nine = getYesterdayNine(examCal)
-                if (nine != null) return ReminderPlan(nine, exam.toMessage(false))
+                val sevenDayBefore = getYesterdayNine(exam.dateTime.getCalendarOfExam())
+                if (sevenDayBefore != null) return ReminderPlan(sevenDayBefore, exam.toMessage(7))
+                val nine = getYesterdayNine(exam.dateTime.getCalendarOfExam())
+                if (nine != null) return ReminderPlan(nine, exam.toMessage(1))
             }
             // 考试当天
             val examCal = exam.dateTime.getCalendarOfExam()
             examCal.add(Calendar.HOUR_OF_DAY, -1)
-            return ReminderPlan(examCal.timeInMillis, exam.toMessage(true))
+            return ReminderPlan(examCal.timeInMillis, exam.toMessage(0))
         }
 
         /**
@@ -62,7 +63,7 @@ data class ReminderPlan(val time: Long, val msg: String) {
             val timeList = timeInDay.split(':')
             calendar.set(Calendar.HOUR_OF_DAY, timeList.first().toInt())
             calendar.set(Calendar.MINUTE, timeList.last().toInt())
-            return calendar.timeInMillis - 70 * 60 * 1000
+            return calendar.timeInMillis - SCHEDULE_TIME_AHEAD
         }
 
         /**
@@ -78,5 +79,20 @@ data class ReminderPlan(val time: Long, val msg: String) {
             return if (time <= Calendar.getInstance().timeInMillis) null
             else time
         }
+
+        /**
+         * 获取安排开始的七天前的九点
+         */
+        private fun getSevenDayBefore(calendar: Calendar) : Long?{
+            calendar.add(Calendar.DATE, -7)
+            calendar.set(Calendar.HOUR_OF_DAY, 21)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            val time = calendar.timeInMillis
+            return if (time <= Calendar.getInstance().timeInMillis) null
+            else time
+        }
+
+        private const val SCHEDULE_TIME_AHEAD = 70 * 60 * 1000
     }
 }

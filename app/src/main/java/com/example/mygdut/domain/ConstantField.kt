@@ -39,6 +39,7 @@ object ConstantField {
     const val SCHEDULE_EXTRA = "schedule_extra"
     const val NOTICE_EXTRA = "notice_extra"
     const val EXAM_EXTRA = "exam_extra"
+    const val PAGE_CODE_EXTRA = "page_code"
 
     // notification
     const val SCHEDULE_CHANNEL_ID = "msg_channel_id"

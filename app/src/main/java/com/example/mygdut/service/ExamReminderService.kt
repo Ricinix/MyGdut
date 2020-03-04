@@ -19,22 +19,21 @@ class ExamReminderService : Service() {
     val scope = MainScope() + CoroutineName("ExamReminderService")
 
     @Inject
-    lateinit var mPresenter : ExamReminderPresenter
+    lateinit var mPresenter: ExamReminderPresenter
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "service start")
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
         if (sp.getBoolean(ConstantField.EXAM_REMIND, false)) {
             scope.launch {
-                if (!startAlarm()) stopSelf()
+                if (!startAlarm()) Log.d(TAG, "无考试安排")
+                stopSelf()
             }
-        } else {
-            stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private suspend fun startAlarm() : Boolean{
+    private suspend fun startAlarm(): Boolean {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val plan = mPresenter.getNearestPlan() ?: return false
         val intent = Intent(this, NotificationService::class.java)
@@ -55,12 +54,12 @@ class ExamReminderService : Service() {
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "无考试或关闭通知, service stop")
+        Log.d(TAG, "service stop")
         scope.cancel()
         super.onDestroy()
     }
 
-    private fun inject(){
+    private fun inject() {
         DaggerExamReminderComponent.builder()
             .baseComponent((application as BaseApplication).getBaseComponent())
             .examReminderModule(ExamReminderModule(this))
@@ -71,15 +70,17 @@ class ExamReminderService : Service() {
     companion object {
         private const val TAG = "ExamReminderService"
         @JvmStatic
-        fun startThisService(context: Context){
+        fun startThisService(context: Context) {
             val intent = Intent(context, ExamReminderService::class.java)
             context.startService(intent)
         }
+
         @JvmStatic
-        fun stopThisService(context: Context){
+        fun stopThisService(context: Context) {
             val intent = Intent(context, ExamReminderService::class.java)
             context.stopService(intent)
         }
     }
-    override fun onBind(intent: Intent): IBinder?=null
+
+    override fun onBind(intent: Intent): IBinder? = null
 }

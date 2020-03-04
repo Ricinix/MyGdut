@@ -30,17 +30,34 @@ class ExamRepo @Inject constructor(
         transformer = TermTransformer(context, account)
     }
 
+    /**
+     * 保存所有的联网数据（供service调用）
+     */
+    suspend fun saveAllExam(examData: ExamData){
+        examDao.deleteExamByTermName(examData.termName.name)
+        examDao.saveAllExam(examData.exams)
+    }
+
+    /**
+     * 获取默认本地数据
+     */
     suspend fun getInitBackupExam(): ExamData {
         val termName = settingSp.getString(EXAM_TERM_NAME, "") ?: ""
         return ExamData(examDao.getExamByTermName(termName), TermName(termName))
     }
 
+    /**
+     * 通过课程名字获取本地数据
+     */
     suspend fun getBackupExamByTermName(termName: TermName): List<Exam> {
         editor.putString(EXAM_TERM_NAME, termName.name)
         editor.commit()
         return examDao.getExamByTermName(termName.name)
     }
 
+    /**
+     * 通过学期名字获取联网数据
+     */
     suspend fun getExamByTermName(termName: TermName): NetResult<List<Exam>> {
         val code = termName.toTermCode(transformer)
         return when (val result = examImpl.getExamByTermCode(code)) {
@@ -53,6 +70,9 @@ class ExamRepo @Inject constructor(
         }
     }
 
+    /**
+     * 获取联网最新数据
+     */
     suspend fun getLatestExam(): NetResult<ExamData> {
         return when (val result = examImpl.getLatestExam()) {
             is NetResult.Success -> {
@@ -65,6 +85,20 @@ class ExamRepo @Inject constructor(
         }
     }
 
+    suspend fun getLatestExamForService() : NetResult<ExamData>{
+        return when (val result = examImpl.getLatestExam()) {
+            is NetResult.Success -> {
+                val termName = result.data.second.toTermName(transformer)
+                val data = result.data.first.toExamList(transformer)
+                NetResult.Success(ExamData(data, termName))
+            }
+            is NetResult.Error -> result
+        }
+    }
+
+    /**
+     * 本地保存
+     */
     private suspend fun save2DateBase(data: List<Exam>, termName: TermName) {
         editor.putString(EXAM_TERM_NAME, termName.name)
         editor.commit()

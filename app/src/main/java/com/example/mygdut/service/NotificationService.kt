@@ -47,10 +47,12 @@ class NotificationService : Service() {
 
     private fun popNotification(title: String, content: String, id: Int, requestCode: Int) {
         checkChannel()
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra(ConstantField.PAGE_CODE_EXTRA, requestCode)
         val pi = PendingIntent.getActivity(
             this,
             requestCode,
-            Intent(this, MainActivity::class.java),
+            intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val notification = NotificationCompat.Builder(this, ConstantField.SCHEDULE_CHANNEL_ID)
@@ -58,6 +60,7 @@ class NotificationService : Service() {
             .setContentText(content)
             .setSmallIcon(R.mipmap.ic_launcher2)
             .setContentIntent(pi)
+            .setAutoCancel(true)
             .build()
         getNotificationManager().notify(id, notification)
     }

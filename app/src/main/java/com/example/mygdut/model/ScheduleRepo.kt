@@ -79,6 +79,14 @@ class ScheduleRepo @Inject constructor(
     }
 
     /**
+     * 保存所有的联网数据（供service调用）
+     */
+    suspend fun saveSchedules(scheduleData: ScheduleData){
+        scheduleDao.deleteScheduleByTermName(scheduleData.termName.name, Schedule.TYPE_FROM_NET)
+        scheduleDao.saveAllSchedule(scheduleData.schedules)
+    }
+
+    /**
      * 存储开学日
      */
     fun saveSchoolDay(schoolCalendar: SchoolCalendar) {
@@ -163,6 +171,19 @@ class ScheduleRepo @Inject constructor(
                 save2DataBase(data, termName)
                 NetResult.Success(ScheduleData(data, termName))
 
+            }
+            is NetResult.Error -> result
+        }
+    }
+
+    suspend fun getNowScheduleForService() : NetResult<ScheduleData>{
+        return when (val result = scheduleImpl.getNowTermSchedule()) {
+            is NetResult.Success -> {
+                val termName = result.data.second.toTermName(transformer)
+                // 为了程序不crash，把不合规范的数据筛选掉
+                val data = result.data.first.map { it.toSchedule(termName) }
+                    .filter { it.isValid() }
+                NetResult.Success(ScheduleData(data, termName))
             }
             is NetResult.Error -> result
         }

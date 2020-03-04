@@ -20,10 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.R
 import com.example.mygdut.data.ApkVersion
 import com.example.mygdut.domain.ConstantField
-import com.example.mygdut.service.ExamReminderService
-import com.example.mygdut.service.NoticeReminderService
-import com.example.mygdut.service.NotificationService
-import com.example.mygdut.service.ScheduleReminderService
+import com.example.mygdut.service.*
 import com.example.mygdut.view.fragment.HomeFragment
 import com.example.mygdut.view.fragment.ScheduleFragment
 import com.example.mygdut.view.fragment.ScoreFragment
@@ -43,6 +40,8 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     private var nowFragment: Fragment? = null
     private lateinit var mViewModel: MainViewModel
 
+    private var startUpdate = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,9 +55,9 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
         checkReminder()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        when (intent?.getIntExtra(ConstantField.PAGE_CODE_EXTRA, -1)) {
             NotificationService.NOTICE_NOTIFICATION_FLAG -> {
                 switchToFragment(homeFragment)
                 homeFragment.scrollToNoticePage()
@@ -83,6 +82,16 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
             onStartExamReminder()
     }
 
+    private fun startUpdateService() {
+        if (!startUpdate) UpdateService.startThisService(this)
+        startUpdate = true
+    }
+
+    private fun stopUpdateService() {
+        if (startUpdate) UpdateService.stopThisService(this)
+        startUpdate = false
+    }
+
     override fun onStartNoticeReminder() {
         ignoreBatteryOptimization()
         NoticeReminderService.startThisService(this)
@@ -95,19 +104,27 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     override fun onStartExamReminder() {
         ignoreBatteryOptimization()
         ExamReminderService.startThisService(this)
+        startUpdateService()
     }
 
     override fun onStopExamReminder() {
         ExamReminderService.stopThisService(this)
+        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        if (!sp.getBoolean(ConstantField.SCHEDULE_REMIND, false))
+            stopUpdateService()
     }
 
     override fun onStopScheduleReminder() {
         ScheduleReminderService.stopThisService(this)
+        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        if (!sp.getBoolean(ConstantField.EXAM_REMIND, false))
+            stopUpdateService()
     }
 
     override fun onStartScheduleReminder() {
         ignoreBatteryOptimization()
         ScheduleReminderService.startThisService(this)
+        startUpdateService()
     }
 
     @SuppressLint("BatteryLife")
