@@ -1,6 +1,7 @@
 package com.example.mygdut.view.fragment
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
@@ -8,8 +9,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.RotateAnimation
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
@@ -19,15 +18,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.mygdut.R
 import com.example.mygdut.data.TermName
+import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.di.component.DaggerScheduleComponent
 import com.example.mygdut.di.module.ScheduleModule
 import com.example.mygdut.view.BaseApplication
+import com.example.mygdut.view.activity.NewScheduleActivity
 import com.example.mygdut.view.widget.BlackListDialog
+import com.example.mygdut.view.widget.LazyAnimation
 import com.example.mygdut.view.widget.OnChooseLetterChangedListener
 import com.example.mygdut.view.widget.TermSelectDialog
 import com.example.mygdut.viewModel.ScheduleViewModel
 import com.example.mygdut.viewModel.`interface`.ScheduleViewModelCallBack
 import kotlinx.android.synthetic.main.fragment_schedule.*
+import java.io.Serializable
 import javax.inject.Inject
 
 class ScheduleFragment : Fragment() {
@@ -35,15 +38,8 @@ class ScheduleFragment : Fragment() {
     @Inject
     lateinit var mViewModel: ScheduleViewModel
 
-    private var anim = RotateAnimation(
-        0f, 360f,
-        Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
-    ).apply {
-        fillAfter = true
-        repeatMode = RotateAnimation.RESTART
-        duration = 800
-        repeatCount = -1
-    }
+
+    private lateinit var anim : LazyAnimation
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +59,21 @@ class ScheduleFragment : Fragment() {
 
             }
 
+            override fun startNewScheduleActivity(
+                weekDay: Int,
+                chosenWeek: Int,
+                disableClasses: List<Schedule>
+            ) {
+//                Log.d(TAG, "putting: termName: ${mViewModel.termName.value} weekDay:$weekDay, chosenWeek:$chosenWeek, disableClasses: $disableClasses")
+                val intent = Intent(context, NewScheduleActivity::class.java)
+                intent.putExtra(NewScheduleActivity.EXTRA_WEEKDAY, weekDay)
+                intent.putExtra(NewScheduleActivity.EXTRA_CHOSEN_WEEK, chosenWeek)
+                intent.putExtra(NewScheduleActivity.EXTRA_DISABLE_LIST, disableClasses as Serializable)
+                intent.putExtra(NewScheduleActivity.EXTRA_TERM_NAME, mViewModel.termName.value)
+                startActivityForResult(intent, NewScheduleActivity.REQUEST_ADD_CODE)
+            }
+
+
             override fun onFail(msg: String) {
                 Toast.makeText(this@ScheduleFragment.context, msg, Toast.LENGTH_SHORT).show()
             }
@@ -72,9 +83,23 @@ class ScheduleFragment : Fragment() {
             }
 
             override fun onRefresh() {
-                schedule_refresh.startAnimation(anim)
+//                schedule_refresh.startAnimation(anim)
+                anim.start()
             }
         })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (resultCode) {
+            ADD_SUCCEED -> refreshData(false)
+        }
+    }
+
+    private fun refreshData(locate : Boolean = true) {
+//        schedule_refresh.startAnimation(anim)
+        anim.start()
+        mViewModel.getData(TermName(schedule_select_termName.text.toString()), locate)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -85,7 +110,9 @@ class ScheduleFragment : Fragment() {
         setObserver()
         setClickListener()
         mViewModel.getInitData()
-        schedule_refresh.startAnimation(anim)
+        anim = LazyAnimation(schedule_refresh)
+//        schedule_refresh.startAnimation(anim)
+        anim.start()
     }
 
     private fun setSchoolDay() {
@@ -117,13 +144,13 @@ class ScheduleFragment : Fragment() {
             setSchoolDay()
         }
         schedule_black_list.setOnClickListener {
-            BlackListDialog(context?:requireContext(), mViewModel.scheduleBlackList){
+            BlackListDialog(context ?: requireContext(), mViewModel.scheduleBlackList) {
                 mViewModel.removeFromBlackList(it)
             }.show()
         }
         schedule_refresh.setOnClickListener {
-            it.startAnimation(anim)
-            mViewModel.getData(TermName(schedule_select_termName.text.toString()))
+            if (!anim.isRefreshing())
+                refreshData()
         }
     }
 
@@ -137,11 +164,12 @@ class ScheduleFragment : Fragment() {
         schedule_btn_termName.setOnClickListener {
             TermSelectDialog(
                 it.context,
-                mViewModel.termName.value?:TermName(schedule_select_termName.text.toString()),
+                mViewModel.termName.value ?: TermName(schedule_select_termName.text.toString()),
                 TermSelectDialog.MODE_SIMPLIFY
             ) { name ->
                 schedule_select_termName.text = name.name
-                schedule_refresh.startAnimation(anim)
+//                schedule_refresh.startAnimation(anim)
+                anim.start()
                 mViewModel.getData(name)
             }.show()
         }
@@ -202,5 +230,7 @@ class ScheduleFragment : Fragment() {
 
     companion object {
         private const val TAG = "ScheduleFragment"
+        const val ADD_SUCCEED = 1
+        const val ADD_CANCEL = 2
     }
 }

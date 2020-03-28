@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.room.Entity
 import androidx.room.TypeConverters
 import com.example.mygdut.db.converters.IntListConverter
+import java.io.Serializable
 import java.util.*
 
 @Entity(
@@ -22,7 +23,7 @@ data class Schedule(
     val classmate: String, // 上课班级
     val termName: String, // 方便本地存储
     val type : Int // 用来判断是用户自行添加的课程还是教务系统的课程
-){
+) : Serializable{
     fun isValid() : Boolean = weeks.isNotEmpty() && classOrderInDay.isNotEmpty() && weekDay >= 1 && weekDay <= 7
 
     fun toScheduleBlackName() = ScheduleBlackName(className, termName)

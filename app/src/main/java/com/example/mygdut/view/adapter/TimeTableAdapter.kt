@@ -1,13 +1,11 @@
 package com.example.mygdut.view.adapter
 
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.mygdut.R
 import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.view.widget.ClassInfoDialog
-import com.example.mygdut.view.widget.ClassNewDialog
 import com.example.mygdut.view.widget.TimeTableView
 
 class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerCallBack) :
@@ -22,7 +20,7 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
             mutableList.clear()
             mutableList.addAll(data.filter { it.weekDay == index + 1 }.sortedBy { it.classOrderInDay.first() })
         }
-        Log.d("TimeTableViewAdapter", "week: ${mWeekNum}, data: $mDataInList")
+//        Log.d("TimeTableViewAdapter", "week: ${mWeekNum}, data: $mDataInList")
         schoolDay?.let { dateArray = it.getDateArray(WEEKDAY_NUM, mWeekNum) }
         notifyDataChange()
     }
@@ -51,18 +49,19 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
 
     override fun bindEmptyView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
         view.setOnLongClickListener {
-            ClassNewDialog(
-                view.context,
-                weekDay,
-                cb.getTermName(),
-                mWeekNum,
-                mDataInList[weekDay - 1]
-            )
-            {
-                cb.saveSchedule(it)
-                mDataInList[weekDay - 1].insert(it)
-                notifyDataChange()
-            }.show()
+//            ClassNewDialog(
+//                view.context,
+//                weekDay,
+//                cb.getTermName(),
+//                mWeekNum,
+//                mDataInList[weekDay - 1]
+//            )
+//            {
+//                cb.saveSchedule(it)
+//                mDataInList[weekDay - 1].insert(it)
+//                notifyDataChange()
+//            }.show()
+            cb.newSchedule(weekDay, mWeekNum, mDataInList[weekDay-1])
             true
         }
 
@@ -107,15 +106,15 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
         else TimeTableView.BlockType.SCHEDULE
     }
 
-    private fun MutableList<Schedule>.insert(schedule: Schedule) {
-        for (i in 0 until size) {
-            if (get(i).classOrderInDay.first() > schedule.classOrderInDay.first()) {
-                add(i, schedule)
-                return
-            }
-        }
-        add(schedule)
-    }
+//    private fun MutableList<Schedule>.insert(schedule: Schedule) {
+//        for (i in 0 until size) {
+//            if (get(i).classOrderInDay.first() > schedule.classOrderInDay.first()) {
+//                add(i, schedule)
+//                return
+//            }
+//        }
+//        add(schedule)
+//    }
 
     companion object {
         private const val WEEKDAY_NUM = 7

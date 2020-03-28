@@ -22,12 +22,17 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     private val mAdapter =
         ScheduleRecyclerAdapter(object : ScheduleRecyclerAdapter.ScheduleRecyclerCallBack {
             override fun getTermName(): TermName = termName.value ?: TermName.newEmptyInstance()
-            override fun saveSchedule(schedule: Schedule) {
-                viewModelScope.launch { scheduleRepo.saveSchedule(schedule) }
+
+            override fun newSchedule(weekDay: Int, chosenWeek: Int, disableClasses: List<Schedule>) {
+                callBack?.startNewScheduleActivity(weekDay, chosenWeek, disableClasses)
             }
 
             override fun deleteSchedule(schedule: Schedule) {
-                viewModelScope.launch { scheduleRepo.deleteSchedule(schedule) }
+                viewModelScope.launch {
+                    val job = launch { scheduleRepo.deleteSchedule(schedule) }
+                    job.join()
+                    getData(termName.value?:return@launch, locate = false)
+                }
             }
 
             override fun moveToBlackList(schedule: Schedule) {
@@ -92,7 +97,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
     /**
      * 学期名字来获取数据，场景是用户自己选择了某个学期
      */
-    fun getData(termName: TermName, getBlackList: Boolean = true) {
+    fun getData(termName: TermName, getBlackList: Boolean = true, locate: Boolean = true) {
         viewModelScope.launch {
             val scheduleBlackList = if (!getBlackList) null else scheduleRepo.getScheduleBlackList(termName).toMutableList()
             val backup = scheduleRepo.getBackupScheduleByTermName(termName)
@@ -100,12 +105,13 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
                 backup,
                 scheduleBlackList,
                 totalFromNet = false,
-                finish = false
+                finish = false,
+                locate = locate
             )
             when (val result =
                 withContext(Dispatchers.IO) { scheduleRepo.getScheduleByTermName(termName) }) {
                 is NetResult.Success -> {
-                    dataSetting(result.data, scheduleBlackList, totalFromNet = true)
+                    dataSetting(result.data, scheduleBlackList, totalFromNet = true, locate = locate)
                 }
                 is NetResult.Error -> {
                     callBack?.onFinish()
@@ -146,7 +152,8 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         scheduleData: ScheduleData,
         blackList: MutableList<ScheduleBlackName>?,
         totalFromNet: Boolean,
-        finish: Boolean = true
+        finish: Boolean = true,
+        locate : Boolean = true
     ) {
         // 给课程表设置开学日和数据
         mAdapter.schoolDay = scheduleRepo.getSchoolDay(scheduleData.termName)
@@ -162,7 +169,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         // 设置选择器的学期显示
         termName.value = scheduleData.termName
         // 全都设置好了再滑动recyclerView
-        blackList?.run {
+        if (blackList != null && locate){
             mAdapter.schoolDay?.let { setWeekPosition(it) }
         }
         // 设置并重绘sidebar

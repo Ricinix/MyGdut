@@ -16,10 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".view.activity.NewScheduleActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <service
             android:name=".service.UpdateService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
         <service
             android:name=".service.ExamReminderService"
             android:enabled="true"

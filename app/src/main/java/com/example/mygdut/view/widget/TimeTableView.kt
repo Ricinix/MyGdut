@@ -409,7 +409,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             endRow: Int
         ): View {
             val container = LinearLayout(viewGroup.context)
-            val colorPosition = weekDay + startRow + endRow
+            val colorPosition = (endRow shl startRow) * weekDay
             // 容器
             container.run {
                 layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)

@@ -123,7 +123,7 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
 
     interface ScheduleRecyclerCallBack {
         fun getTermName(): TermName
-        fun saveSchedule(schedule: Schedule)
+        fun newSchedule(weekDay: Int, chosenWeek: Int, disableClasses: List<Schedule>)
         fun deleteSchedule(schedule: Schedule)
         fun moveToBlackList(schedule: Schedule)
     }

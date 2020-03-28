@@ -10,6 +10,7 @@ import com.example.mygdut.data.TermName
 import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.view.adapter.OrderSelectRecyclerAdapter
 import com.example.mygdut.view.adapter.WeekSelectRecyclerAdapter
+import kotlinx.android.synthetic.main.content_new_class.*
 import kotlinx.android.synthetic.main.dialog_new_class.*
 
 /**
@@ -77,7 +78,7 @@ class ClassNewDialog(
         setupRecyclerView()
         setClickListener()
         setCanceledOnTouchOutside(false)
-        dialog_new_week_day.text = weekNameArr[weekDay]
+        dialog_new_week_day.text = context.getString(R.string.diy_schedule_template, weekNameArr[weekDay])
     }
 
     private fun setClickListener() {
