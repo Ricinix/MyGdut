@@ -25,7 +25,7 @@ class ScheduleReminderPresenter @Inject constructor(
         val schoolDay = getLatestSchoolDay() ?: return null
         Log.d(TAG, "schoolDay: ${schoolDay.termName}, ${schoolDay.schoolDay}")
         val data = scheduleDao.getScheduleByTermName(schoolDay.termName.name)
-            .filter { it.className !in scheduleDao.getScheduleBlackListByTermName(schoolDay.termName.name).map { it.className } }
+            .filter { schedule -> schedule.className !in scheduleDao.getScheduleBlackListByTermName(schoolDay.termName.name).map { it.className } }
         if (data.isEmpty()) return null
         val maxWeek = getMaxWeek(data)
         val week = schoolDay.calculateWeekPosition(maxWeek) + 1
@@ -42,6 +42,7 @@ class ScheduleReminderPresenter @Inject constructor(
             try {
                 val sortedList = schedules.sortedBy { it.classOrderInDay.first() }
                 for (schedule in sortedList) {
+                    // 若是当天，则一个个判断是否上了课，否则则是第一节课
                     if (fromToday == 0 && schedule.hasPass(startTimeArr)) continue
                     return ReminderPlan.from(fromToday, startTimeArr, schedule)
                 }

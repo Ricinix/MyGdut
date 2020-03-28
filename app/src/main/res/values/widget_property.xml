@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TimeTableView">
+        <attr name="week_mode" format="enum">
+            <enum name="normal" value="0"/>
+            <enum name="simplify" value="1"/>
+            <enum name="weekend" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>

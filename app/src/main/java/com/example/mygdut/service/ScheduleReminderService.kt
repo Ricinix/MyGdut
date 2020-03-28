@@ -27,9 +27,9 @@ class ScheduleReminderService : Service() {
         if (sp.getBoolean(ConstantField.SCHEDULE_REMIND, false)) {
             scope.launch {
                 if (!startAlarm()) Log.d(TAG, "无新课程")
-                stopSelf()
             }
         }
+        stopSelf()
         return super.onStartCommand(intent, flags, startId)
     }
 

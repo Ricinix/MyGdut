@@ -11,6 +11,19 @@
         <item>周日</item>
     </string-array>
 
+    <string-array name="week_name_simplify">
+        <item>周一</item>
+        <item>周二</item>
+        <item>周三</item>
+        <item>周四</item>
+        <item>周五</item>
+    </string-array>
+
+    <string-array name="week_name_weekend">
+        <item>周六</item>
+        <item>周日</item>
+    </string-array>
+
     <string-array name="time_schedule_start">
         <item>8:30</item>
         <item>9:20</item>
