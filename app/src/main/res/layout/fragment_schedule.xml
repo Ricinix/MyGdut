@@ -82,17 +82,17 @@
                 app:layout_constraintEnd_toStartOf="@id/schedule_black_list"
                 app:layout_constraintTop_toTopOf="parent" />
 
-<!--            <ImageView-->
-<!--                android:id="@+id/schedule_output"-->
-<!--                android:padding="8dp"-->
-<!--                android:background="?selectableItemBackgroundBorderless"-->
-<!--                android:layout_marginEnd="28dp"-->
-<!--                android:src="@drawable/ic_screen_share_black_24dp"-->
-<!--                app:layout_constraintEnd_toStartOf="@id/schedule_refresh"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:contentDescription="@string/output_ics" />-->
+            <ImageView
+                android:id="@+id/schedule_output"
+                android:padding="8dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:layout_marginEnd="28dp"
+                android:src="@drawable/ic_screen_share_black_24dp"
+                app:layout_constraintEnd_toStartOf="@id/schedule_refresh"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/output_ics" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.Toolbar>

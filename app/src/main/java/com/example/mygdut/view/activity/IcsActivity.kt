@@ -55,8 +55,12 @@ class IcsActivity : AppCompatActivity() {
 
     private fun setupTimeSelector() {
         time_switch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) time_set_layout.visibility = View.VISIBLE
-            else time_set_layout.visibility = View.GONE
+            if (isChecked){
+                time_set_layout.visibility = View.VISIBLE
+            }
+            else{
+                time_set_layout.visibility = View.GONE
+            }
         }
     }
 
@@ -104,7 +108,10 @@ class IcsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getPath() : String? = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath
+    private fun getPath() : String?{
+        val path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath
+        return path?.replace("Android/data/com.example.mygdut/files/", "")
+    }
     private fun getSchoolDay(termName: TermName): SchoolCalendar {
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
         return SchoolCalendar(termName, sp.getInt(termName.name, 0))

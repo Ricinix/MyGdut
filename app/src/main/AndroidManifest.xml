@@ -8,7 +8,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+
     <application
+        android:requestLegacyExternalStorage = "true"
         android:name=".view.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher2"
@@ -17,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher2_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="q">
         <activity android:name=".view.activity.IcsActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity

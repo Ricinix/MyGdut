@@ -22,6 +22,7 @@ import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.di.component.DaggerScheduleComponent
 import com.example.mygdut.di.module.ScheduleModule
 import com.example.mygdut.view.BaseApplication
+import com.example.mygdut.view.activity.IcsActivity
 import com.example.mygdut.view.activity.NewScheduleActivity
 import com.example.mygdut.view.widget.BlackListDialog
 import com.example.mygdut.view.widget.LazyAnimation
@@ -152,9 +153,9 @@ class ScheduleFragment : Fragment() {
             if (!anim.isRefreshing())
                 refreshData()
         }
-//        schedule_output.setOnClickListener {
-//            IcsActivity.startThisActivity(context?:requireContext(), mViewModel.termName.value?:return@setOnClickListener)
-//        }
+        schedule_output.setOnClickListener {
+            IcsActivity.startThisActivity(context?:requireContext(), mViewModel.termName.value?:return@setOnClickListener)
+        }
     }
 
     /**

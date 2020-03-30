@@ -11,13 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
-        android:elevation="1dp"
+        android:elevation="3dp"
         app:title="导出ICS文件" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chip_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="12dp"
         android:animateLayoutChanges="true"
         android:theme="@style/ClipTheme"
         app:singleSelection="false" />
@@ -57,6 +58,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:textSize="16sp"
+        android:layout_margin="6dp"
+        android:text="@string/ics_intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/btn_output"

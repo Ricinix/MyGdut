@@ -31,6 +31,7 @@ class IcsGenerator private constructor(
         properties.add(Version.VERSION_2_0)
         properties.add(CalScale.GREGORIAN)
     }
+    private var timeClock: Int? = null
 //    private val tz = kotlin.run {
 //        val registry = TimeZoneRegistryFactory.getInstance().createRegistry()
 //        val timezone = registry.getTimeZone("Asia/Shanghai")
@@ -38,15 +39,16 @@ class IcsGenerator private constructor(
 //    }
 
 
-    private fun generateSchedule(time: Int?) {
+    private fun generateSchedule() {
         for (schedule in data) {
             val startList = timeGenerator.generateStartTime(schedule)
             val endList = timeGenerator.generateEndTime(schedule)
             for (i in startList.indices) {
                 val event =
                     generateEvent(startList[i], endList[i], schedule.className, schedule.classRoom)
-                if (time != null){
-                    val alarm = generateClock(schedule.className, schedule.classRoom, time, startList[i])
+                timeClock?.let {
+                    val alarm =
+                        generateClock(schedule.className, schedule.classRoom, it, startList[i])
                     event.alarms.add(alarm)
                 }
 //                sb.append(event)
@@ -82,7 +84,12 @@ class IcsGenerator private constructor(
 //        return "${time1}T${time2}Z"
 //    }
 
-    private fun generateClock(className: String, place: String, time: Int, startCal: Calendar): VAlarm {
+    private fun generateClock(
+        className: String,
+        place: String,
+        time: Int,
+        startCal: Calendar
+    ): VAlarm {
         startCal.add(Calendar.MINUTE, -time)
 //                val timeCal = getTime(cal)
 //                val ssb = StringBuilder("BEGIN:VALARM\n")
@@ -101,23 +108,23 @@ class IcsGenerator private constructor(
 //        sb.append("END:VCALENDAR")
 //        return Ics(sb.toString(), timeGenerator.getTermName())
         calendar.validate()
-        return Ics(calendar, timeGenerator.getTermName())
+        return Ics(calendar, timeGenerator.getTermName(),timeClock != null)
     }
 
-    companion object{
+    companion object {
         private const val HOST = "mygdut"
     }
 
     class Builder(data: List<Schedule>, schoolCalendar: SchoolCalendar, context: Context) {
         private val generator = IcsGenerator(data, ScheduleTImeGenerator(context, schoolCalendar))
-        private var timeClock: Int? = null
 
         fun setTime(time: Int) {
-            if (time >= 0) timeClock = time
+            if (time >= 0) generator.timeClock = time
+            else generator.timeClock = null
         }
 
         fun build(): Ics {
-            generator.generateSchedule(timeClock)
+            generator.generateSchedule()
             return generator.generate()
         }
     }

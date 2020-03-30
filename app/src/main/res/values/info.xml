@@ -5,4 +5,6 @@
     </string>
     <string name="github">https://github.com/Ricinix/MyGdut</string>
     <string name="github_download">https://github.com/Ricinix/MyGdut/releases</string>
+    <string name="ics_intro">什么是ics文件：\n    ics文件指的是iCalendar格式的文件，可以导入到日历app（如Google Calendar）中来创建事件。
+        当日历中有了相对应的事件，就可以获得系统级的推送以及可以在日历的桌面小部件中展示课程表。</string>
 </resources>
