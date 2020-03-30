@@ -11,7 +11,7 @@ import com.example.mygdut.data.TermName
 import com.example.mygdut.db.dao.ScheduleDao
 import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.di.component.DaggerNewScheduleActivityComponent
-import com.example.mygdut.di.module.NewScheduleActivityModule
+import com.example.mygdut.di.module.ScheduleDaoModule
 import com.example.mygdut.view.BaseApplication
 import com.example.mygdut.view.adapter.OrderSelectRecyclerAdapter
 import com.example.mygdut.view.adapter.WeekSelectRecyclerAdapter
@@ -179,7 +179,7 @@ class NewScheduleActivity : AppCompatActivity() {
     fun inject(){
         DaggerNewScheduleActivityComponent.builder()
             .baseComponent((application as BaseApplication).getBaseComponent())
-            .newScheduleActivityModule(NewScheduleActivityModule())
+            .scheduleDaoModule(ScheduleDaoModule())
             .build()
             .inject(this)
     }

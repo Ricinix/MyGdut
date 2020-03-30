@@ -66,4 +66,10 @@
     <string name="download_url">下载页面</string>
     <string name="schedule_black_list">schedule black list</string>
     <string name="schedule_black_list_title">课程黑名单</string>
+    <string name="output_ics">output ics</string>
+    <string name="output">导出</string>
+    <string name="generate_alarm">生成提醒</string>
+    <string name="before">提前</string>
+    <string name="_70">70</string>
+    <string name="minute">分钟</string>
 </resources>

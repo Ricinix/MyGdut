@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         app:title="@string/title"
         android:background="#ffffff"
-        android:elevation="8dp"
+        android:elevation="1dp"
         android:minHeight="0dp"
         android:padding="6dp"
         app:contentInsetStart="0dp"

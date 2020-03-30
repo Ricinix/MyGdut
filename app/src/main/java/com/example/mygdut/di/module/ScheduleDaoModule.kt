@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class NewScheduleActivityModule {
+class ScheduleDaoModule {
 
     @Provides
     @ActivityScope

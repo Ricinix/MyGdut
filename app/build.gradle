@@ -65,6 +65,14 @@ android {
 //            jni.srcDirs = ['src/main/jni/']
 //        }
 //    }
+    packagingOptions {
+        // prevent duplicate files
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+
+        //!!! andoird buildToolsVersion 19.0.3 does not support exclude with wildcards yet :-(
+        exclude('org/apache/commons/codec/language/bm/*.txt')		//  124 files (uncompressed 215kb) with unused language specific rules
+    }
 }
 
 dependencies {
@@ -118,4 +126,10 @@ dependencies {
 
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
+    
+    implementation 'org.mnode.ical4j:ical4j:3.0.18'
+//    implementation 'org.hibernate:hibernate-jcache:5.4.13.Final'
+//    implementation 'backport-util-concurrent:backport-util-concurrent:3.1'
+//    implementation 'commons-codec:commons-codec:1.11'
+//    implementation 'commons-lang:commons-lang:2.6'
 }

@@ -152,6 +152,9 @@ class ScheduleFragment : Fragment() {
             if (!anim.isRefreshing())
                 refreshData()
         }
+//        schedule_output.setOnClickListener {
+//            IcsActivity.startThisActivity(context?:requireContext(), mViewModel.termName.value?:return@setOnClickListener)
+//        }
     }
 
     /**
