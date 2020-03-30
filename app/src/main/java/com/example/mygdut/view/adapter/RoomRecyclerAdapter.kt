@@ -30,6 +30,7 @@ class RoomRecyclerAdapter(
     init {
         resourceHolder.setInitCampus(campusNameChosenLastTime)
     }
+
     private var mList = listOf<ClassRoom>()
 
     fun setData(list: List<ClassRoom>) {
@@ -90,6 +91,13 @@ class RoomRecyclerAdapter(
                         getData()
                         notifyDataSetChanged()
                     }
+//                    chip.setOnCheckedChangeListener { buttonView, isChecked ->
+//                        if (isChecked){
+//                            resourceHolder.setBuilding(chip.text.toString(), buttonView.context)
+//                            getData()
+//                            notifyDataSetChanged()
+//                        }
+//                    }
                 }
             }
             is ViewHolder.ItemHolder -> {
@@ -167,22 +175,26 @@ class RoomRecyclerAdapter(
             val campus: AppCompatSpinner = v.findViewById(R.id.header_room_campus_select) // 校区选择器
             val chipGroup: ChipGroup = v.findViewById(R.id.header_room_chip_group) //
             val date: AppCompatSpinner = v.findViewById(R.id.header_room_date_select) // 时间选择器
-            private val attributes: AttributeSet
-
-            init {
-                val parser = v.context.resources.getLayout(R.layout.chip_choose)
-                var type = 0
-                while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
-                    type = parser.next()
-                }
-                attributes = Xml.asAttributeSet(parser)
-            }
+//            private val attributes: AttributeSet
+//
+//            init {
+//                val parser = v.context.resources.getLayout(R.layout.chip_choose)
+//                var type = 0
+//                while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
+//                    type = parser.next()
+//                }
+//                attributes = Xml.asAttributeSet(parser)
+//            }
 
             fun refreshChips() {
                 val buildingArr = resourceHolder.getBuildingArray()
                 chipGroup.removeAllViews()
                 for (buildingName in buildingArr) {
-                    val chip = Chip(chipGroup.context, attributes).apply { text = buildingName }
+                    val chip = LayoutInflater.from(chipGroup.context)
+                        .inflate(R.layout.chip_choose, chipGroup, false)
+                        .findViewById(R.id.chip) as Chip
+                    if (buildingName == resourceHolder.nowBuilding) chip.isChecked = true
+                    chip.text = buildingName
                     chipGroup.addView(chip)
                 }
 
@@ -204,16 +216,16 @@ class RoomRecyclerAdapter(
             ViewHolder(v, resourceHolder) {
             val title: AppCompatTextView = v.findViewById(R.id.item_room_title)
             private val content: ChipGroup = v.findViewById(R.id.item_room_content)
-            private val attributes: AttributeSet
-
-            init {
-                val parser = v.context.resources.getLayout(R.layout.chip_show)
-                var type = 0
-                while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
-                    type = parser.next()
-                }
-                attributes = Xml.asAttributeSet(parser)
-            }
+//            private val attributes: AttributeSet
+//
+//            init {
+//                val parser = v.context.resources.getLayout(R.layout.chip_show)
+//                var type = 0
+//                while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
+//                    type = parser.next()
+//                }
+//                attributes = Xml.asAttributeSet(parser)
+//            }
 
             fun refreshData(data: List<ClassRoom>, floor: Int) {
                 if (!resourceHolder.isShown()) {
@@ -238,7 +250,10 @@ class RoomRecyclerAdapter(
             private fun refreshChips(arr: List<String>) {
                 content.removeAllViews()
                 for (r in arr) {
-                    val chip = Chip(content.context, attributes).apply { text = r }
+                    val chip = LayoutInflater.from(content.context)
+                        .inflate(R.layout.chip_show, content, false)
+                        .findViewById(R.id.chip) as Chip
+                    chip.text = r
                     content.addView(chip)
                 }
             }

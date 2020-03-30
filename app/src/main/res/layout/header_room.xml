@@ -40,12 +40,14 @@
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/header_room_chip_group"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="16dp"
         android:layout_marginRight="12dp"
         android:layout_marginBottom="16dp"
-        android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
+        android:animateLayoutChanges="true"
+        android:theme="@style/ClipTheme"
+        app:singleSelection="true" />
 
 
 </LinearLayout>
