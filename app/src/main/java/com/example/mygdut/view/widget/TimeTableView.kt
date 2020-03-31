@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.mygdut.R
+import com.example.mygdut.util.ViewPixelUtils
 import java.lang.ref.WeakReference
 
 

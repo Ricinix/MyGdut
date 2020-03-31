@@ -1,4 +1,4 @@
-package com.example.mygdut.view.widget
+package com.example.mygdut.util
 
 import android.content.res.Resources
 

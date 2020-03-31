@@ -172,9 +172,10 @@ class IcsActivity : AppCompatActivity() {
         for (permission in grantResults) {
             if (permission == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(this, getString(R.string.permission_fail_template), Toast.LENGTH_LONG).show()
-                break
+                return
             }
         }
+        btn_output.callOnClick()
     }
 
     private fun inject() {

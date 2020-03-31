@@ -165,8 +165,8 @@ class RoomRecyclerAdapter(
 
     sealed class ViewHolder(v: View, protected val resourceHolder: BuildingResourceHolder) :
         RecyclerView.ViewHolder(v) {
-        private val density = v.context.resources.displayMetrics.density
-        protected fun dp2px(value: Int): Int = (density * value + 0.5f).toInt()
+//        private val density = v.context.resources.displayMetrics.density
+//        protected fun dp2px(value: Int): Int = (density * value + 0.5f).toInt()
 
         class HeaderHolder(v: View, resourceHolder: BuildingResourceHolder) :
             ViewHolder(v, resourceHolder) {
@@ -272,23 +272,23 @@ class RoomRecyclerAdapter(
 //                attributes = Xml.asAttributeSet(parser)
 
                 val linearOne = v.findViewById<LinearLayout>(R.id.middle_room_one)
-                linearOne.removeAllViews()
+//                linearOne.removeAllViews()
                 for (i in 1..4) {
                     addNewChild(linearOne, i)
                 }
 
                 val linearTwo = v.findViewById<LinearLayout>(R.id.middle_room_two)
-                linearTwo.removeAllViews()
+//                linearTwo.removeAllViews()
                 addNewChild(linearTwo, 5)
 
                 val linearThree = v.findViewById<LinearLayout>(R.id.middle_room_three)
-                linearThree.removeAllViews()
+//                linearThree.removeAllViews()
                 for (i in 6..9) {
                     addNewChild(linearThree, i)
                 }
 
                 val linearFour = v.findViewById<LinearLayout>(R.id.middle_room_four)
-                linearFour.removeAllViews()
+//                linearFour.removeAllViews()
                 for (i in 10..12) {
                     addNewChild(linearFour, i)
                 }
