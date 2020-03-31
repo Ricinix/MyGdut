@@ -89,11 +89,13 @@ class ScoreRecyclerAdapter(private val getData: (termName: TermName, includeElec
         val index = position2Index(position)
         when (holder) {
             is ViewHolder.HeaderViewHolder -> {
-                holder.gpa.text = mAvgGpa?.run { String.format("%.3f", mAvgGpa) } ?: "暂无成绩"
+                holder.gpa.run {
+                    text = mAvgGpa?.let { String.format("%.3f", it) } ?: context.getString(R.string.no_score_template)
+                }
                 holder.title.text = currentTermName.name
                 holder.termShow.text = currentTermName.name
-                holder.scoreNum.text = "共${mList.size}门课程"
-                holder.wrongMsg.text = if (inValidNum == 0) "" else "其中有${inValidNum}门成绩因未教评而无法查看，故暂不计入绩点"
+                holder.scoreNum.run { text = context.getString(R.string.num_score_template, mList.size) }
+                holder.wrongMsg.run { text = if (inValidNum == 0) "" else context.getString(R.string.invalid_score_template, inValidNum) }
                 holder.termSelect.setOnClickListener {
                     mContext?.run {
                         TermSelectDialog(this, currentTermName, TermSelectDialog.MODE_ALL) {
@@ -111,7 +113,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: TermName, includeElec
                             firstInit = false
                             return
                         }
-                        includeElective = mode != "不含选修"
+                        includeElective = mode != ExcludeElective
                         Log.d("ScoreAdapter", "mode select: ")
                     }
                 }
@@ -138,6 +140,7 @@ class ScoreRecyclerAdapter(private val getData: (termName: TermName, includeElec
     companion object {
         private const val HEADER_TYPE = 0
         private const val ITEM_TYPE = 1
+        private const val ExcludeElective = "不含选修"
     }
 
     sealed class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {

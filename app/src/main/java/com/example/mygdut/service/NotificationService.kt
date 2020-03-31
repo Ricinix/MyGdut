@@ -22,19 +22,19 @@ class NotificationService : Service() {
         val type = intent?.getIntExtra(ConstantField.NOTIFICATION_TYPE, -1)
         if (type == SCHEDULE_FLAG && sp.getBoolean(ConstantField.SCHEDULE_REMIND, false)) {
             popNotification(
-                "您有一门课程提醒", intent.getStringExtra(ConstantField.SCHEDULE_EXTRA) ?: "",
+                getString(R.string.class_notification_template), intent.getStringExtra(ConstantField.SCHEDULE_EXTRA) ?: "",
                 startId, SCHEDULE_FLAG
             )
             ScheduleReminderService.startThisService(this)
         } else if (type == NOTICE_FLAG && sp.getBoolean(ConstantField.NOTICE_REMIND, false)) {
             popNotification(
-                "您有一则新通知", intent.getStringExtra(ConstantField.NOTICE_EXTRA) ?: "",
+                getString(R.string.notice_notification_template), intent.getStringExtra(ConstantField.NOTICE_EXTRA) ?: "",
                 startId, NOTICE_FLAG
             )
             NoticeReminderService.startThisService(this)
         } else if (type == EXAM_FLAG && sp.getBoolean(ConstantField.EXAM_REMIND, false)) {
             popNotification(
-                "您有一门考试即将到来", intent.getStringExtra(ConstantField.EXAM_EXTRA) ?: "",
+                getString(R.string.exam_notification_template), intent.getStringExtra(ConstantField.EXAM_EXTRA) ?: "",
                 startId, EXAM_FLAG
             )
             ExamReminderService.startThisService(this)

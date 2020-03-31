@@ -65,9 +65,9 @@ class ClassNewDialog(
     private fun setTimeTips(list: List<Int>) {
         dialog_new_order_tips.text = if (list.isNotEmpty()) {
             if (list.size == 1)
-                "${startTimeArr[list.first()]}-${endTimeArr[list.last()]}(第${list.first()}节)"
+                context.getString(R.string.schedule_time_template, startTimeArr[list.first()], endTimeArr[list.last()], list.first())
             else
-                "${startTimeArr[list.first()]}-${endTimeArr[list.last()]}(第${list.first()}-${list.last()}节)"
+                context.getString(R.string.schedule_period_template, startTimeArr[list.first()], endTimeArr[list.last()], list.first(), list.last())
         } else ""
     }
 
@@ -85,13 +85,13 @@ class ClassNewDialog(
         dialog_new_btn_confirm.setOnClickListener {
             when {
                 dialog_input_class_name.text?.isEmpty() == true -> {
-                    Toast.makeText(context, "请填写好课程名称", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.warn_for_class_name), Toast.LENGTH_SHORT).show()
                 }
                 weekAdapter.weekSelect.isEmpty() -> {
-                    Toast.makeText(context, "起码要选择一周", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.warn_for_one_week), Toast.LENGTH_SHORT).show()
                 }
                 orderAdapter.orderSelect.isEmpty() -> {
-                    Toast.makeText(context, "起码要选择一个时间段", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.warn_for_one_period), Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     val schedule = Schedule(

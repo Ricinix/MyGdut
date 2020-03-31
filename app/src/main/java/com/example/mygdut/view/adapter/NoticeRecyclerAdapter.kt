@@ -72,8 +72,8 @@ class NoticeRecyclerAdapter : RecyclerView.Adapter<NoticeRecyclerAdapter.ViewHol
 
             }
             is ViewHolder.HeaderViewHolder -> {
-                holderItem.titleView.text = "您有${mList.size}条新信息"
-                holderItem.contentView.text = "可以点击卡片右上角的叉叉来关闭该项通知"
+                holderItem.titleView.run { text = context.getString(R.string.new_message_template, mList.size) }
+                holderItem.contentView.run { text = context.getString(R.string.message_operation_template) }
             }
         }
     }

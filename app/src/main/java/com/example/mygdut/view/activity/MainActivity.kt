@@ -177,11 +177,11 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
             }
 
             override fun onNewStable(version: ApkVersion) {
-                showDialogForDownload(version, "发现新稳定版本")
+                showDialogForDownload(version, getString(R.string.new_stable_version_template))
             }
 
             override fun onNewBeta(version: ApkVersion) {
-                showDialogForDownload(version, "发现新Beta版本")
+                showDialogForDownload(version, getString(R.string.new_beta_version_template))
             }
         })
     }
@@ -191,9 +191,9 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
      */
     private fun showDialogForLatest() {
         AlertDialog.Builder(this)
-            .setTitle("已是最新版")
-            .setMessage("版本号: ${getNowVersion().version}")
-            .setPositiveButton("了解") { _, _ -> }
+            .setTitle(getString(R.string.already_latest_version_template))
+            .setMessage(getString(R.string.version_template, getNowVersion().version))
+            .setPositiveButton(getString(R.string.understand_template)) { _, _ -> }
             .create()
             .show()
     }
@@ -204,20 +204,21 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     private fun showDialogForDownload(versionName: ApkVersion, title: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
-            .setMessage("当前版本: ${getNowVersion().version}\n最新版本: ${versionName.version}")
-            .setPositiveButton("前往下载") { _, _ ->
+            .setMessage(getString(R.string.version_complete_template, getNowVersion().version, versionName.version))
+            .setPositiveButton(getString(R.string.to_download_template)) { _, _ ->
                 downloadApk(versionName)
             }
-            .setNegativeButton("关闭") { _, _ -> }
+            .setNegativeButton(getString(R.string.close_template)) { _, _ -> }
             .create()
             .show()
+
     }
 
     /**
      * 下载apk，当前方案是打开浏览器来下载（毕竟毒瘤GitHub防爬虫）
      */
     private fun downloadApk(version: ApkVersion) {
-        val url = "$GITHUB_BASE_URL${version.version}/${version.getApkName()}"
+        val url = "${getString(R.string.github_download_detail)}${version.version}/${version.getApkName()}"
         Log.d("Update", "url: $url")
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -342,6 +343,5 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
             context.startActivity(intent)
         }
 
-        private const val GITHUB_BASE_URL = "https://github.com/Ricinix/MyGdut/releases/download/"
     }
 }

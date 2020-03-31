@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="date_template">%s\n%s</string>
+    <string name="schedule_time_template">%s-%s(第%d节)</string>
+    <string name="schedule_period_template">%s-%s(第%d-%d节)</string>
     <string name="diy_schedule_template">自定义课程-%s</string>
+    <string name="floor_template">%d楼</string>
+    <string name="version_template">版本号: %s</string>
+    <string name="version_complete_template">当前版本: %s\n最新版本: %s</string>
+    <string name="invalid_score_template">其中有%d门成绩因未教评而无法查看，故暂不计入绩点</string>
+    <string name="new_message_template">您有%d条新信息</string>
+    <string name="num_score_template">共%d门课程</string>
+    <string name="output_path_template">导出路径: %s</string>
+    <string name="output_fail_template">导出失败</string>
+    <string name="understand_template">了解</string>
+    <string name="close_template">关闭</string>
+    <string name="attention_template">提醒</string>
+    <string name="confirm_template">确定</string>
+    <string name="cancel_template">取消</string>
+    <string name="delete_template">删除</string>
+    <string name="class_notification_template">您有一门课程提醒</string>
+    <string name="notice_notification_template">您有一则新通知</string>
+    <string name="exam_notification_template">您有一门考试即将到来</string>
+    <string name="insert_time_template">请输入时间</string>
+    <string name="permission_fail_template">申请权限失败</string>
+    <string name="new_stable_version_template">发现新稳定版本</string>
+    <string name="new_beta_version_template">发现新Beta版本</string>
+    <string name="already_latest_version_template">已是最新版</string>
+    <string name="to_download_template">前往下载</string>
+    <string name="warn_for_class_name">请填写好课程名称</string>
+    <string name="warn_for_one_week">起码要选择一周</string>
+    <string name="warn_for_one_period">起码要选择一个时间段</string>
+    <string name="on_exam_template">正在考试中</string>
+    <string name="no_exam_template">暂无考试</string>
+    <string name="message_operation_template">可以点击卡片右上角的叉叉来关闭该项通知</string>
+    <string name="empty_area_template">空闲区域</string>
+    <string name="no_score_template">暂无成绩</string>
+    <string name="schedule_setting_template">该学期还没有设置开学日\n\n请点击右上角的齿轮以设置开学日来开启完整功能</string>
+    <string name="school_day_operation_template">请选择本学期上学第一天的日期</string>
+    <string name="checking_update_template">正在检测更新…</string>
+    <string name="remove_schedule_template">不上这门课</string>
+
 </resources>

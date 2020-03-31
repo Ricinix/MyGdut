@@ -374,7 +374,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 textSize = 12f
                 gravity = Gravity.CENTER
                 layoutParams =
-                    LayoutParams(LayoutParams.MATCH_PARENT, Utils.dp2px(HEADER_HEIGHT, resources))
+                    LayoutParams(LayoutParams.MATCH_PARENT, ViewPixelUtils.dp2px(HEADER_HEIGHT, resources))
             }
         }
 
@@ -385,8 +385,8 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 setTextColor(context.getColor(R.color.colorPrimary))
                 gravity = Gravity.CENTER
                 layoutParams = LayoutParams(
-                    Utils.dp2px(HEADER_WIDTH, resources),
-                    Utils.dp2px(HEADER_HEIGHT, resources)
+                    ViewPixelUtils.dp2px(HEADER_WIDTH, resources),
+                    ViewPixelUtils.dp2px(HEADER_HEIGHT, resources)
                 )
             }
         }
@@ -396,7 +396,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 text = num.toString()
                 textSize = 14f
                 gravity = Gravity.CENTER
-                layoutParams = LayoutParams(Utils.dp2px(HEADER_WIDTH, resources), 0).apply {
+                layoutParams = LayoutParams(ViewPixelUtils.dp2px(HEADER_WIDTH, resources), 0).apply {
                     weight = 1f
                 }
             }
@@ -495,7 +495,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             val view = onGetHeaderView(viewGroup, weekName, pos)
             val params = view.layoutParams
             if (params.height == LayoutParams.MATCH_PARENT) {
-                params.height = Utils.dp2px(HEADER_HEIGHT, view.resources)
+                params.height = ViewPixelUtils.dp2px(HEADER_HEIGHT, view.resources)
             }
             return view
         }
@@ -517,10 +517,10 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             val view = onGetWeekNumView(viewGroup, weekNum)
             val params = view.layoutParams
             if (params.height == LayoutParams.MATCH_PARENT) {
-                params.height = Utils.dp2px(HEADER_HEIGHT, view.resources)
+                params.height = ViewPixelUtils.dp2px(HEADER_HEIGHT, view.resources)
             }
             if (params.width == LayoutParams.MATCH_PARENT) {
-                params.width = Utils.dp2px(HEADER_WIDTH, view.resources)
+                params.width = ViewPixelUtils.dp2px(HEADER_WIDTH, view.resources)
             }
             return view
         }
@@ -536,7 +536,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             val params = LayoutParams(view.layoutParams)
             params.weight = 1f
             if (params.width == LayoutParams.MATCH_PARENT) {
-                params.height = Utils.dp2px(HEADER_WIDTH, view.resources)
+                params.height = ViewPixelUtils.dp2px(HEADER_WIDTH, view.resources)
             }
             view.layoutParams = params
             return view

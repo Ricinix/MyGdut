@@ -51,10 +51,10 @@ class ScheduleFragment : Fragment() {
             override fun schoolDayEmpty() {
                 if (!isShown) {
                     AlertDialog.Builder(this@ScheduleFragment.context)
-                        .setTitle("提醒")
-                        .setMessage("该学期还没有设置开学日\n\n请点击右上角的齿轮以设置开学日来开启完整功能")
+                        .setTitle(getString(R.string.attention_template))
+                        .setMessage(getString(R.string.schedule_setting_template))
                         .setOnDismissListener { isShown = false }
-                        .setPositiveButton("了解") { _, _ -> }.show()
+                        .setPositiveButton(getString(R.string.understand_template)) { _, _ -> }.show()
                     isShown = true
                 }
 
@@ -125,17 +125,17 @@ class ScheduleFragment : Fragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
             gravity = Gravity.CENTER
-            text = SpannableStringBuilder("请选择本学期上学第一天的日期")
+            text = SpannableStringBuilder(getString(R.string.school_day_operation_template))
             setPadding(5, 10, 5, 10)
         }
         AlertDialog.Builder(this.context)
             .setCustomTitle(title)
             .setView(picker)
             .setCancelable(true)
-            .setPositiveButton("确定") { _, _ ->
+            .setPositiveButton(getString(R.string.confirm_template)) { _, _ ->
                 mViewModel.setSchoolDay(picker.year * 10000 + (picker.month + 1) * 100 + picker.dayOfMonth)
             }
-            .setNegativeButton("取消") { _, _ ->
+            .setNegativeButton(getString(R.string.cancel_template)) { _, _ ->
 
             }.create().show()
     }

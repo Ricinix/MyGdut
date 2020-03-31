@@ -6,10 +6,10 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.example.mygdut.R
+import com.example.mygdut.util.ViewSizeUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -70,7 +70,7 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
     private val touchRange = Rect()
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        Log.v("SizeTest", "onMeasure!")
+//        Log.v("SizeTest", "onMeasure!")
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
@@ -105,11 +105,11 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
             left = right - PADDING_RIGHT - maxTextWidth
             top = PADDING_TOP + paddingTop
         }
-        Log.v("SizeTest", "width:$width, height:$height")
+//        Log.v("SizeTest", "width:$width, height:$height")
     }
 
     override fun onDraw(canvas: Canvas?) {
-        Log.v("SizeTest", "set original")
+//        Log.v("SizeTest", "set original")
         // 每个字母所占空间的高度
         val singleHeight =
             if (letters.size > 0)
@@ -135,9 +135,9 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
                 //画水滴
                 waterPoint?.run {
                     setBounds(
-                        (x - waterPointWidth).toInt() - PADDING_WATERPOINT,
+                        (x - waterPointWidth).toInt() - PADDING_WATER_POINT,
                         getDrawableYCor(y, i).toInt(),
-                        x.toInt() - PADDING_WATERPOINT,
+                        x.toInt() - PADDING_WATER_POINT,
                         (getDrawableYCor(y, i) + waterPointHeight).toInt()
                     )
                     if (canvas != null)
@@ -146,7 +146,7 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
                 //画水滴里的字
                 canvas?.drawText(
                     letters[i],
-                    (x - waterPointWidth * 7 / 12).toInt() - PADDING_WATERPOINT - getTitleWidth(
+                    (x - waterPointWidth * 7 / 12).toInt() - PADDING_WATER_POINT - getTitleWidth(
                         letters[i]
                     ) / 2,
                     getTitleYCor(y, i),
@@ -160,13 +160,13 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        Log.v("TouchTest", "dispatch!")
+//        Log.v("TouchTest", "dispatch!")
         val x = event?.x ?: 0f
         val y = event?.y ?: 0f
         // 如果不在范围内就不消费此事件，并使其分发给父级view/viewGroup
         if (event?.action == MotionEvent.ACTION_DOWN &&!touchRange.contains(x.toInt(), y.toInt())) {
-            Log.v("TouchTest", "cor is ($touchRange) \n press is (${x.toInt()}, ${y.toInt()})")
-            Log.v("TouchTest", "not in range")
+//            Log.v("TouchTest", "cor is ($touchRange) \n press is (${x.toInt()}, ${y.toInt()})")
+//            Log.v("TouchTest", "not in range")
             cancelSelect()
             return false
         }
@@ -184,7 +184,7 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
             (y - PADDING_TOP - paddingTop - waterPointHeight / 2) / (height - paddingTotal)
         // 触摸的是第几个字母
         val c = (touchHeightScale * letters.size).toInt()
-        Log.v("TouchTest", "onTouch:   c:$c, touchHeightScale:$touchHeightScale")
+//        Log.v("TouchTest", "onTouch:   c:$c, touchHeightScale:$touchHeightScale")
         when (action) {
             // 按下或者滑动的时候，选中字母
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
@@ -239,27 +239,19 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
     }
 
     // 获取字母的高度
-    private fun getTextHeight(letter: String): Int {
-        val rect = Rect()
-        textPaint.getTextBounds(letter, 0, 1, rect)
-        return rect.height()
-    }
+    private fun getTextHeight(letter: String): Int = ViewSizeUtils.getHeight(letter, textPaint)
 
     /**
      * 获取字母的宽度（这个比[getTextBounds()]更好，因为获取到的宽度会稍微宽一点，使得效果更好）
      * @link getTextBounds
      */
-    private fun getTextWidth(letter: String): Float = textPaint.measureText(letter)
+    private fun getTextWidth(letter: String): Float = ViewSizeUtils.getWidth(letter, textPaint)
 
     // 测量标题（水滴里面的字母）的高度
-    private fun getTitleHeight(letter: String): Int {
-        val rect = Rect()
-        titlePaint.getTextBounds(letter, 0, 1, rect)
-        return rect.height()
-    }
+    private fun getTitleHeight(letter: String): Int = ViewSizeUtils.getHeight(letter, titlePaint)
 
     // 测量标题（水滴里面的字母）的宽度
-    private fun getTitleWidth(letter: String): Float = titlePaint.measureText(letter)
+    private fun getTitleWidth(letter: String): Float = ViewSizeUtils.getWidth(letter, titlePaint)
 
     // 获取水滴里的字母的y坐标(保证与字母导航栏中的对应字母的中心高度相同)
     private fun getTitleYCor(y: Float, i: Int): Float {
@@ -295,7 +287,7 @@ class SideBar(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) 
         const val PADDING_BOTTOM = 30
         // 行间距，为字体高度的倍率
         const val LINE_SPACE = 2
-        const val PADDING_WATERPOINT = 10
+        const val PADDING_WATER_POINT = 10
 
     }
 

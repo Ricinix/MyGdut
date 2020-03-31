@@ -68,7 +68,7 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
                     if(examList.first().getState() == ExamDate.EXAM_ING){
                         holder.tipsTextView.visibility = View.GONE
                         holder.titleTextView.text = examList.first().className
-                        holder.timeTextView.text = "正在考试中"
+                        holder.timeTextView.run { text = context.getString(R.string.on_exam_template) }
                     }else{
                         holder.tipsTextView.visibility = View.VISIBLE
                         holder.titleTextView.text = examList.first().className
@@ -76,7 +76,7 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
                     }
                 }else{
                     holder.tipsTextView.visibility = View.GONE
-                    holder.titleTextView.text = "暂无考试"
+                    holder.titleTextView.run { text = context.getString(R.string.no_exam_template) }
                     holder.timeTextView.text = ""
                 }
             }

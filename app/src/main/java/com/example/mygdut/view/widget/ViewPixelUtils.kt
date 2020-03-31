@@ -2,7 +2,7 @@ package com.example.mygdut.view.widget
 
 import android.content.res.Resources
 
-object Utils {
+object ViewPixelUtils {
     /**
      * dp转px，设置view的宽高时需要用
      */

@@ -6,7 +6,7 @@ import android.animation.ValueAnimator
 import android.view.View
 
 
-class ViewUtils(private val height : Int) {
+class ViewAnimUtils(private val height : Int) {
 
     fun expand(view: View) {
         DropAnim.instance.animateOpen(view, height)

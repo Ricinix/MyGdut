@@ -60,12 +60,12 @@ class UpdateService : Service() {
 
     private suspend fun needToUpdateSchedule(): Boolean {
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
-        return sp.getBoolean("schedule_remind", false) && mPresenter.checkScheduleNew()
+        return sp.getBoolean(ConstantField.SCHEDULE_REMIND, false) && mPresenter.checkScheduleNew()
     }
 
     private suspend fun needToUpdateExam(): Boolean {
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
-        return sp.getBoolean("exam_remind", false) && mPresenter.checkExamNew()
+        return sp.getBoolean(ConstantField.EXAM_REMIND, false) && mPresenter.checkExamNew()
     }
 
     override fun onCreate() {

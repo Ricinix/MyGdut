@@ -1,7 +1,5 @@
 package com.example.mygdut.view.adapter
 
-import android.util.AttributeSet
-import android.util.Xml
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +8,12 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.view.setMargins
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mygdut.R
 import com.example.mygdut.db.entity.ClassRoom
 import com.example.mygdut.view.resource.BuildingResourceHolder
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import org.xmlpull.v1.XmlPullParser
 
 
 class RoomRecyclerAdapter(
@@ -102,7 +98,10 @@ class RoomRecyclerAdapter(
             }
             is ViewHolder.ItemHolder -> {
                 val floor = resourceHolder.floorOfThisBuilding[position - 2]
-                holder.title.text = if (floor != 0) "${floor}楼" else "空闲区域"
+                holder.title.run {
+                    text = if (floor != 0) context.getString(R.string.floor_template, floor) else context.getString(R.string.empty_area_template)
+
+                }
                 holder.refreshData(mList.filter { it.roomPlace.floor == floor }, floor)
             }
             is ViewHolder.MiddleHolder -> {
@@ -262,15 +261,15 @@ class RoomRecyclerAdapter(
         class MiddleHolder(v: View, resourceHolder: BuildingResourceHolder) :
             ViewHolder(v, resourceHolder) {
             val viewArray = mutableListOf<AppCompatTextView>()
-            private val attributes: AttributeSet
+//            private val attributes: AttributeSet
 
             init {
-                val parser = v.context.resources.getLayout(R.layout.item_order)
-                var type = 0
-                while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
-                    type = parser.next()
-                }
-                attributes = Xml.asAttributeSet(parser)
+//                val parser = v.context.resources.getLayout(R.layout.item_order)
+//                var type = 0
+//                while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
+//                    type = parser.next()
+//                }
+//                attributes = Xml.asAttributeSet(parser)
 
                 val linearOne = v.findViewById<LinearLayout>(R.id.middle_room_one)
                 linearOne.removeAllViews()
@@ -296,11 +295,14 @@ class RoomRecyclerAdapter(
             }
 
             private fun addNewChild(parent: LinearLayout, pos: Int) {
-                val tv = AppCompatTextView(parent.context, attributes).apply {
-                    layoutParams = LinearLayout.LayoutParams(dp2px(30), dp2px(20)).also {
-                        it.setMargins(dp2px(4))
-                    }
-                }
+//                val tv = AppCompatTextView(parent.context, attributes).apply {
+//                    layoutParams = LinearLayout.LayoutParams(dp2px(30), dp2px(20)).also {
+//                        it.setMargins(dp2px(4))
+//                    }
+//                }
+                val tv = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_order, parent, false)
+                    .findViewById(R.id.order) as AppCompatTextView
                 tv.text = pos.toString()
                 tv.background = tv.context.getDrawable(R.drawable.shape_block_green_up)
                 parent.addView(tv)

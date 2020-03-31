@@ -86,13 +86,13 @@ class NewScheduleActivity : AppCompatActivity() {
         btn_confirm.setOnClickListener {
             when {
                 dialog_input_class_name.text?.isEmpty() == true -> {
-                    Toast.makeText(this, "请填写好课程名称", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.warn_for_class_name), Toast.LENGTH_SHORT).show()
                 }
                 weekAdapter?.weekSelect?.isEmpty() == true -> {
-                    Toast.makeText(this, "起码要选择一周", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,getString(R.string.warn_for_one_week) , Toast.LENGTH_SHORT).show()
                 }
                 orderAdapter?.orderSelect?.isEmpty() == true -> {
-                    Toast.makeText(this, "起码要选择一个时间段", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.warn_for_one_period), Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     val schedule = Schedule(

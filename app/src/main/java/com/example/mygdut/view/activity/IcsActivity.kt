@@ -76,7 +76,7 @@ class IcsActivity : AppCompatActivity() {
         btn_output.setOnClickListener {
             if (!checkWriteAndReadPermission()) return@setOnClickListener
             if (time_edit.text == null || time_edit.text?.isEmpty() == true) {
-                Toast.makeText(this, "请输入时间", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.insert_time_template), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             scope.launch {
@@ -99,9 +99,10 @@ class IcsActivity : AppCompatActivity() {
                 }
                 job.join()
                 if (getPath()?.isNotEmpty() == true){
-                    Toast.makeText(this@IcsActivity, "导出路径: ${getPath()}", Toast.LENGTH_LONG).show()
+
+                    Toast.makeText(this@IcsActivity, getString(R.string.output_path_template, getPath()), Toast.LENGTH_LONG).show()
                 }else{
-                    Toast.makeText(this@IcsActivity, "导出失败", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@IcsActivity, getString(R.string.output_fail_template), Toast.LENGTH_LONG).show()
                 }
                 finish()
             }
@@ -110,7 +111,7 @@ class IcsActivity : AppCompatActivity() {
 
     private fun getPath() : String?{
         val path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath
-        return path?.replace("Android/data/com.example.mygdut/files/", "")
+        return path?.replace(REPLACE_PATH, "")
     }
     private fun getSchoolDay(termName: TermName): SchoolCalendar {
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
@@ -170,7 +171,7 @@ class IcsActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (permission in grantResults) {
             if (permission == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, "申请权限失败", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.permission_fail_template), Toast.LENGTH_LONG).show()
                 break
             }
         }
@@ -196,6 +197,7 @@ class IcsActivity : AppCompatActivity() {
             context.startActivity(intent)
         }
 
+        private const val REPLACE_PATH = "Android/data/com.example.mygdut/files/"
         private const val TAG = "IcsActivity"
         private const val EXTRA_TERM_NAME = "termName"
     }

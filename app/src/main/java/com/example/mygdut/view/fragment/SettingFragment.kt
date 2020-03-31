@@ -30,23 +30,23 @@ class SettingFragment : PreferenceFragmentCompat() {
      * 设置click监听
      */
     private fun setupClickListener() {
-        findPreference<Preference>("about_btn")?.setOnPreferenceClickListener {
+        findPreference<Preference>(BTN_ABOUT)?.setOnPreferenceClickListener {
             AppInfoDialog(context ?: it.context).show()
             true
         }
-        findPreference<Preference>("logout_btn")?.setOnPreferenceClickListener {
+        findPreference<Preference>(BTN_LOGIN)?.setOnPreferenceClickListener {
             mListener?.onLogout()
             true
         }
-        findPreference<Preference>("check_update_btn")?.setOnPreferenceClickListener {
-            Toast.makeText(this@SettingFragment.context, "正在检测更新...", Toast.LENGTH_SHORT).show()
+        findPreference<Preference>(BTN_CHECK_UPDATE)?.setOnPreferenceClickListener {
+            Toast.makeText(this@SettingFragment.context, getString(R.string.checking_update_template), Toast.LENGTH_SHORT).show()
             mListener?.onCheckUpdate(false)
             true
         }
     }
 
     private fun setupSwitchListener(){
-        findPreference<SwitchPreference>("schedule_remind")?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<SwitchPreference>(SCHEDULE_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue == true){
                 mListener?.onStartScheduleReminder()
             }else{
@@ -54,7 +54,7 @@ class SettingFragment : PreferenceFragmentCompat() {
             }
             true
         }
-        findPreference<SwitchPreference>("notice_remind")?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<SwitchPreference>(NOTICE_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue == true){
                 mListener?.onStartNoticeReminder()
             }else{
@@ -62,7 +62,7 @@ class SettingFragment : PreferenceFragmentCompat() {
             }
             true
         }
-        findPreference<SwitchPreference>("exam_remind")?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<SwitchPreference>(EXAM_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue == true){
                 mListener?.onStartExamReminder()
             }else{
@@ -70,6 +70,15 @@ class SettingFragment : PreferenceFragmentCompat() {
             }
             true
         }
+    }
+
+    companion object{
+        private const val BTN_ABOUT = "about_btn"
+        private const val BTN_LOGIN = "logout_btn"
+        private const val BTN_CHECK_UPDATE = "check_update_btn"
+        private const val SCHEDULE_REMIND = "schedule_remind"
+        private const val NOTICE_REMIND = "notice_remind"
+        private const val EXAM_REMIND = "exam_remind"
     }
 
     interface SettingChangeListener {

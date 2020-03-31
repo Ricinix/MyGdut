@@ -94,7 +94,7 @@ class BuildingResourceHolder(context: Context) {
     fun provideDateList(): List<String> {
         val calendar = Calendar.getInstance()
         val tempList = mutableListOf<String>()
-        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE)
         for (i in 1..7) {
             tempList.add(sdf.format(calendar.time))
             calendar.add(Calendar.DATE, 1)

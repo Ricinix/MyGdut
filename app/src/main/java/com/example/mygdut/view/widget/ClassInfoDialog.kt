@@ -14,9 +14,9 @@ class ClassInfoDialog(context: Context, private val schedule: Schedule, private 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.dialog_class_info)
         if (schedule.type == Schedule.TYPE_FROM_LOCAL)
-            dialog_class_btn_delete.text = "删除"
+            dialog_class_btn_delete.text = context.getString(R.string.delete_template)
         else if (schedule.type == Schedule.TYPE_FROM_NET)
-            dialog_class_btn_delete.text = "不上这门课"
+            dialog_class_btn_delete.text = context.getString(R.string.remove_schedule_template)
 
         setSize(SCALA)
         setText()
