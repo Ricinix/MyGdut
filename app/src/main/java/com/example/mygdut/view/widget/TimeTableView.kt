@@ -18,14 +18,16 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null)
 
+    // 观察者，用以通知课程表重绘
     private val mObservable = AdapterDataObservable(this)
+
+    // 适配器来向外提供自定义子view以及数据更新的接口，默认的情况下全为空
     var adapter = object : DefaultAdapter() {
         override fun bindHeaderView(textView: AppCompatTextView, weekName: String, pos: Int) {}
         override fun bindWeekNumView(textView: AppCompatTextView) {}
         override fun getBlockEndRow(weekDay: Int, startRow: Int): Int = 0
         override fun getBlockType(weekDay: Int, startRow: Int, endRow: Int): BlockType =
             BlockType.EMPTY
-
         override fun getClassName(weekDay: Int, startRow: Int, endRow: Int): String = ""
         override fun getClassRoomName(weekDay: Int, startRow: Int, endRow: Int): String = ""
     }
@@ -35,15 +37,12 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             field = value
             invalidate()
         }
-//    private var listener: TimeTableListener? = null
-//    fun setListener(li: TimeTableListener) {
-//        listener = li
-//    }
-
-//    private var weekNum = 1
 
     // 周一、周二……啥的
     private val weekNames: Array<String>
+
+    // 一个放着列表的数组，数组长度由xml中设置的星期模式决定。
+    // 列表里放着的是viewHolder，主要存储了view和type
     private val holdersArr : Array<MutableList<ViewHolder>>
 
     init {
@@ -60,24 +59,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         setupNormalView()
     }
 
-    // 颜色
-//    private val colorArray = arrayOf(
-//        R.drawable.selector_block_blue,
-//        R.drawable.selector_block_green,
-//        R.drawable.selector_block_orange,
-//        R.drawable.selector_block_pink,
-//        R.drawable.selector_block_violet
-//    )
-
-    // 数据
-//    private val mData = List<MutableList<Schedule>>(weekNames.size) { mutableListOf() }
-//    var schoolDay: SchoolCalendar? = null
-//        set(value) {
-//            field = value
-//            refreshHeader()
-//            invalidate()
-//        }
-
+    /**
+     * 构建课程表的大体框架，只调用一次
+     */
     private fun setupNormalView() {
         // 第一节、第二节……什么的
         val firstVertical = LinearLayout(context).apply {
@@ -107,51 +91,40 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
+    /**
+     * 构建课程表的主要部分（课程部分）
+     */
     private fun setupClass() {
-//        val weekShow = (getChildAt(0) as LinearLayout).getChildAt(0) as AppCompatTextView
-//        weekShow.text = weekNum.toString()
+        // 先更新左边课程节次部分
         val firstLayout = getChildAt(0) as LinearLayout
         val weekShow = firstLayout.getChildAt(0)
         adapter.bindWeekNumView(weekShow)
         for (i in 1..adapter.getLessonNumOneDay()) {
             adapter.bindLeftNumView(firstLayout.getChildAt(i), i)
         }
+        // 更新主体部分
         for (i in 1 until childCount) {
             val layout = getChildAt(i) as LinearLayout
             val holderSubArr = holdersArr[i-1]
+            // 先更新头部（主要是为了更新日期）
             adapter.bindHeaderView(layout.getChildAt(0), weekNames[i - 1], i)
-//            for (j in layout.childCount - 1 downTo 1)
-//                layout.removeViewAt(j)
-//            val list = mData[i - 1]
-//            // 全空时
-//            if (list.isEmpty()) {
-//                layout.addView(getEmptyView(MAX_NUM, i, 1))
-//            } else {
-//                var start = 1
-//                for (s in list) {
-//                    if (start != s.classOrderInDay.first()) {
-//                        layout.addView(getEmptyView(s.classOrderInDay.first() - start, i, start))
-//                    }
-//                    start = s.classOrderInDay.last() + 1
-//                    layout.addView(getClassBlockView(s, start * i + start))
-//                }
-//                if (start != MAX_NUM) {
-//                    layout.addView(getEmptyView(MAX_NUM - start + 1, i, start))
-//                }
-//            }
             var start = 1
             var childIndex = 1
+            // 更新这一天的课程
             while (start <= adapter.getLessonNumOneDay()) {
+                // 先获取一个block的位置
                 val end = adapter.getBlockEndRow(i, start)
                 Log.d(TAG, "block: $start-$end, weekday:$i")
+                // 获取其类型
                 val type = adapter.getBlockType(i, start, end)
-                // 如果view则检查是否可以复用
+                // 如果有view则检查是否可以复用
                 if (childIndex < layout.childCount) {
                     val holder = holderSubArr[childIndex - 1]
                     val child = layout.getChildAt(childIndex)
                     val params = child.layoutParams as LayoutParams
-                    // 如果可以复用
+                    // 如果可以复用（长度一致并且type一致）
                     if (params.weight.toInt() == end - start + 1 && holder.type == type) {
+                        // 更新数据
                         adapter.bindBLockViewHolder(holder, i, start, end)
                         start = end + 1
                         childIndex++
@@ -161,12 +134,14 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         holderSubArr.removeAt(childIndex - 1)
                     }
                 }
+                // 如果需要生成新的view
                 val newHolder = adapter.getBlockViewHolder(layout, i, start, end, type)
                 adapter.bindBLockViewHolder(newHolder, i, start, end)
                 holderSubArr.add(childIndex-1, newHolder)
                 layout.addView(newHolder.view, childIndex++)
-                start = end + 1
+                start = end + 1 // 开始下一个block
             }
+            // 要把剩下的view全都弃用
             for (j in layout.childCount - 1 downTo childIndex) {
                 layout.removeViewAt(j)
                 holderSubArr.removeAt(j-1)
@@ -174,170 +149,6 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
     }
 
-    /**
-     * 获取课程块的view
-     */
-//    private fun getClassBlockView(viewGroup: ViewGroup, weekDay: Int, startRow: Int, endRow: Int): View {
-//        val container = LinearLayout(context)
-//        // 容器
-//        container.run {
-//            orientation = VERTICAL
-//            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
-//                weight = schedule.classOrderInDay.size.toFloat()
-//                setMargins(MARGIN, MARGIN, MARGIN, MARGIN)
-//            }
-//            isClickable = true
-//            background = context.getDrawable(colorArray[colorPosition % colorArray.size])
-//        }
-//        // 课程名字
-//        val name = AppCompatTextView(context).apply {
-//            text = if (schedule.className.length < 10)
-//                schedule.className
-//            else
-//                schedule.className.substring(0, 9)
-//            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
-//                weight = 1f
-//                setMargins(MARGIN + 2, MARGIN, MARGIN + 2, MARGIN)
-//            }
-//            setTextColor(context.getColor(R.color.white))
-//        }
-//        // 课室
-//        val room = AppCompatTextView(context).apply {
-//            text = schedule.classRoom
-//            layoutParams =
-//                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-//                    setMargins(MARGIN + 1, MARGIN, MARGIN + 1, MARGIN)
-//                }
-//            gravity = Gravity.CENTER
-//            textSize = 12f
-//            isSingleLine = true
-//            setTextColor(context.getColor(R.color.white))
-//        }
-//        container.addView(name)
-//        container.addView(room)
-//        container.setOnClickListener {
-//            listener?.onClassClick(schedule, it)
-//        }
-//        return container
-
-//        return AppCompatTextView(context).apply {
-//            text = if(schedule.className.length < 10)
-//                "${schedule.className}\n\n${schedule.classRoom}"
-//            else
-//                "${schedule.className.substring(0, 9)}...\n\n${schedule.classRoom}"
-//            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
-//                weight = schedule.classOrderInDay.size.toFloat()
-//                Log.d(TAG, "${schedule.className}: $weight");
-//            }
-//            background = context.getDrawable(R.drawable.selector_block_blue)
-//            setTextColor(context.getColor(R.color.white))
-//        }
-//    }
-
-    /**
-     * 获取空白view
-     */
-//    private fun getEmptyView(viewGroup: ViewGroup, weekDay: Int, rowStart: Int, rowEnd: Int): View {
-//        return AppCompatTextView(context).apply {
-//            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
-//                weight = length.toFloat()
-//                Log.d(TAG, "empty: $weight")
-//            }
-//            setOnLongClickListener {
-//                listener?.onEmptyClick(col, rowStart, rowStart + length - 1, it)
-//                true
-//            }
-//        }
-//    }
-
-    /**
-     * 获取左侧数字view
-     */
-//    private fun getLeftNumView(viewGroup: ViewGroup, num: Int): View {
-//        return AppCompatTextView(context).apply {
-//            text = num.toString()
-//            textSize = 14f
-//            gravity = Gravity.CENTER
-//            layoutParams = LayoutParams(dp2px(HEADER_WIDTH), 0).apply {
-//                weight = 1f
-//            }
-//        }
-//    }
-
-    /**
-     * 获取上方星期几的view
-     */
-//    private fun getHeaderView(viewGroup: ViewGroup, weekName: String): View {
-//        return AppCompatTextView(context).apply {
-//            text = weekName
-//            textSize = 12f
-//            gravity = Gravity.CENTER
-//            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, dp2px(HEADER_HEIGHT))
-//        }
-//    }
-
-    /**
-     * 获取左上角的周数的view
-     */
-//    private fun getWeekNumView(): View {
-//        return AppCompatTextView(context).apply {
-//            text = weekNum.toString()
-//            textSize = 24f
-//            setTextColor(context.getColor(R.color.colorPrimary))
-//            gravity = Gravity.CENTER
-//            layoutParams = LayoutParams(dp2px(HEADER_WIDTH), dp2px(HEADER_HEIGHT))
-//        }
-//    }
-
-    /**
-     * 刷新header（添加具体日期）
-     */
-//    private fun refreshHeader() {
-//        schoolDay?.let {
-//            val arr = it.getDateArray(weekNames.size, weekNum)
-//            for (i in 1..weekNames.size) {
-//                val layout = getChildAt(i) as LinearLayout
-//                val header = layout.getChildAt(0) as AppCompatTextView
-//                header.text = context.getString(R.string.date_template, weekNames[i - 1], arr[i - 1])
-//            }
-//        } ?: kotlin.run {
-//            for (i in 1..weekNames.size) {
-//                val layout = getChildAt(i) as LinearLayout
-//                val header = layout.getChildAt(0) as AppCompatTextView
-//                header.text = weekNames[i - 1]
-//            }
-//        }
-//    }
-
-
-//    fun setTimeTable(list: List<Schedule>, week: Int) {
-//        weekNum = week
-//        mData.forEach { it.clear() }
-//        for (s in list) {
-//            if (s.weekDay in 1..7) {
-//                mData[s.weekDay - 1].add(s)
-//            }
-//        }
-//        mData.forEach { dayList ->
-//            dayList.sortBy { it.classOrderInDay.first() }
-//        }
-//        setupClass()
-//        invalidate()
-//    }
-
-
-    /**
-     * dp转px，设置view的宽高时需要用
-     */
-//    private fun dp2px(dpValue: Float): Int {
-//        val scale = context.resources.displayMetrics.density
-//        return (dpValue * scale + 0.5f).toInt()
-//    }
-
-//    interface TimeTableListener {
-//        fun onEmptyClick(column: Int, startRow: Int, endRow: Int, view: View)
-//        fun onClassClick(schedule: Schedule, view: View)
-//    }
 
     companion object {
         private const val MAX_NUM = 12
@@ -350,6 +161,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         private const val TAG = "TimeTableView"
     }
 
+    /**
+     * 观察者，被用来通知课程表重绘
+     */
     class AdapterDataObservable(timeTableView: TimeTableView) {
         private val timeTableView = WeakReference(timeTableView)
         fun onChange() {
@@ -372,8 +186,14 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             R.drawable.selector_block_violet
         )
 
+        /**
+         * 默认是一天12节课
+         */
         override fun getLessonNumOneDay(): Int = MAX_NUM
 
+        /**
+         * 头部view的实现
+         */
         override fun onGetHeaderView(viewGroup: ViewGroup, weekName: String, pos: Int): View {
             return AppCompatTextView(viewGroup.context).apply {
                 text = weekName
@@ -387,6 +207,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
         }
 
+        /**
+         * 左上角周次view的实现
+         */
         override fun onGetWeekNumView(viewGroup: ViewGroup, weekNum: String): View {
             return AppCompatTextView(viewGroup.context).apply {
                 text = weekNum
@@ -400,6 +223,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
         }
 
+        /**
+         * 左侧课程节次view的实现
+         */
         override fun onGetLeftNumView(viewGroup: ViewGroup, num: Int): View {
             return AppCompatTextView(viewGroup.context).apply {
                 text = num.toString()
@@ -412,6 +238,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
         }
 
+        /**
+         * 课程部分view的实现，目前来说[type]分为课程和空两种
+         */
         override fun onGetBlockViewHolder(
             viewGroup: ViewGroup,
             weekDay: Int,
@@ -448,21 +277,21 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 }
                 container.addView(name)
                 container.addView(room)
-//            container.setOnClickListener {
-//                listener?.onClassClick(schedule, it)
-//            }
                 return ViewHolder(container, BlockType.SCHEDULE)
             }else{
+                // 空view
                 val v = AppCompatTextView(viewGroup.context).apply {
                     layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
                         weight = (endRow - startRow + 1).toFloat()
-//                    Log.d(TAG, "empty: $weight")
                     }
                 }
                 return ViewHolder(v, BlockType.EMPTY)
             }
         }
 
+        /**
+         * 默认的更新数据方式是背景色、课程名、课室的更新
+         */
         override fun bindBLockViewHolder(
             holder: ViewHolder,
             weekDay: Int,
@@ -472,20 +301,25 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             super.bindBLockViewHolder(holder, weekDay, startRow, endRow)
             if (holder.type == BlockType.SCHEDULE){
                 val container = holder.view as LinearLayout
+                // 课程名
                 val className = getClassName(weekDay, startRow, endRow)
                 (container.getChildAt(0) as AppCompatTextView).text = if (className.length < 10)
                     className
                 else
                     className.substring(0, 9)
+                // 课室
                 (container.getChildAt(1) as AppCompatTextView).text = getClassRoomName(weekDay, startRow, endRow)
 
+                // 背景色
                 val colorPosition = (endRow shl startRow) * weekDay
                 container.background = container.context.getDrawable(colorArray[colorPosition % colorArray.size])
             }
 
         }
 
-
+        /**
+         * 转换一下view
+         */
         override fun bindWeekNumView(view: View) {
             bindWeekNumView(view as AppCompatTextView)
         }
@@ -515,14 +349,23 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
     abstract class Adapter {
         private var mObservable: AdapterDataObservable? = null
 
+        /**
+         * 用来注册观察者
+         */
         fun registerObservable(observable: AdapterDataObservable) {
             mObservable = observable
         }
 
+        /**
+         * 注销观察者
+         */
         fun unRegisterObservable() {
             mObservable = null
         }
 
+        /**
+         * 通知观察者要重绘
+         */
         fun notifyDataChange() {
             mObservable?.onChange()
         }
@@ -589,6 +432,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         protected abstract fun onGetLeftNumView(viewGroup: ViewGroup, num: Int): View
         open fun bindLeftNumView(view: View, num: Int) {}
 
+        /**
+         * 获取课程部分的viewHolder，这里对其做了一些硬性改动，主要是weight的改动
+         */
         fun getBlockViewHolder(
             viewGroup: ViewGroup,
             weekDay: Int,
@@ -616,6 +462,9 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
         }
 
+        /**
+         * 主要的实现部分
+         */
         protected abstract fun onGetBlockViewHolder(
             viewGroup: ViewGroup,
             weekDay: Int,

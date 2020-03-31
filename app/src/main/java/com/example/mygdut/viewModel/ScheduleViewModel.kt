@@ -101,13 +101,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         viewModelScope.launch {
             val scheduleBlackList = if (!getBlackList) null else scheduleRepo.getScheduleBlackList(termName).toMutableList()
             val backup = scheduleRepo.getBackupScheduleByTermName(termName)
-            dataSetting(
-                backup,
-                scheduleBlackList,
-                totalFromNet = false,
-                finish = false,
-                locate = locate
-            )
+            dataSetting(backup, scheduleBlackList, totalFromNet = false, locate = locate)
             when (val result =
                 withContext(Dispatchers.IO) { scheduleRepo.getScheduleByTermName(termName) }) {
                 is NetResult.Success -> {
@@ -131,7 +125,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         viewModelScope.launch {
             val scheduleBlackList = scheduleRepo.getScheduleBlackList(termName.value).toMutableList() // 这里应是null
             val backup = scheduleRepo.getBackupSchedule()
-            dataSetting(backup, scheduleBlackList, totalFromNet = false, finish = false)
+            dataSetting(backup, scheduleBlackList, false)
             when (val result = withContext(Dispatchers.IO) { scheduleRepo.getCurrentSchedule() }) {
                 is NetResult.Success -> {
                     dataSetting(result.data, scheduleBlackList, true)
@@ -152,12 +146,11 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         scheduleData: ScheduleData,
         blackList: MutableList<ScheduleBlackName>?,
         totalFromNet: Boolean,
-        finish: Boolean = true,
         locate : Boolean = true
     ) {
         // 给课程表设置开学日和数据
         mAdapter.schoolDay = scheduleRepo.getSchoolDay(scheduleData.termName)
-        if (finish && mAdapter.schoolDay == null) {
+        if (totalFromNet && mAdapter.schoolDay == null) {
             callBack?.schoolDayEmpty()
         }
         blackList?.let { scheduleBlackList = it }
@@ -175,7 +168,7 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         }
         // 设置并重绘sidebar
         maxWeek.value = mAdapter.maxWeek
-        if (finish) callBack?.onFinish()
+        if (totalFromNet) callBack?.onFinish()
     }
 
     /**

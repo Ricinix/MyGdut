@@ -125,16 +125,6 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
         else TimeTableView.BlockType.SCHEDULE
     }
 
-//    private fun MutableList<Schedule>.insert(schedule: Schedule) {
-//        for (i in 0 until size) {
-//            if (get(i).classOrderInDay.first() > schedule.classOrderInDay.first()) {
-//                add(i, schedule)
-//                return
-//            }
-//        }
-//        add(schedule)
-//    }
-
     companion object {
         private const val WEEKDAY_NUM = 7
     }

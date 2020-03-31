@@ -32,6 +32,7 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
 
     fun setData(schedules: List<Schedule>, totalFromNet: Boolean, termName: TermName?) {
         val tempList = schedules.toMutableList()
+        // 如果全部数据都来自网络，则把原来那些本地数据都保留下来，如果数据来自本地，则直接替换
         if (totalFromNet) {
             mList.forEach {
                 if (it.type != Schedule.TYPE_FROM_NET && it.termName == termName?.name) {
@@ -40,6 +41,7 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
             }
         }
         mList = tempList
+        // 下面是计算最大的周次
         var temp = 0
         for (s in mList) {
             if (s.weeks.last() > temp)
@@ -58,36 +60,6 @@ class ScheduleRecyclerAdapter(private val cb: ScheduleRecyclerCallBack) :
                     position + 1,
                     schoolDay
                 )
-//                holder.table.setTimeTable(mList.filter { position + 1 in it.weeks }, position + 1)
-//                holder.table.setListener(object : TimeTableView.TimeTableListener {
-//                    override fun onEmptyClick(column: Int, startRow: Int, endRow: Int, view: View) {
-////                        view.context.startActivity(Intent(view.context, LoginActivity::class.java))
-//                        ClassNewDialog(
-//                            view.context,
-//                            column,
-//                            cb.getTermName(),
-//                            position + 1,
-//                            mList.filter { it.weekDay == column })
-//                        {
-//                            cb.saveSchedule(it)
-//                            mList.add(it)
-//                            notifyDataSetChanged()
-//                        }.show()
-//                    }
-//
-//                    override fun onClassClick(schedule: Schedule, view: View) {
-//                        ClassInfoDialog(view.context, schedule){
-//                            if (schedule.type == Schedule.TYPE_FROM_LOCAL){
-//                                cb.deleteSchedule(it)
-//                                mList.remove(it)
-//                                notifyDataSetChanged()
-//                            }else if (schedule.type == Schedule.TYPE_FROM_NET){
-//                                cb.moveToBlackList(it)
-//                            }
-//                        }.show()
-//                    }
-//                })
-//                schoolDay?.let { holder.table.schoolDay = it }
             }
         }
     }
