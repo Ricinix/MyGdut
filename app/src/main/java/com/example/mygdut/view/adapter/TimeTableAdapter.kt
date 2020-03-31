@@ -6,6 +6,7 @@ import com.example.mygdut.R
 import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.view.widget.ClassInfoDialog
+import com.example.mygdut.view.widget.ExamInfoDialog
 import com.example.mygdut.view.widget.TimeTableView
 
 class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerCallBack) :
@@ -13,6 +14,7 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
     private val mDataInList = List<MutableList<Schedule>>(WEEKDAY_NUM) { mutableListOf() }
     private var mWeekNum = 0
     private var dateArray = Array(WEEKDAY_NUM) { "" }
+    private val examColor = R.drawable.selector_block_red
 
     fun setData(data: List<Schedule>, weekNum: Int, schoolDay: SchoolCalendar?) {
         mWeekNum = weekNum
@@ -40,7 +42,8 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
     }
 
     override fun bindHeaderView(textView: AppCompatTextView, weekName: String, pos: Int) {
-        textView.text = textView.context.getString(R.string.date_template, weekName, dateArray[pos-1])
+        textView.text =
+            textView.context.getString(R.string.date_template, weekName, dateArray[pos - 1])
     }
 
     override fun bindWeekNumView(textView: AppCompatTextView) {
@@ -49,7 +52,7 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
 
     override fun bindEmptyView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
         view.setOnLongClickListener {
-//            ClassNewDialog(
+            //            ClassNewDialog(
 //                view.context,
 //                weekDay,
 //                cb.getTermName(),
@@ -61,27 +64,38 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
 //                mDataInList[weekDay - 1].insert(it)
 //                notifyDataChange()
 //            }.show()
-            cb.newSchedule(weekDay, mWeekNum, mDataInList[weekDay-1])
+            cb.newSchedule(weekDay, mWeekNum, mDataInList[weekDay - 1])
             true
         }
 
     }
 
     override fun bindClassBlockView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
+        super.bindClassBlockView(view, weekDay, startRow, endRow)
         val schedule = mDataInList[weekDay - 1].find {
             it.classOrderInDay.first() == startRow
                     && it.classOrderInDay.last() == endRow
         } ?: return
+        if (schedule.type == Schedule.TYPE_EXAM) {
+            view.background = view.context.getDrawable(examColor)
+        }
         view.setOnClickListener {
-            ClassInfoDialog(view.context, schedule) {
-                if (schedule.type == Schedule.TYPE_FROM_LOCAL) {
-                    cb.deleteSchedule(it)
-                    mDataInList[weekDay - 1].remove(it)
-                    notifyDataChange()
-                } else if (schedule.type == Schedule.TYPE_FROM_NET) {
-                    cb.moveToBlackList(it)
+            when (schedule.type) {
+                Schedule.TYPE_FROM_LOCAL -> {
+                    ClassInfoDialog(view.context, schedule) {
+                        cb.deleteSchedule(it)
+                        mDataInList[weekDay - 1].remove(it)
+                        notifyDataChange()
+                    }.show()
                 }
-            }.show()
+                Schedule.TYPE_FROM_NET -> {
+                    ClassInfoDialog(view.context, schedule) { cb.moveToBlackList(it) }.show()
+                }
+                Schedule.TYPE_EXAM -> {
+                    schedule.exam?.let { ExamInfoDialog(view.context, it).show() }
+                }
+            }
+
         }
     }
 

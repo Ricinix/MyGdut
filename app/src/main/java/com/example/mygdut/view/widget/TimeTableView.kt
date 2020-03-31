@@ -25,6 +25,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         override fun getBlockEndRow(weekDay: Int, startRow: Int): Int = 0
         override fun getBlockType(weekDay: Int, startRow: Int, endRow: Int): BlockType =
             BlockType.EMPTY
+
         override fun getClassName(weekDay: Int, startRow: Int, endRow: Int): String = ""
         override fun getClassRoomName(weekDay: Int, startRow: Int, endRow: Int): String = ""
     }
@@ -43,6 +44,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     // 周一、周二……啥的
     private val weekNames: Array<String>
+    private val typeArr : Array<MutableList<BlockType>>
 
     init {
         val typeArray = context.obtainStyledAttributes(attrs, R.styleable.TimeTableView)
@@ -52,6 +54,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             2 -> resources.getStringArray(R.array.week_name_weekend)
             else -> resources.getStringArray(R.array.week_name)
         }
+        typeArr = Array(weekNames.size){ mutableListOf(BlockType.HEADER) }
         typeArray.recycle()
         orientation = HORIZONTAL
         setupNormalView()
@@ -93,7 +96,13 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 orientation = VERTICAL
                 layoutParams = LayoutParams(0, LayoutParams.MATCH_PARENT).apply { weight = 1f }
             }
-            verticalLinearLayout.addView(adapter.getHeaderView(verticalLinearLayout, weekNames[index], index+1))
+            verticalLinearLayout.addView(
+                adapter.getHeaderView(
+                    verticalLinearLayout,
+                    weekNames[index],
+                    index + 1
+                )
+            )
             addView(verticalLinearLayout)
         }
     }
@@ -109,7 +118,8 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
         for (i in 1 until childCount) {
             val layout = getChildAt(i) as LinearLayout
-            adapter.bindHeaderView(layout.getChildAt(0), weekNames[i-1], i)
+            val typeSubArr = typeArr[i-1]
+            adapter.bindHeaderView(layout.getChildAt(0), weekNames[i - 1], i)
 //            for (j in layout.childCount - 1 downTo 1)
 //                layout.removeViewAt(j)
 //            val list = mData[i - 1]
@@ -137,10 +147,11 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 val type = adapter.getBlockType(i, start, end)
                 // 如果view则检查是否可以复用
                 if (childIndex < layout.childCount) {
+                    val oldType = typeSubArr[childIndex]
                     val child = layout.getChildAt(childIndex)
                     val params = child.layoutParams as LayoutParams
                     // 如果可以复用
-                    if (params.weight.toInt() == end - start + 1) {
+                    if (params.weight.toInt() == end - start + 1 && oldType == type) {
                         if (type == BlockType.SCHEDULE)
                             adapter.bindClassBlockView(child, i, start, end)
                         else
@@ -150,21 +161,25 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                         continue
                     } else {
                         layout.removeViewAt(childIndex) // 如果view长度与原来不一致，则弃用
+                        typeSubArr.removeAt(childIndex)
                     }
                 }
                 if (type == BlockType.SCHEDULE) {
                     val newView = adapter.getClassBlockView(layout, i, start, end)
                     adapter.bindClassBlockView(newView, i, start, end)
+                    typeSubArr.add(childIndex, BlockType.SCHEDULE)
                     layout.addView(newView, childIndex++)
                 } else {
                     val newView = adapter.getEmptyView(layout, i, start, end)
                     adapter.bindEmptyView(newView, i, start, end)
+                    typeSubArr.add(childIndex, BlockType.EMPTY)
                     layout.addView(newView, childIndex++)
                 }
                 start = end + 1
             }
-            for (j in layout.childCount-1 downTo childIndex){
+            for (j in layout.childCount - 1 downTo childIndex) {
                 layout.removeViewAt(j)
+                typeSubArr.removeAt(j)
             }
         }
     }
@@ -375,7 +390,10 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 textSize = 12f
                 gravity = Gravity.CENTER
                 layoutParams =
-                    LayoutParams(LayoutParams.MATCH_PARENT, ViewPixelUtils.dp2px(HEADER_HEIGHT, resources))
+                    LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        ViewPixelUtils.dp2px(HEADER_HEIGHT, resources)
+                    )
             }
         }
 
@@ -397,9 +415,10 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 text = num.toString()
                 textSize = 14f
                 gravity = Gravity.CENTER
-                layoutParams = LayoutParams(ViewPixelUtils.dp2px(HEADER_WIDTH, resources), 0).apply {
-                    weight = 1f
-                }
+                layoutParams =
+                    LayoutParams(ViewPixelUtils.dp2px(HEADER_WIDTH, resources), 0).apply {
+                        weight = 1f
+                    }
             }
         }
 
@@ -410,21 +429,14 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             endRow: Int
         ): View {
             val container = LinearLayout(viewGroup.context)
-            val colorPosition = (endRow shl startRow) * weekDay
             // 容器
             container.run {
                 layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                 orientation = VERTICAL
                 isClickable = true
-                background = context.getDrawable(colorArray[colorPosition % colorArray.size])
             }
             // 课程名字
             val name = AppCompatTextView(viewGroup.context).apply {
-                val className = getClassName(weekDay, startRow, endRow)
-                text = if (className.length < 10)
-                    className
-                else
-                    className.substring(0, 9)
                 layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
                     weight = 1f
                     setMargins(MARGIN + 2, MARGIN, MARGIN + 2, MARGIN)
@@ -433,7 +445,6 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
             // 课室
             val room = AppCompatTextView(viewGroup.context).apply {
-                text = getClassRoomName(weekDay, startRow, endRow)
                 layoutParams =
                     LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
                         setMargins(MARGIN + 1, MARGIN, MARGIN + 1, MARGIN)
@@ -451,17 +462,36 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             return container
         }
 
+        override fun bindClassBlockView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
+            super.bindClassBlockView(view, weekDay, startRow, endRow)
+            val container = view as LinearLayout
+            val className = getClassName(weekDay, startRow, endRow)
+            (container.getChildAt(0) as AppCompatTextView).text = if (className.length < 10)
+                className
+            else
+                className.substring(0, 9)
+            (container.getChildAt(1) as AppCompatTextView).text = getClassRoomName(weekDay, startRow, endRow)
+
+            val colorPosition = (endRow shl startRow) * weekDay
+            container.background = container.context.getDrawable(colorArray[colorPosition % colorArray.size])
+        }
+
+
         override fun bindWeekNumView(view: View) {
             bindWeekNumView(view as AppCompatTextView)
         }
 
-        protected abstract fun bindWeekNumView(textView : AppCompatTextView)
+        protected abstract fun bindWeekNumView(textView: AppCompatTextView)
 
         override fun bindHeaderView(view: View, weekName: String, pos: Int) {
             bindHeaderView(view as AppCompatTextView, weekName, pos)
         }
 
-        protected abstract fun bindHeaderView(textView: AppCompatTextView, weekName: String, pos: Int)
+        protected abstract fun bindHeaderView(
+            textView: AppCompatTextView,
+            weekName: String,
+            pos: Int
+        )
 
         protected abstract fun getClassName(weekDay: Int, startRow: Int, endRow: Int): String
 
@@ -492,7 +522,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
          * 获取头部
          * @param pos 从1开始
          */
-        fun getHeaderView(viewGroup: ViewGroup, weekName: String, pos : Int): View {
+        fun getHeaderView(viewGroup: ViewGroup, weekName: String, pos: Int): View {
             val view = onGetHeaderView(viewGroup, weekName, pos)
             val params = view.layoutParams
             if (params.height == LayoutParams.MATCH_PARENT) {
@@ -504,12 +534,16 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         /**
          * @param pos 从1开始
          */
-        protected abstract fun onGetHeaderView(viewGroup: ViewGroup, weekName: String, pos : Int): View
+        protected abstract fun onGetHeaderView(
+            viewGroup: ViewGroup,
+            weekName: String,
+            pos: Int
+        ): View
 
         /**
          * @param pos 从1开始
          */
-        open fun bindHeaderView(view: View, weekName: String, pos : Int) {}
+        open fun bindHeaderView(view: View, weekName: String, pos: Int) {}
 
         /**
          * 获取左上角的周次
@@ -620,6 +654,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     enum class BlockType {
         SCHEDULE,
-        EMPTY
+        EMPTY,
+        HEADER
     }
 }

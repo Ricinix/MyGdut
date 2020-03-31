@@ -5,10 +5,12 @@ import android.util.Log
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.TermCode
 import com.example.mygdut.data.TermName
+import com.example.mygdut.db.dao.ExamDao
 import com.example.mygdut.db.dao.ScheduleDao
 import com.example.mygdut.db.data.ScheduleData
 import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.db.entity.ScheduleBlackName
+import com.example.mygdut.domain.ConstantField
 import com.example.mygdut.domain.ConstantField.GET_SCHOOL_DAY_EVERY_TIME
 import com.example.mygdut.domain.ConstantField.SCHEDULE_TERM_NAME
 import com.example.mygdut.domain.ConstantField.SP_SETTING
@@ -23,7 +25,8 @@ import javax.inject.Inject
 class ScheduleRepo @Inject constructor(
     context: Context,
     login: LoginImpl,
-    private val scheduleDao: ScheduleDao
+    private val scheduleDao: ScheduleDao,
+    private val examDao: ExamDao
 ) : BaseRepo(context) {
     private val scheduleImpl: ScheduleImpl
     private val schoolDayImpl = SchoolDayImpl()
@@ -38,24 +41,27 @@ class ScheduleRepo @Inject constructor(
         transformer = TermTransformer(context, account)
     }
 
+    private fun isNeedToGetExam(): Boolean =
+        settingSp.getBoolean(ConstantField.EXAM_IN_SCHEDULE, false)
+
     /**
      * 黑名单-1
      */
-    suspend fun removeScheduleName(data : ScheduleBlackName){
+    suspend fun removeScheduleName(data: ScheduleBlackName) {
         scheduleDao.removeFromScheduleBlackList(data)
     }
 
     /**
      * 黑名单+1
      */
-    suspend fun saveScheduleName(scheduleBlackName: ScheduleBlackName){
+    suspend fun saveScheduleName(scheduleBlackName: ScheduleBlackName) {
         scheduleDao.saveScheduleBlackName(scheduleBlackName)
     }
 
     /**
      * 获取课程黑名单
      */
-    suspend fun getScheduleBlackList(termName: TermName? = null) : List<ScheduleBlackName> {
+    suspend fun getScheduleBlackList(termName: TermName? = null): List<ScheduleBlackName> {
         return scheduleDao.getScheduleBlackListByTermName(
             termName?.name ?: settingSp.getString(
                 SCHEDULE_TERM_NAME,
@@ -81,7 +87,7 @@ class ScheduleRepo @Inject constructor(
     /**
      * 保存所有的联网数据（供service调用）
      */
-    suspend fun saveSchedules(scheduleData: ScheduleData){
+    suspend fun saveSchedules(scheduleData: ScheduleData) {
         scheduleDao.deleteScheduleByTermName(scheduleData.termName.name, Schedule.TYPE_FROM_NET)
         scheduleDao.saveAllSchedule(scheduleData.schedules)
     }
@@ -112,8 +118,7 @@ class ScheduleRepo @Inject constructor(
      */
     suspend fun getBackupSchedule(): ScheduleData {
         val chooseTerm = TermName(settingSp.getString(SCHEDULE_TERM_NAME, "") ?: "")
-        val schedules = scheduleDao.getScheduleByTermName(chooseTerm.name)
-        return ScheduleData(schedules, chooseTerm)
+        return getBackupScheduleByTermName(chooseTerm)
     }
 
     /**
@@ -122,7 +127,12 @@ class ScheduleRepo @Inject constructor(
     suspend fun getBackupScheduleByTermName(termName: TermName): ScheduleData {
         editor.putString(SCHEDULE_TERM_NAME, termName.name)
         editor.commit()
-        return ScheduleData(scheduleDao.getScheduleByTermName(termName.name), termName)
+        val schedules = scheduleDao.getScheduleByTermName(termName.name)
+        return if (isNeedToGetExam()) {
+            val exams = examDao.getExamByTermName(termName.name)
+            ScheduleData(schedules + exams.map { it.toSchedule() }, termName)
+        } else
+            ScheduleData(scheduleDao.getScheduleByTermName(termName.name), termName)
     }
 
     /**
@@ -176,7 +186,7 @@ class ScheduleRepo @Inject constructor(
         }
     }
 
-    suspend fun getNowScheduleForService() : NetResult<ScheduleData>{
+    suspend fun getNowScheduleForService(): NetResult<ScheduleData> {
         return when (val result = scheduleImpl.getNowTermSchedule()) {
             is NetResult.Success -> {
                 val termName = result.data.second.toTermName(transformer)

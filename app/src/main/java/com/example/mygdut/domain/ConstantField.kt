@@ -12,6 +12,7 @@ object ConstantField {
     // 设置sharedPreferences字段
     const val SP_SETTING = "setting"
 
+    const val EXAM_IN_SCHEDULE = "exam_in_schedule"
     const val INTRA_NET_CHOOSE = "intra_net_choose"
     const val CRACK_ENGINE_tYPE = "crack_engine_type"
     const val SCHEDULE_TERM_NAME = "schedule_term_name"

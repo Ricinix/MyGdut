@@ -12,6 +12,7 @@ class ExamInfoDialog(context: Context, private val exam : Exam) : BaseDialog(con
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.dialog_exam_info)
         setSize()
         setText()
         setClickListener()
@@ -19,6 +20,7 @@ class ExamInfoDialog(context: Context, private val exam : Exam) : BaseDialog(con
     }
 
     private fun setText(){
+        item_exam_finish_title.text = context.getString(R.string.exam_template, exam.className)
         item_exam_finish_period.text = exam.period
         item_exam_finish_paper_num.text = exam.paperNum
         item_exam_finish_mode.text = exam.mode

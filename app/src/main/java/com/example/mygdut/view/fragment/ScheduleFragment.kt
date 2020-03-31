@@ -97,7 +97,7 @@ class ScheduleFragment : Fragment() {
         }
     }
 
-    private fun refreshData(locate : Boolean = true) {
+    fun refreshData(locate : Boolean = true) {
 //        schedule_refresh.startAnimation(anim)
         anim.start()
         mViewModel.getData(TermName(schedule_select_termName.text.toString()), locate)

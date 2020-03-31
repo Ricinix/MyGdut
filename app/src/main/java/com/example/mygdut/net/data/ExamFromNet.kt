@@ -1,7 +1,6 @@
 package com.example.mygdut.net.data
 
 import com.example.mygdut.db.entity.Exam
-import com.example.mygdut.db.entity.Schedule
 import com.example.mygdut.domain.ExamDate
 import com.example.mygdut.domain.TermTransformer
 
@@ -35,32 +34,32 @@ data class ExamRow(
     val zc: String, // 考试周次
     val zwh: String // 座位号
 ) {
-    fun toSchedule(transformer: TermTransformer): Schedule =
-        try {
-            Schedule(
-                "$kcmc-考试",
-                xq.toInt(),
-                jcdm2.split(',').map { it.toInt() }.sorted(),
-                kscdmc,
-                listOf(zc.toInt()),
-                jkteaxms,
-                "$zwh,${getMode()},$kslbmc,$ksaplxmc",
-                transformer.termCode2TermName(xnxqdm),
-                Schedule.TYPE_EXAM
-            )
-        }catch (e : NumberFormatException){
-            Schedule(
-                "$kcmc-考试",
-                xq.toInt(),
-                listOf(0),
-                kscdmc,
-                listOf(0),
-                jkteaxms,
-                "$zwh,${getMode()},$kslbmc,$ksaplxmc,$kssj",
-                transformer.termCode2TermName(xnxqdm),
-                Schedule.TYPE_EXAM
-            )
-        }
+//    fun toSchedule(transformer: TermTransformer): Schedule =
+//        try {
+//            Schedule(
+//                "$kcmc-考试",
+//                xq.toInt(),
+//                jcdm2.split(',').map { it.toInt() }.sorted(),
+//                kscdmc,
+//                listOf(zc.toInt()),
+//                jkteaxms,
+//                "$zwh,${getMode()},$kslbmc,$ksaplxmc",
+//                transformer.termCode2TermName(xnxqdm),
+//                Schedule.TYPE_EXAM
+//            )
+//        }catch (e : NumberFormatException){
+//            Schedule(
+//                "$kcmc-考试",
+//                xq.toInt(),
+//                listOf(0),
+//                kscdmc,
+//                listOf(0),
+//                jkteaxms,
+//                "$zwh,${getMode()},$kslbmc,$ksaplxmc,$kssj",
+//                transformer.termCode2TermName(xnxqdm),
+//                Schedule.TYPE_EXAM
+//            )
+//        }
 
 
     fun toExam(transformer: TermTransformer) : Exam =

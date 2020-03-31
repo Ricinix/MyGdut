@@ -6,6 +6,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.example.mygdut.R
+import com.example.mygdut.domain.ConstantField
 import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.view.widget.AppInfoDialog
 
@@ -46,7 +47,7 @@ class SettingFragment : PreferenceFragmentCompat() {
     }
 
     private fun setupSwitchListener(){
-        findPreference<SwitchPreference>(SCHEDULE_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<SwitchPreference>(ConstantField.SCHEDULE_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue == true){
                 mListener?.onStartScheduleReminder()
             }else{
@@ -54,7 +55,7 @@ class SettingFragment : PreferenceFragmentCompat() {
             }
             true
         }
-        findPreference<SwitchPreference>(NOTICE_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<SwitchPreference>(ConstantField.NOTICE_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue == true){
                 mListener?.onStartNoticeReminder()
             }else{
@@ -62,12 +63,16 @@ class SettingFragment : PreferenceFragmentCompat() {
             }
             true
         }
-        findPreference<SwitchPreference>(EXAM_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<SwitchPreference>(ConstantField.EXAM_REMIND)?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue == true){
                 mListener?.onStartExamReminder()
             }else{
                 mListener?.onStopExamReminder()
             }
+            true
+        }
+        findPreference<SwitchPreference>(ConstantField.EXAM_IN_SCHEDULE)?.setOnPreferenceChangeListener { _, _ ->
+            mListener?.scheduleChange()
             true
         }
     }
@@ -76,9 +81,6 @@ class SettingFragment : PreferenceFragmentCompat() {
         private const val BTN_ABOUT = "about_btn"
         private const val BTN_LOGIN = "logout_btn"
         private const val BTN_CHECK_UPDATE = "check_update_btn"
-        private const val SCHEDULE_REMIND = "schedule_remind"
-        private const val NOTICE_REMIND = "notice_remind"
-        private const val EXAM_REMIND = "exam_remind"
     }
 
     interface SettingChangeListener {
@@ -90,6 +92,7 @@ class SettingFragment : PreferenceFragmentCompat() {
         fun onStopNoticeReminder()
         fun onStartExamReminder()
         fun onStopExamReminder()
+        fun scheduleChange()
     }
 
     override fun onDestroy() {

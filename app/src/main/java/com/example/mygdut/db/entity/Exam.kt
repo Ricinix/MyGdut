@@ -28,7 +28,7 @@ data class Exam(
     val period: String // 学时
 ) {
 
-    fun toMessage(dayBefore : Int) : String{
+    fun toMessage(dayBefore: Int): String {
         val time = if (dayBefore == 0) "" else if (dayBefore == 1) "明天" else "7天后"
         return "考试课程: $className, 时间: ${time}${dateTime.getHourAndMinute()}, 地点: $place"
     }
@@ -52,5 +52,19 @@ data class Exam(
                 ""
             }
         } ?: ""
+    }
+
+    fun toSchedule(): Schedule {
+        return Schedule(
+            "${className}考试",
+            weekDay,
+            orderInDay,
+            place,
+            listOf(week),
+            teacher,
+            "具体信息请从考试界面查看",
+            termName,
+            Schedule.TYPE_EXAM
+        ).also { it.exam = this }
     }
 }

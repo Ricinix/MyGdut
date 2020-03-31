@@ -4,6 +4,7 @@
     <string name="schedule_time_template">%s-%s(第%d节)</string>
     <string name="schedule_period_template">%s-%s(第%d-%d节)</string>
     <string name="diy_schedule_template">自定义课程-%s</string>
+    <string name="exam_template">%s考试</string>
     <string name="floor_template">%d楼</string>
     <string name="version_template">版本号: %s</string>
     <string name="version_complete_template">当前版本: %s\n最新版本: %s</string>

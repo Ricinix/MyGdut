@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
     private var nowFragment: Fragment? = null
     private lateinit var mViewModel: MainViewModel
 
+    private var needToRefreshSchedule = false
     private var startUpdate = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,6 +113,10 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
         if (!sp.getBoolean(ConstantField.SCHEDULE_REMIND, false))
             stopUpdateService()
+    }
+
+    override fun scheduleChange() {
+        needToRefreshSchedule = true
     }
 
     override fun onStopScheduleReminder() {
@@ -261,6 +266,10 @@ class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener 
                 R.id.navigation_schedule -> {
                     StatusBarUtil.setColorNoTranslucent(this, Color.WHITE)
                     switchToFragment(scheduleFragment)
+                    if (needToRefreshSchedule){
+                        scheduleFragment.refreshData(false)
+                        needToRefreshSchedule = false
+                    }
                 }
                 R.id.navigation_score -> {
                     StatusBarUtil.setTransparent(this)

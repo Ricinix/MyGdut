@@ -164,7 +164,8 @@ class ScheduleViewModel(private val scheduleRepo: ScheduleRepo) : ViewModel() {
         val blackNames = scheduleBlackList.map { it.className }
         mAdapter.setData(
             scheduleData.schedules.filter { it.className !in blackNames },
-            totalFromNet
+            totalFromNet,
+            termName.value
         )
         // 设置选择器的学期显示
         termName.value = scheduleData.termName
