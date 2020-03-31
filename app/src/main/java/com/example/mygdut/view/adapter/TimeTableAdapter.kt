@@ -1,6 +1,5 @@
 package com.example.mygdut.view.adapter
 
-import android.view.View
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.mygdut.R
 import com.example.mygdut.db.entity.Schedule
@@ -42,17 +41,52 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
     }
 
     override fun bindHeaderView(textView: AppCompatTextView, weekName: String, pos: Int) {
-        textView.text =
-            textView.context.getString(R.string.date_template, weekName, dateArray[pos - 1])
+        textView.text = textView.context.getString(R.string.date_template, weekName, dateArray[pos - 1])
     }
 
     override fun bindWeekNumView(textView: AppCompatTextView) {
         textView.text = mWeekNum.toString()
     }
 
-    override fun bindEmptyView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
-        view.setOnLongClickListener {
-            //            ClassNewDialog(
+    override fun bindBLockViewHolder(
+        holder: TimeTableView.ViewHolder,
+        weekDay: Int,
+        startRow: Int,
+        endRow: Int
+    ) {
+        super.bindBLockViewHolder(holder, weekDay, startRow, endRow)
+        val type = holder.type
+        if (type == TimeTableView.BlockType.SCHEDULE){
+            val view = holder.view
+            val schedule = mDataInList[weekDay - 1].find {
+                it.classOrderInDay.first() == startRow
+                        && it.classOrderInDay.last() == endRow
+            } ?: return
+            if (schedule.type == Schedule.TYPE_EXAM) {
+                view.background = view.context.getDrawable(examColor)
+            }
+            view.setOnClickListener {
+                when (schedule.type) {
+                    Schedule.TYPE_FROM_LOCAL -> {
+                        ClassInfoDialog(view.context, schedule) {
+                            cb.deleteSchedule(it)
+                            mDataInList[weekDay - 1].remove(it)
+                            notifyDataChange()
+                        }.show()
+                    }
+                    Schedule.TYPE_FROM_NET -> {
+                        ClassInfoDialog(view.context, schedule) { cb.moveToBlackList(it) }.show()
+                    }
+                    Schedule.TYPE_EXAM -> {
+                        schedule.exam?.let { ExamInfoDialog(view.context, it).show() }
+                    }
+                }
+
+            }
+        }else if (type == TimeTableView.BlockType.EMPTY){
+            val view = holder.view
+            view.setOnLongClickListener {
+                //            ClassNewDialog(
 //                view.context,
 //                weekDay,
 //                cb.getTermName(),
@@ -64,38 +98,9 @@ class TimeTableAdapter(private val cb: ScheduleRecyclerAdapter.ScheduleRecyclerC
 //                mDataInList[weekDay - 1].insert(it)
 //                notifyDataChange()
 //            }.show()
-            cb.newSchedule(weekDay, mWeekNum, mDataInList[weekDay - 1])
-            true
-        }
-
-    }
-
-    override fun bindClassBlockView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
-        super.bindClassBlockView(view, weekDay, startRow, endRow)
-        val schedule = mDataInList[weekDay - 1].find {
-            it.classOrderInDay.first() == startRow
-                    && it.classOrderInDay.last() == endRow
-        } ?: return
-        if (schedule.type == Schedule.TYPE_EXAM) {
-            view.background = view.context.getDrawable(examColor)
-        }
-        view.setOnClickListener {
-            when (schedule.type) {
-                Schedule.TYPE_FROM_LOCAL -> {
-                    ClassInfoDialog(view.context, schedule) {
-                        cb.deleteSchedule(it)
-                        mDataInList[weekDay - 1].remove(it)
-                        notifyDataChange()
-                    }.show()
-                }
-                Schedule.TYPE_FROM_NET -> {
-                    ClassInfoDialog(view.context, schedule) { cb.moveToBlackList(it) }.show()
-                }
-                Schedule.TYPE_EXAM -> {
-                    schedule.exam?.let { ExamInfoDialog(view.context, it).show() }
-                }
+                cb.newSchedule(weekDay, mWeekNum, mDataInList[weekDay - 1])
+                true
             }
-
         }
     }
 

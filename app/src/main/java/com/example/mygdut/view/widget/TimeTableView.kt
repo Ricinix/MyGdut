@@ -44,7 +44,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
 
     // 周一、周二……啥的
     private val weekNames: Array<String>
-    private val typeArr : Array<MutableList<BlockType>>
+    private val holdersArr : Array<MutableList<ViewHolder>>
 
     init {
         val typeArray = context.obtainStyledAttributes(attrs, R.styleable.TimeTableView)
@@ -54,7 +54,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             2 -> resources.getStringArray(R.array.week_name_weekend)
             else -> resources.getStringArray(R.array.week_name)
         }
-        typeArr = Array(weekNames.size){ mutableListOf(BlockType.HEADER) }
+        holdersArr = Array(weekNames.size){ mutableListOf<ViewHolder>() }
         typeArray.recycle()
         orientation = HORIZONTAL
         setupNormalView()
@@ -118,7 +118,7 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         }
         for (i in 1 until childCount) {
             val layout = getChildAt(i) as LinearLayout
-            val typeSubArr = typeArr[i-1]
+            val holderSubArr = holdersArr[i-1]
             adapter.bindHeaderView(layout.getChildAt(0), weekNames[i - 1], i)
 //            for (j in layout.childCount - 1 downTo 1)
 //                layout.removeViewAt(j)
@@ -147,39 +147,29 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
                 val type = adapter.getBlockType(i, start, end)
                 // 如果view则检查是否可以复用
                 if (childIndex < layout.childCount) {
-                    val oldType = typeSubArr[childIndex]
+                    val holder = holderSubArr[childIndex - 1]
                     val child = layout.getChildAt(childIndex)
                     val params = child.layoutParams as LayoutParams
                     // 如果可以复用
-                    if (params.weight.toInt() == end - start + 1 && oldType == type) {
-                        if (type == BlockType.SCHEDULE)
-                            adapter.bindClassBlockView(child, i, start, end)
-                        else
-                            adapter.bindEmptyView(child, i, start, end)
+                    if (params.weight.toInt() == end - start + 1 && holder.type == type) {
+                        adapter.bindBLockViewHolder(holder, i, start, end)
                         start = end + 1
                         childIndex++
                         continue
                     } else {
                         layout.removeViewAt(childIndex) // 如果view长度与原来不一致，则弃用
-                        typeSubArr.removeAt(childIndex)
+                        holderSubArr.removeAt(childIndex - 1)
                     }
                 }
-                if (type == BlockType.SCHEDULE) {
-                    val newView = adapter.getClassBlockView(layout, i, start, end)
-                    adapter.bindClassBlockView(newView, i, start, end)
-                    typeSubArr.add(childIndex, BlockType.SCHEDULE)
-                    layout.addView(newView, childIndex++)
-                } else {
-                    val newView = adapter.getEmptyView(layout, i, start, end)
-                    adapter.bindEmptyView(newView, i, start, end)
-                    typeSubArr.add(childIndex, BlockType.EMPTY)
-                    layout.addView(newView, childIndex++)
-                }
+                val newHolder = adapter.getBlockViewHolder(layout, i, start, end, type)
+                adapter.bindBLockViewHolder(newHolder, i, start, end)
+                holderSubArr.add(childIndex-1, newHolder)
+                layout.addView(newHolder.view, childIndex++)
                 start = end + 1
             }
             for (j in layout.childCount - 1 downTo childIndex) {
                 layout.removeViewAt(j)
-                typeSubArr.removeAt(j)
+                holderSubArr.removeAt(j-1)
             }
         }
     }
@@ -422,58 +412,77 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
             }
         }
 
-        override fun onGetClassBlockView(
+        override fun onGetBlockViewHolder(
             viewGroup: ViewGroup,
             weekDay: Int,
             startRow: Int,
-            endRow: Int
-        ): View {
-            val container = LinearLayout(viewGroup.context)
-            // 容器
-            container.run {
-                layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-                orientation = VERTICAL
-                isClickable = true
-            }
-            // 课程名字
-            val name = AppCompatTextView(viewGroup.context).apply {
-                layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
-                    weight = 1f
-                    setMargins(MARGIN + 2, MARGIN, MARGIN + 2, MARGIN)
+            endRow: Int,
+            type: BlockType
+        ): ViewHolder {
+            if (type == BlockType.SCHEDULE){
+                val container = LinearLayout(viewGroup.context)
+                // 容器
+                container.run {
+                    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                    orientation = VERTICAL
+                    isClickable = true
                 }
-                setTextColor(context.getColor(R.color.white))
-            }
-            // 课室
-            val room = AppCompatTextView(viewGroup.context).apply {
-                layoutParams =
-                    LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                        setMargins(MARGIN + 1, MARGIN, MARGIN + 1, MARGIN)
+                // 课程名字
+                val name = AppCompatTextView(viewGroup.context).apply {
+                    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
+                        weight = 1f
+                        setMargins(MARGIN + 2, MARGIN, MARGIN + 2, MARGIN)
                     }
-                gravity = Gravity.CENTER
-                textSize = 12f
-                isSingleLine = true
-                setTextColor(context.getColor(R.color.white))
-            }
-            container.addView(name)
-            container.addView(room)
+                    setTextColor(context.getColor(R.color.white))
+                }
+                // 课室
+                val room = AppCompatTextView(viewGroup.context).apply {
+                    layoutParams =
+                        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                            setMargins(MARGIN + 1, MARGIN, MARGIN + 1, MARGIN)
+                        }
+                    gravity = Gravity.CENTER
+                    textSize = 12f
+                    isSingleLine = true
+                    setTextColor(context.getColor(R.color.white))
+                }
+                container.addView(name)
+                container.addView(room)
 //            container.setOnClickListener {
 //                listener?.onClassClick(schedule, it)
 //            }
-            return container
+                return ViewHolder(container, BlockType.SCHEDULE)
+            }else{
+                val v = AppCompatTextView(viewGroup.context).apply {
+                    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
+                        weight = (endRow - startRow + 1).toFloat()
+//                    Log.d(TAG, "empty: $weight")
+                    }
+                }
+                return ViewHolder(v, BlockType.EMPTY)
+            }
         }
 
-        override fun bindClassBlockView(view: View, weekDay: Int, startRow: Int, endRow: Int) {
-            super.bindClassBlockView(view, weekDay, startRow, endRow)
-            val container = view as LinearLayout
-            val className = getClassName(weekDay, startRow, endRow)
-            (container.getChildAt(0) as AppCompatTextView).text = if (className.length < 10)
-                className
-            else
-                className.substring(0, 9)
-            (container.getChildAt(1) as AppCompatTextView).text = getClassRoomName(weekDay, startRow, endRow)
+        override fun bindBLockViewHolder(
+            holder: ViewHolder,
+            weekDay: Int,
+            startRow: Int,
+            endRow: Int
+        ) {
+            super.bindBLockViewHolder(holder, weekDay, startRow, endRow)
+            if (holder.type == BlockType.SCHEDULE){
+                val container = holder.view as LinearLayout
+                val className = getClassName(weekDay, startRow, endRow)
+                (container.getChildAt(0) as AppCompatTextView).text = if (className.length < 10)
+                    className
+                else
+                    className.substring(0, 9)
+                (container.getChildAt(1) as AppCompatTextView).text = getClassRoomName(weekDay, startRow, endRow)
 
-            val colorPosition = (endRow shl startRow) * weekDay
-            container.background = container.context.getDrawable(colorArray[colorPosition % colorArray.size])
+                val colorPosition = (endRow shl startRow) * weekDay
+                container.background = container.context.getDrawable(colorArray[colorPosition % colorArray.size])
+            }
+
         }
 
 
@@ -580,61 +589,42 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         protected abstract fun onGetLeftNumView(viewGroup: ViewGroup, num: Int): View
         open fun bindLeftNumView(view: View, num: Int) {}
 
-        /**
-         * 获取名字
-         */
-        fun getClassBlockView(
+        fun getBlockViewHolder(
             viewGroup: ViewGroup,
             weekDay: Int,
             startRow: Int,
-            endRow: Int
-        ): View {
-            val view = onGetClassBlockView(viewGroup, weekDay, startRow, endRow)
-            val params = LayoutParams(view.layoutParams)
-            params.apply {
-                width = LayoutParams.MATCH_PARENT
-                height = 0
-                weight = (endRow - startRow + 1).toFloat()
-                setMargins(MARGIN, MARGIN, MARGIN, MARGIN)
-            }
-            view.layoutParams = params
-            return view
-        }
-
-        protected abstract fun onGetClassBlockView(
-            viewGroup: ViewGroup,
-            weekDay: Int,
-            startRow: Int,
-            endRow: Int
-        ): View
-
-        open fun bindClassBlockView(view: View, weekDay: Int, startRow: Int, endRow: Int) {}
-        /**
-         * 获取空白格
-         */
-        fun getEmptyView(viewGroup: ViewGroup, weekDay: Int, startRow: Int, endRow: Int): View {
-            val view = onGetEmptyView(viewGroup, weekDay, startRow, endRow)
-            val params = LayoutParams(view.layoutParams)
-            params.weight = (endRow - startRow + 1).toFloat()
-            view.layoutParams = params
-            return view
-        }
-
-        protected open fun onGetEmptyView(
-            viewGroup: ViewGroup,
-            weekDay: Int,
-            startRow: Int,
-            endRow: Int
-        ): View {
-            return AppCompatTextView(viewGroup.context).apply {
-                layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, 0).apply {
+            endRow: Int,
+            type: BlockType
+        ): ViewHolder {
+            val holder = onGetBlockViewHolder(viewGroup, weekDay, startRow, endRow, type)
+            if (type == BlockType.SCHEDULE){
+                val params = LayoutParams(holder.view.layoutParams)
+                params.apply {
+                    width = LayoutParams.MATCH_PARENT
+                    height = 0
                     weight = (endRow - startRow + 1).toFloat()
-//                    Log.d(TAG, "empty: $weight")
+                    setMargins(MARGIN, MARGIN, MARGIN, MARGIN)
                 }
+                holder.view.layoutParams = params
+                return holder
+            }else{
+                val params = LayoutParams(holder.view.layoutParams)
+                params.weight = (endRow - startRow + 1).toFloat()
+                holder.view.layoutParams = params
+                return holder
             }
+
         }
 
-        open fun bindEmptyView(view: View, weekDay: Int, startRow: Int, endRow: Int) {}
+        protected abstract fun onGetBlockViewHolder(
+            viewGroup: ViewGroup,
+            weekDay: Int,
+            startRow: Int,
+            endRow: Int,
+            type : BlockType
+        ): ViewHolder
+
+        open fun bindBLockViewHolder(holder : ViewHolder, weekDay: Int, startRow: Int, endRow: Int) {}
 
         /**
          * 获取一个格子的结束位置(包括课程格子和空白格子)
@@ -652,9 +642,10 @@ class TimeTableView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         abstract fun getLessonNumOneDay(): Int
     }
 
+    open class ViewHolder(val view : View, val type : BlockType)
+
     enum class BlockType {
         SCHEDULE,
-        EMPTY,
-        HEADER
+        EMPTY
     }
 }
