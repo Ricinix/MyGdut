@@ -6,8 +6,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-//    def name = "v1.2.7-armeabi"
-    def name = "v1.2.7"
+//    def name = "v1.2.8-armeabi"
+    def name = "v1.2.8"
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 //    ndkVersion "21.0.6113669"
@@ -15,7 +15,7 @@ android {
         applicationId "com.example.mygdut"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 13
+        versionCode 14
         versionName name
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        externalNativeBuild{
