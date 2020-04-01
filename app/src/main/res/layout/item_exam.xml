@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_exam_block"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
     android:background="?android:selectableItemBackground"
-    android:id="@+id/item_exam_block"
     android:clickable="true"
+    android:focusable="true"
     android:orientation="vertical"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
@@ -31,9 +32,9 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/item_exam_week"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="end" />
     </LinearLayout>
 
@@ -51,9 +52,9 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/item_exam_time"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="end" />
     </LinearLayout>
 
@@ -71,9 +72,9 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/item_exam_seat"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="end" />
     </LinearLayout>
 
@@ -91,9 +92,9 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/item_exam_place"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="end" />
     </LinearLayout>
 
@@ -111,9 +112,9 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/item_exam_mode"
-            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="end"/>
+            android:layout_weight="1"
+            android:gravity="end" />
     </LinearLayout>
 </LinearLayout>

@@ -2,8 +2,8 @@ package com.example.mygdut.net.impl
 
 import android.content.Context
 import android.util.Log
+import com.example.mygdut.data.ConnectionExpiredException
 import com.example.mygdut.data.NetResult
-import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.TermCode
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.api.ScoreApi
@@ -41,13 +41,14 @@ class ScoreImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) 
     /**
      * 获取最新的学期代码
      */
+    @Synchronized
     private suspend fun getNowTermCodeForScores(): NetResult<TermCode> = getData {
         val body = call.getTermCodeForScores()
         val raw = body.string()
         body.close()
         // 匹配选择的学期代码
         val result = TermCode.termCodePatten.find(raw)?.value
-        TermCode(result?:throw NotMatchException())
+        TermCode(result?:throw ConnectionExpiredException())
     }
 
     companion object{

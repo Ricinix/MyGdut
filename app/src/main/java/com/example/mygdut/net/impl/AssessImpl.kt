@@ -19,9 +19,6 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
 
     private val gson = Gson()
 
-    private var wt = listOf<AssessQuestion>()
-    private var wtxm = listOf<AssessAnswer>()
-
     /**
      * 通过学期代码[xnxqdm]和课程名称[kcmc]来对相对应老师、课程进行教评
      */
@@ -41,6 +38,7 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
     /**
      * 先预留着，以后可以给用户手动一键教评
      */
+    @Synchronized
     suspend fun getAllTeacherNeedAssess(termCode: TermCode): NetResult<List<Teacher>>{
         val body = call.getAlreadyAssess()
         val raw = body.string()
@@ -70,6 +68,7 @@ class AssessImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context)
     /**
      * 拿到问卷答案和问题
      */
+    @Synchronized
     private suspend fun getQuestionAndAnswer(queryMap: Map<String, String>): NetResult<Pair<List<AssessQuestion>, List<AssessAnswer>>> =
         getData {
             val body = call.getTeacherData(queryMap)

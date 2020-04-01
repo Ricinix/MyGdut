@@ -47,7 +47,7 @@ data class Exam(
     private fun getWeekName(weekNames: Array<String>?, weekDay: Int): String {
         return weekNames?.let {
             try {
-                "${weekNames[weekDay]}-"
+                "${weekNames[weekDay - 1]}-"
             } catch (e: IndexOutOfBoundsException) {
                 ""
             }

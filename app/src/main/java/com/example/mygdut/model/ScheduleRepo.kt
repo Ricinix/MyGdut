@@ -130,7 +130,7 @@ class ScheduleRepo @Inject constructor(
         val schedules = scheduleDao.getScheduleByTermName(termName.name)
         return if (isNeedToGetExam()) {
             val exams = examDao.getExamByTermName(termName.name)
-            ScheduleData(schedules + exams.map { it.toSchedule() }, termName)
+            ScheduleData(exams.map { it.toSchedule() } + schedules, termName)
         } else
             ScheduleData(scheduleDao.getScheduleByTermName(termName.name), termName)
     }
@@ -160,16 +160,7 @@ class ScheduleRepo @Inject constructor(
         // 联网获取上次访问的学期（若没有则获取最新的）
         val chooseTerm = TermName(settingSp.getString(SCHEDULE_TERM_NAME, "") ?: "")
         if (chooseTerm.isValid()) {
-            val code = chooseTerm.toTermCode(transformer)
-            return when (val result = scheduleImpl.getClassScheduleByTermCode(code)) {
-                is NetResult.Success -> {
-                    val data = result.data.map { it.toSchedule(chooseTerm) }
-                        .filter { it.isValid() }
-                    save2DataBase(data, chooseTerm)
-                    NetResult.Success(ScheduleData(data, chooseTerm))
-                }
-                is NetResult.Error -> result
-            }
+            return getScheduleByTermName(chooseTerm)
         }
         // 如果需要获取
         return when (val result = scheduleImpl.getNowTermSchedule()) {

@@ -174,7 +174,7 @@ class ExamRecyclerAdapter(private val weekNames : Array<String>,private val getD
             val seatTextView: AppCompatTextView = v.findViewById(R.id.item_exam_seat)
             val placeTextView: AppCompatTextView = v.findViewById(R.id.item_exam_place)
             val modeTextView: AppCompatTextView = v.findViewById(R.id.item_exam_mode)
-            val block : LinearLayout = v as LinearLayout
+            val block : LinearLayout = v.findViewById(R.id.item_exam_block)
         }
 
         class FinishViewHolder(v : View) : ViewHolder(v){

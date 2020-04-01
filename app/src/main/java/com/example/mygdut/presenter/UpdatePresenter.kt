@@ -56,7 +56,7 @@ class UpdatePresenter @Inject constructor(
         val cal = Calendar.getInstance()
         cal.set(Calendar.HOUR_OF_DAY, 20)
         cal.set(Calendar.MINUTE, 0)
-        if (cal.timeInMillis >= Calendar.getInstance().timeInMillis)
+        if (cal.timeInMillis <= Calendar.getInstance().timeInMillis)
             cal.add(Calendar.DATE, 1)
         return cal.timeInMillis
     }

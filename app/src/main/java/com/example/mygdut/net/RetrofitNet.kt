@@ -22,6 +22,7 @@ sealed class RetrofitNet(url : String) {
         val clientBuilder = initClient()
         clientBuilder.addInterceptor(GetCookieInterceptor())
             .addInterceptor(PutCookieInterceptor())
+//            .addInterceptor(ShortConnectionInterceptor())
         Retrofit.Builder()
             .baseUrl(url)
             .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())

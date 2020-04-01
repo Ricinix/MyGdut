@@ -69,27 +69,22 @@ class ExamDate(val date: String, val time: String) {
      */
     fun getDistance(): String {
         val todayCalendar = Calendar.getInstance()
-        val examCalendar = Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month-1)
-            set(Calendar.DAY_OF_MONTH, day)
-            set(Calendar.HOUR_OF_DAY, startHour)
-            set(Calendar.MINUTE, startMinute)
-        }
+        val examCalendar = getCalendarOfExam()
         val distance = examCalendar.timeInMillis - todayCalendar.timeInMillis
         val weekDistance = distance / (1000 * 60 * 60 * 24 * 7)
         val dayDistance = (distance / (1000 * 60 * 60 * 24)) % 7
+        val hourDistance = (distance / (1000 * 60 * 60)) % 24
+        val dayNeedAddOne = todayCalendar.get(Calendar.HOUR_OF_DAY) >= examCalendar.get(Calendar.HOUR_OF_DAY)
         // 非当天
         if (weekDistance > 0){
             return if (dayDistance>0)
-                "${weekDistance}周加${dayDistance}天"
+                "${weekDistance}周加${if (dayNeedAddOne) dayDistance + 1 else dayDistance}天"
             else "${weekDistance}周"
         }else if (dayDistance > 0){
-            return "${dayDistance}天"
+            return "${if (dayNeedAddOne) dayDistance + 1 else dayDistance}天"
         }
 
         // 当天
-        val hourDistance = (distance / (1000 * 60 * 60)) % 24
         val minuteDistance = (distance / (1000 * 60)) % 60
         // 还有好几个小时
         if (hourDistance > 0){

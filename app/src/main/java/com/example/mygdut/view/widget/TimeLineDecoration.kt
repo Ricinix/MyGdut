@@ -77,6 +77,8 @@ class TimeLineDecoration(context: Context) : RecyclerView.ItemDecoration(){
                     }
                     else -> {
                         c.drawLine(centerX, v.top.toFloat(), centerX, v.bottom.toFloat(), shapePaint)
+                        c.drawLine(v.left.toFloat(), v.top.toFloat(), v.left.toFloat() + v.width, v.top.toFloat(), shapePaint)
+                        c.drawLine(v.left.toFloat(), v.bottom.toFloat(), v.left.toFloat() + v.width, v.bottom.toFloat(), shapePaint)
                     }
                 }
             }

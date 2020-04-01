@@ -2,8 +2,9 @@ package com.example.mygdut.net.impl
 
 import android.content.Context
 import android.util.Log
+import com.example.mygdut.data.ConnectionException
+import com.example.mygdut.data.DataException
 import com.example.mygdut.data.NetResult
-import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.domain.ConstantField.INTRA_NET_CHOOSE
 import com.example.mygdut.domain.ConstantField.SP_SETTING
@@ -11,7 +12,6 @@ import com.example.mygdut.net.RetrofitNet
 import com.example.mygdut.net.data.DataFromNetWithRows
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
-import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
 
@@ -49,13 +49,13 @@ abstract class DataImpl<T>(
     /**
      * 获取带Rows的Pair，Rows要在前面
      */
-    protected suspend fun <E, T : Pair<DataFromNetWithRows<E>, *>> getDataWithPairRows(f : suspend (Int) ->T) : NetResult<T>{
+    protected suspend fun <E, T : Pair<DataFromNetWithRows<E>, *>> getDataWithPairRows(f: suspend (Int) -> T): NetResult<T> {
         var page = 1
-        var data : T? = null
-        while (page > 0){
-            when(val r = getData { f(page) }){
-                is NetResult.Error->return r
-                is NetResult.Success->{
+        var data: T? = null
+        while (page > 0) {
+            when (val r = getData { f(page) }) {
+                is NetResult.Error -> return r
+                is NetResult.Success -> {
                     if (data == null) data = r.data
                     else data.first.rows = r.data.first.rows + data.first.rows
                     if (data.first.rows.size >= data.first.total) page = 0
@@ -74,11 +74,11 @@ abstract class DataImpl<T>(
      */
     protected suspend fun <E, T : DataFromNetWithRows<E>> getDataWithRows(f: suspend (Int) -> T): NetResult<T> {
         var page = 1
-        var data : T? = null
-        while (page > 0){
-            when(val r = getData { f(page) }){
-                is NetResult.Error->return r
-                is NetResult.Success->{
+        var data: T? = null
+        while (page > 0) {
+            when (val r = getData { f(page) }) {
+                is NetResult.Error -> return r
+                is NetResult.Success -> {
                     if (data == null) data = r.data
                     else data.rows = r.data.rows + data.rows
                     if (data.rows.size >= data.total) page = 0
@@ -110,8 +110,14 @@ abstract class DataImpl<T>(
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return loginResult
-            } catch (e: NotMatchException) {
-                if (i == 1) return NetResult.Error("未匹配到数据")
+            } catch (e: ConnectionException) {
+                if (i == 1) return NetResult.Error(e.msg)
+                Log.d(TAG, e.toString())
+                val loginResult = login.login(loginMessage)
+                if (loginResult is NetResult.Error)
+                    return loginResult
+            } catch (e: DataException) {
+                if (i == 1) return NetResult.Error(e.msg)
                 Log.d(TAG, e.toString())
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
@@ -127,12 +133,9 @@ abstract class DataImpl<T>(
             } catch (e: JsonSyntaxException) {
                 Log.d(TAG, e.toString())
                 return NetResult.Error("获取数据失败，可能是接口改变")
-            } catch (e: HttpException) {
+            } catch (e: Exception) {
                 Log.d(TAG, e.toString())
-                return NetResult.Error("HTTP 错误")
-            }catch (e : Exception){
-                Log.d(TAG, e.toString())
-                return NetResult.Error(e.message?:"奇怪的错误")
+                return NetResult.Error(e.message ?: "奇怪的错误")
             }
         }
         return NetResult.Error("未获取数据")

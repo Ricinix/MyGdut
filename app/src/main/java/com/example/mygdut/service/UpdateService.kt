@@ -43,7 +43,7 @@ class UpdateService : Service() {
     }
 
     private fun startExamService() {
-        ExamReminderService.stopThisService(this)
+        ExamReminderService.startThisService(this)
     }
 
     private fun startUpdateAlarm(): Boolean {

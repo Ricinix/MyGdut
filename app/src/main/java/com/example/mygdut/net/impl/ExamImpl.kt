@@ -1,8 +1,8 @@
 package com.example.mygdut.net.impl
 
 import android.content.Context
+import com.example.mygdut.data.ConnectionExpiredException
 import com.example.mygdut.data.NetResult
-import com.example.mygdut.data.NotMatchException
 import com.example.mygdut.data.TermCode
 import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.api.ExamApi
@@ -22,11 +22,12 @@ class ExamImpl(login: LoginImpl, loginMessage: LoginMessage, context: Context) :
         }
     }
 
+    @Synchronized
     private suspend fun getLatestTermCode(): NetResult<TermCode> = getData {
         val body = call.getExamPage()
         val raw = body.string()
         body.close()
         val result = TermCode.termCodePatten.find(raw)?.value
-        TermCode(result ?: throw NotMatchException())
+        TermCode(result ?: throw ConnectionExpiredException())
     }
 }
