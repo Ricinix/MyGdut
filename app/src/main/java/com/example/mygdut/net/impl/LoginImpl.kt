@@ -7,6 +7,7 @@ import com.example.mygdut.data.ConnectionExpiredException
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.VerifyCodeWrongException
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.data.login.LoginStatus
 import com.example.mygdut.domain.ConstantField.INTRA_NET_CHOOSE
 import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.domain.VerifyCodeCrack
@@ -35,6 +36,7 @@ class LoginImpl(
 
     @Synchronized
     suspend fun login(loginMessage: LoginMessage): NetResult<String> {
+        if (LoginStatus.isOnline()) return NetResult.Success("已登录")
         checkNet()
         // 验证码为4位才能进行下一步的加密操作
         while (true) {
@@ -51,6 +53,7 @@ class LoginImpl(
                     throw VerifyCodeWrongException()
                 return when {
                     r.code >= 0 -> NetResult.Success(r.data ?: "null").also {
+                        LoginStatus.setOnline()
                         Log.d(TAG, "succeed, data: ${r.data}")
                     }
                     r.message == "连接已过期" -> {

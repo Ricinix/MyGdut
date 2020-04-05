@@ -6,6 +6,7 @@ import com.example.mygdut.data.ConnectionException
 import com.example.mygdut.data.DataException
 import com.example.mygdut.data.NetResult
 import com.example.mygdut.data.login.LoginMessage
+import com.example.mygdut.data.login.LoginStatus
 import com.example.mygdut.domain.ConstantField.INTRA_NET_CHOOSE
 import com.example.mygdut.domain.ConstantField.SP_SETTING
 import com.example.mygdut.net.RetrofitNet
@@ -107,23 +108,27 @@ abstract class DataImpl<T>(
             } catch (e: MalformedJsonException) {
                 if (i == 1) return NetResult.Error("获取到的json文本格式有误")
                 Log.d(TAG, e.toString())
+                LoginStatus.setOffline()
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return loginResult
             } catch (e: ConnectionException) {
                 if (i == 1) return NetResult.Error(e.msg)
                 Log.d(TAG, e.toString())
+                LoginStatus.setOffline()
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return loginResult
             } catch (e: DataException) {
                 if (i == 1) return NetResult.Error(e.msg)
                 Log.d(TAG, e.toString())
+                LoginStatus.setOffline()
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return loginResult
             } catch (e: IllegalArgumentException) {
                 Log.d(TAG, e.toString())
+                LoginStatus.setOffline()
                 val loginResult = login.login(loginMessage)
                 if (loginResult is NetResult.Error)
                     return loginResult
