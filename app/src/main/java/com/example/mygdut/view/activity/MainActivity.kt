@@ -30,7 +30,7 @@ import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.content_main.*
 
 
-class MainActivity : AppCompatActivity(), SettingFragment.SettingChangeListener {
+class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
 
     //    private val noticeFragment = NoticeFragment()
     private val homeFragment = HomeFragment()
