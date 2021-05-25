@@ -23,9 +23,9 @@ android {
 //                cppFlags
 //            }
 //        }
-//        ndk {
-//            abiFilters "armeabi","armeabi-v7a"
-//        }
+        ndk {
+            abiFilters "armeabi","armeabi-v7a"
+        }
     }
 
     //自动生成指定名称的release发布版的 apk文件
