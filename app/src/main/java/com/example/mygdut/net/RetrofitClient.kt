@@ -1,22 +1,22 @@
 package com.example.mygdut.net
 
+import com.example.mygdut.net.adapter.RpcAdapter
+import com.example.mygdut.net.converter.HttpConverterFactory
 import com.example.mygdut.net.interceptor.GetCookieInterceptor
 import com.example.mygdut.net.interceptor.PutCookieInterceptor
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
-sealed class RetrofitNet(url : String) {
-    object GithubProject : RetrofitNet("https://github.com/Ricinix/MyGdut/")
-    object AutoMationOfficialWeb : RetrofitNet("http://automation.gdut.edu.cn/")
-    object ExtraNet : RetrofitNet("https://jxfw.gdut.edu.cn/")
-    object IntraNet : RetrofitNet("http://222.200.98.147/")
+sealed class RetrofitClient(url : String) {
+    object GithubProject : RetrofitClient("https://github.com/Ricinix/MyGdut/")
+    object AutoMationOfficialWeb : RetrofitClient("http://automation.gdut.edu.cn/")
+    object ExtraClient : RetrofitClient("https://jxfw.gdut.edu.cn/")
+    object IntraClient : RetrofitClient("http://222.200.98.147/")
 
     val instance: Retrofit by lazy {
         val clientBuilder = initClient()
@@ -25,8 +25,8 @@ sealed class RetrofitNet(url : String) {
 //            .addInterceptor(ShortConnectionInterceptor())
         Retrofit.Builder()
             .baseUrl(url)
-            .addCallAdapterFactory(CoroutineCallAdapterFactory.invoke())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RpcAdapter())
+            .addConverterFactory(HttpConverterFactory())
             .client(clientBuilder.build())
             .build()
     }

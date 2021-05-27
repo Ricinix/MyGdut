@@ -102,7 +102,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     //lifecycle
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-    implementation "android.arch.lifecycle:extensions:2.1.0"
+//    implementation "android.arch.lifecycle:extensions:2.1.0" // 此库不兼容新的gradle
     //dagger
     implementation 'com.google.dagger:dagger:2.26'
     kapt 'com.google.dagger:dagger-compiler:2.26'
@@ -112,9 +112,6 @@ dependencies {
 
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
-//    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.2'
-    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
     //room
     implementation 'androidx.room:room-runtime:2.2.4'
     kapt 'androidx.room:room-compiler:2.2.4' // use kapt for Kotlin
