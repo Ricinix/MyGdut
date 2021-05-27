@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.R
@@ -13,9 +12,8 @@ import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.viewModel.LoginViewModel
 import com.example.mygdut.viewModel.`interface`.LoginCallBack
 import kotlinx.android.synthetic.main.activity_login.*
-import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     lateinit var loginViewModel: LoginViewModel
     private var finishInputStatus = NONE_INPUT
