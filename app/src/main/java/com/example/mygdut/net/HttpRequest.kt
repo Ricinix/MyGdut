@@ -1,5 +1,6 @@
 package com.example.mygdut.net
 
+import com.example.mygdut.data.login.LoginMessage
 import com.example.mygdut.net.impl.LoginService
 
 object HttpRequest {
@@ -19,8 +20,10 @@ object HttpRequest {
         loginService = login
     }
 
-    suspend fun login() {
-        loginService?.login()
+    suspend fun login(loginMessage: LoginMessage? = null) {
+        loginMessage?.apply {
+            loginService?.login(loginMessage)
+        } ?: loginService?.login()
     }
 
 

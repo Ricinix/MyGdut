@@ -3,6 +3,9 @@ package com.example.mygdut.view.activity
 import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.example.mygdut.viewModel.BaseViewModel
+import com.example.mygdut.viewModel.ExamViewModel
 import com.jaeger.library.StatusBarUtil
 
 /**
