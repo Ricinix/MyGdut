@@ -8,11 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mygdut.R
 import com.example.mygdut.data.TermName
+import com.example.mygdut.db.LocalRepository
 import com.example.mygdut.db.dao.ScheduleDao
 import com.example.mygdut.db.entity.Schedule
-import com.example.mygdut.di.component.DaggerNewScheduleActivityComponent
-import com.example.mygdut.di.module.ScheduleDaoModule
-import com.example.mygdut.view.BaseApplication
 import com.example.mygdut.view.adapter.OrderSelectRecyclerAdapter
 import com.example.mygdut.view.adapter.WeekSelectRecyclerAdapter
 import com.example.mygdut.view.fragment.ScheduleFragment
@@ -20,7 +18,6 @@ import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_new_schedule.*
 import kotlinx.android.synthetic.main.content_new_class.*
 import kotlinx.coroutines.*
-import javax.inject.Inject
 
 class NewScheduleActivity : AppCompatActivity() {
     private lateinit var startTimeArr: Array<String>
@@ -37,8 +34,7 @@ class NewScheduleActivity : AppCompatActivity() {
     private var termName: TermName? = null
     private val disableClasses = mutableListOf<Schedule>()
 
-    @Inject
-    lateinit var scheduleDao : ScheduleDao
+    lateinit var scheduleDao: ScheduleDao
     private val scope = MainScope() + CoroutineName("NewScheduleActivity")
 
     private fun initData() {
@@ -60,7 +56,7 @@ class NewScheduleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_schedule)
-        inject()
+        scheduleDao = LocalRepository.db.scheduleDao()
         setBarColor()
         initData()
 
@@ -86,13 +82,22 @@ class NewScheduleActivity : AppCompatActivity() {
         btn_confirm.setOnClickListener {
             when {
                 dialog_input_class_name.text?.isEmpty() == true -> {
-                    Toast.makeText(this, getString(R.string.warn_for_class_name), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.warn_for_class_name),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 weekAdapter?.weekSelect?.isEmpty() == true -> {
-                    Toast.makeText(this,getString(R.string.warn_for_one_week) , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.warn_for_one_week), Toast.LENGTH_SHORT)
+                        .show()
                 }
                 orderAdapter?.orderSelect?.isEmpty() == true -> {
-                    Toast.makeText(this, getString(R.string.warn_for_one_period), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.warn_for_one_period),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 else -> {
                     val schedule = Schedule(
@@ -115,7 +120,7 @@ class NewScheduleActivity : AppCompatActivity() {
         }
     }
 
-    private fun addNewSchedule(schedule: Schedule){
+    private fun addNewSchedule(schedule: Schedule) {
         scope.launch {
             val job = launch { scheduleDao.saveSchedule(schedule) }
             job.join()
@@ -141,7 +146,7 @@ class NewScheduleActivity : AppCompatActivity() {
         }.apply {
             // 先把一开始就选中的周次的当天有课的时间段选出来
             val set = mutableSetOf<Int>()
-            val schedules = disableClasses.filter { chosenWeek?:return in it.weeks }
+            val schedules = disableClasses.filter { chosenWeek ?: return in it.weeks }
             for (s in schedules) {
                 set.addAll(s.classOrderInDay)
             }
@@ -174,14 +179,6 @@ class NewScheduleActivity : AppCompatActivity() {
             else
                 "${startTimeArr[list.first()]}-${endTimeArr[list.last()]}(第${list.first()}-${list.last()}节)"
         } else ""
-    }
-
-    fun inject(){
-        DaggerNewScheduleActivityComponent.builder()
-            .baseComponent((application as BaseApplication).getBaseComponent())
-            .scheduleDaoModule(ScheduleDaoModule())
-            .build()
-            .inject(this)
     }
 
     override fun onDestroy() {

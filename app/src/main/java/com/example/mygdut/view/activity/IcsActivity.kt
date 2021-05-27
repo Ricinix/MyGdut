@@ -15,22 +15,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mygdut.R
 import com.example.mygdut.data.TermName
+import com.example.mygdut.db.LocalRepository
 import com.example.mygdut.db.dao.ScheduleDao
-import com.example.mygdut.di.component.DaggerIcsComponent
-import com.example.mygdut.di.module.ScheduleDaoModule
 import com.example.mygdut.domain.ConstantField
 import com.example.mygdut.domain.SchoolCalendar
 import com.example.mygdut.domain.ics.IcsGenerator
-import com.example.mygdut.view.BaseApplication
 import com.google.android.material.chip.Chip
 import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_ics.*
 import kotlinx.coroutines.*
-import javax.inject.Inject
 
 class IcsActivity : AppCompatActivity() {
 
-    @Inject
     lateinit var scheduleDao: ScheduleDao
     private val scope = MainScope() + CoroutineName("IcsActivity")
     private val mTermNames = mutableListOf<TermName>()
@@ -39,7 +35,7 @@ class IcsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ics)
-        inject()
+        scheduleDao = LocalRepository.db.scheduleDao()
         intent.getParcelableExtra<TermName>(EXTRA_TERM_NAME)?.let {
             mTermNames.add(it)
         }
@@ -55,10 +51,9 @@ class IcsActivity : AppCompatActivity() {
 
     private fun setupTimeSelector() {
         time_switch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked){
+            if (isChecked) {
                 time_set_layout.visibility = View.VISIBLE
-            }
-            else{
+            } else {
                 time_set_layout.visibility = View.GONE
             }
         }
@@ -76,7 +71,8 @@ class IcsActivity : AppCompatActivity() {
         btn_output.setOnClickListener {
             if (!checkWriteAndReadPermission()) return@setOnClickListener
             if (time_edit.text == null || time_edit.text?.isEmpty() == true) {
-                Toast.makeText(this, getString(R.string.insert_time_template), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.insert_time_template), Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
             scope.launch {
@@ -90,29 +86,40 @@ class IcsActivity : AppCompatActivity() {
                                 termName
                             ), this@IcsActivity
                         )
-                        if (time_set_layout.visibility == View.VISIBLE && time_edit.text.toString().isNotEmpty()){
+                        if (time_set_layout.visibility == View.VISIBLE && time_edit.text.toString()
+                                .isNotEmpty()
+                        ) {
                             builder.setTime(time_edit.text.toString().toInt())
                         }
                         val ics = builder.build()
-                        ics.saveToSDCard(getPath()?:break)
+                        ics.saveToSDCard(getPath() ?: break)
                     }
                 }
                 job.join()
-                if (getPath()?.isNotEmpty() == true){
+                if (getPath()?.isNotEmpty() == true) {
 
-                    Toast.makeText(this@IcsActivity, getString(R.string.output_path_template, getPath()), Toast.LENGTH_LONG).show()
-                }else{
-                    Toast.makeText(this@IcsActivity, getString(R.string.output_fail_template), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@IcsActivity,
+                        getString(R.string.output_path_template, getPath()),
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this@IcsActivity,
+                        getString(R.string.output_fail_template),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 finish()
             }
         }
     }
 
-    private fun getPath() : String?{
+    private fun getPath(): String? {
         val path = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath
         return path?.replace(REPLACE_PATH, "")
     }
+
     private fun getSchoolDay(termName: TermName): SchoolCalendar {
         val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
         return SchoolCalendar(termName, sp.getInt(termName.name, 0))
@@ -171,19 +178,15 @@ class IcsActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         for (permission in grantResults) {
             if (permission == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, getString(R.string.permission_fail_template), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.permission_fail_template),
+                    Toast.LENGTH_LONG
+                ).show()
                 return
             }
         }
         btn_output.callOnClick()
-    }
-
-    private fun inject() {
-        DaggerIcsComponent.builder()
-            .baseComponent((application as BaseApplication).getBaseComponent())
-            .scheduleDaoModule(ScheduleDaoModule())
-            .build()
-            .inject(this)
     }
 
     override fun onDestroy() {

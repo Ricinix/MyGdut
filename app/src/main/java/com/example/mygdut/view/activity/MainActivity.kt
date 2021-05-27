@@ -14,11 +14,11 @@ import android.os.PowerManager
 import android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.mygdut.R
 import com.example.mygdut.data.ApkVersion
+import com.example.mygdut.db.LocalRepository
 import com.example.mygdut.domain.ConstantField
 import com.example.mygdut.service.*
 import com.example.mygdut.view.fragment.HomeFragment
@@ -46,8 +46,6 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        StatusBarUtil.setTransparent(this)
-        StatusBarUtil.setLightMode(this)
 
         checkLogin()
         setupNavigationView()
@@ -74,7 +72,7 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
     }
 
     private fun checkReminder() {
-        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        val sp = LocalRepository.cache
         if (sp.getBoolean(ConstantField.SCHEDULE_REMIND, false))
             onStartScheduleReminder()
         if (sp.getBoolean(ConstantField.NOTICE_REMIND, false))
@@ -110,7 +108,7 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
 
     override fun onStopExamReminder() {
         ExamReminderService.stopThisService(this)
-        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        val sp = LocalRepository.cache
         if (!sp.getBoolean(ConstantField.SCHEDULE_REMIND, false))
             stopUpdateService()
     }
@@ -121,7 +119,7 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
 
     override fun onStopScheduleReminder() {
         ScheduleReminderService.stopThisService(this)
-        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        val sp = LocalRepository.cache
         if (!sp.getBoolean(ConstantField.EXAM_REMIND, false))
             stopUpdateService()
     }
@@ -157,7 +155,7 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
      * 检测是否需要检查更新
      */
     private fun autoCheckUpdate() {
-        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        val sp = LocalRepository.cache
         val autoCheck = sp.getBoolean(ConstantField.AUTO_CHECK_UPDATE, false)
         if (autoCheck)
             onCheckUpdate(true)
@@ -173,7 +171,7 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
     }
 
     override fun onCheckUpdate(autoCheck: Boolean) {
-        val sp = getSharedPreferences(ConstantField.SP_SETTING, Context.MODE_PRIVATE)
+        val sp = LocalRepository.cache
         val checkBeta = sp.getBoolean(ConstantField.CHECK_BETA, false)
         mViewModel.checkVersion(getNowVersion(), checkBeta, autoCheck)
         mViewModel.setListener(object : MainViewModel.MainViewModelListener {
@@ -209,7 +207,13 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
     private fun showDialogForDownload(versionName: ApkVersion, title: String) {
         AlertDialog.Builder(this)
             .setTitle(title)
-            .setMessage(getString(R.string.version_complete_template, getNowVersion().version, versionName.version))
+            .setMessage(
+                getString(
+                    R.string.version_complete_template,
+                    getNowVersion().version,
+                    versionName.version
+                )
+            )
             .setPositiveButton(getString(R.string.to_download_template)) { _, _ ->
                 downloadApk(versionName)
             }
@@ -223,7 +227,8 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
      * 下载apk，当前方案是打开浏览器来下载（毕竟毒瘤GitHub防爬虫）
      */
     private fun downloadApk(version: ApkVersion) {
-        val url = "${getString(R.string.github_download_detail)}${version.version}/${version.getApkName()}"
+        val url =
+            "${getString(R.string.github_download_detail)}${version.version}/${version.getApkName()}"
         Log.d("Update", "url: $url")
         val uri = Uri.parse(url)
         val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -266,7 +271,7 @@ class MainActivity : BaseActivity(), SettingFragment.SettingChangeListener {
                 R.id.navigation_schedule -> {
                     StatusBarUtil.setColorNoTranslucent(this, Color.WHITE)
                     switchToFragment(scheduleFragment)
-                    if (needToRefreshSchedule){
+                    if (needToRefreshSchedule) {
                         scheduleFragment.refreshData(false)
                         needToRefreshSchedule = false
                     }
